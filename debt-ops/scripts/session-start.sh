@@ -20,7 +20,7 @@
 # Output: SessionStart hookSpecificOutput.additionalContext on stdout.
 # Diagnostics go to stderr so they don't pollute the model's context.
 
-set -u
+set -u -o pipefail
 umask 077
 
 DATA_DIR="${CLAUDE_PLUGIN_DATA:-}"
@@ -49,6 +49,8 @@ fi
 # Pull commands from the charter's <!-- debt-ops:feedback --> block, if any.
 charter_commands() {
   local file="$1"
+  # The trailing grep can legitimately match nothing (empty marker block);
+  # || true keeps pipefail from failing the caller in that case.
   awk '
     /<!--[[:space:]]*debt-ops:feedback[[:space:]]*-->/ { in_block = 1; next }
     /<!--[[:space:]]*\/debt-ops:feedback[[:space:]]*-->/ { in_block = 0; next }
@@ -56,7 +58,7 @@ charter_commands() {
   ' "${file}" | sed -E 's/^[[:space:]]*[-*][[:space:]]+//' \
               | sed -E 's/^[[:space:]]*```.*$//' \
               | sed -E 's/^[[:space:]]+|[[:space:]]+$//g' \
-              | grep -Ev '^$|^#'
+              | { grep -Ev '^$|^#' || true; }
 }
 
 CMDS=""
@@ -72,7 +74,9 @@ if [[ -n "${CHARTER}" ]] && grep -qE '<!--[[:space:]]*debt-ops:feedback[[:space:
 fi
 
 if [[ -z "${CMDS}" && -n "${CACHE_FILE}" && -s "${CACHE_FILE}" ]]; then
-  CMDS="$(grep -Ev '^[[:space:]]*$|^[[:space:]]*#' "${CACHE_FILE}")"
+  # Cache may contain only blank/comment lines; grep returns nonzero for no
+  # matches under pipefail, so fall back to empty.
+  CMDS="$(grep -Ev '^[[:space:]]*$|^[[:space:]]*#' "${CACHE_FILE}" || true)"
   if [[ -n "${CMDS}" ]]; then
     SOURCE="cache:${CACHE_FILE}"
   fi

@@ -1,6 +1,7 @@
 ---
 name: add
-description: Register a tech debt entry. Use when you write a TODO/FIXME/HACK/XXX marker that's real debt (a known shortcut, an incomplete case, a fragile assumption), or when the user explicitly asks to record debt. Skip for trivial style nits.
+description: Drafts and writes a tech debt registry entry under debt/registry/. Use whenever you take an expedient choice (a known shortcut, an incomplete case, a fragile assumption, a deferred refactor), or when you write a TODO, FIXME, HACK, or XXX marker that represents real debt, or when the user explicitly asks to record debt. Skips for trivial style nits and naming preferences.
+allowed-tools: Read, Write, Glob, Bash(ls:*)
 ---
 
 # /debt-ops:add — register a debt entry

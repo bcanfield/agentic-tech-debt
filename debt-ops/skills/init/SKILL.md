@@ -1,7 +1,8 @@
 ---
 name: init
-description: Persist debt-ops disciplines and quality commands into the project's AGENTS.md or CLAUDE.md so the team and other AI tools share one source of truth. Opt-in; only run when the user explicitly asks.
+description: Writes the debt-ops disciplines and the project's detected quality commands into AGENTS.md or CLAUDE.md so the team and other AI tools share one source of truth. Opt-in; only runs when the user explicitly asks.
 disable-model-invocation: true
+allowed-tools: Read, Edit, Write, Glob, Bash(ls:*)
 ---
 
 # /debt-ops:init — write disciplines and commands into the charter
@@ -51,31 +52,38 @@ updates and travel to other AI tools (Cursor, Aider, Codex) that read
 ## Section template
 
 Insert this section verbatim, substituting the detected commands into the
-marker block:
+marker block. The outer fence uses **four backticks** so the inner
+triple-backtick commands block nests correctly — preserve that when
+copying.
 
-```markdown
+````markdown
 ## Tech debt operations
 
-This section is managed by the [`debt-ops`](https://github.com/) Claude Code
-plugin. The marker block below is read by the plugin's PostToolUse hook;
-keep the `<!-- debt-ops:feedback -->` comments intact.
+This section is managed by the `debt-ops` Claude Code plugin. The marker
+block below is read by the plugin's PostToolUse hook; keep the
+`<!-- debt-ops:feedback -->` comments intact.
 
 ### Disciplines
 
-1. **Auto-register debt.** When you write a `TODO`, `FIXME`, `HACK`, or
-   `XXX` marker that's real debt (a known shortcut, an incomplete case, a
-   fragile assumption), invoke `/debt-ops:add` immediately. No permission
-   prompt; just do it and announce. Use `payoff_trigger: unknown` if
-   unsure. Trivial markers (style nits) don't earn an entry; use judgment.
+1. **Auto-register debt.** When you take an expedient choice — a known
+   shortcut, an incomplete case, a fragile assumption, a deferred
+   refactor — register it via `/debt-ops:add` immediately. This includes
+   any `TODO`, `FIXME`, `HACK`, or `XXX` marker you write that represents
+   real debt, but is not limited to markers: a silent shortcut still
+   earns an entry. No permission prompt; just register and announce
+   briefly. Use `payoff_trigger: unknown` if unsure. Trivial nits (style,
+   naming preferences) don't earn an entry; use judgment.
 
 2. **Draft ADRs for architectural changes.** When making an
    architecturally significant change (data model, public interface,
-   dependency manifest, security boundary, release pipeline), draft an ADR
-   under `doc/adr/` in Nygard format (Context, Decision, Consequences,
-   Alternatives, Payoff trigger). Create the directory if needed.
+   dependency manifest, security boundary, release pipeline), draft an
+   ADR under `doc/adr/` in Nygard format (Context, Decision,
+   Consequences, Alternatives, Payoff trigger). Create the directory if
+   needed.
 
-3. **Read the registry first.** Read entries under `debt/registry/`
-   before changing files they reference.
+3. **Read the registry and ADR index first.** Before changing files in
+   an area covered by entries under `debt/registry/` or ADRs under
+   `doc/adr/`, read the relevant entries.
 
 4. **Refer by content, not ID.** In conversation, refer to debt entries
    and ADRs by what they're about, not by numeric ID. IDs are for tooling
@@ -90,7 +98,7 @@ keep the `<!-- debt-ops:feedback -->` comments intact.
 <DETECTED-COMMAND-3>
 ```
 <!-- /debt-ops:feedback -->
-```
+````
 
 ## Edge cases
 

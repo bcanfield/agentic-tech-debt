@@ -10,10 +10,22 @@
 # hook output as ground truth; staying silent on success would let it
 # hallucinate "tests passed" with nothing to contradict it.
 
-set -u
+set -u -o pipefail
 umask 077
 
 BUDGET_SECS="${DEBT_OPS_FEEDBACK_BUDGET:-3}"
+
+# Concurrency guard. If a previous feedback.sh is still running (e.g., the
+# agent did MultiEdit + immediate Write), skip silently rather than racing
+# the same commands. flock is best-effort: missing flock or no DATA dir →
+# proceed without locking.
+if [[ -n "${CLAUDE_PLUGIN_DATA:-}" ]] && command -v flock >/dev/null 2>&1; then
+  mkdir -p "${CLAUDE_PLUGIN_DATA}" 2>/dev/null || true
+  exec 9>"${CLAUDE_PLUGIN_DATA}/.feedback.lock"
+  if ! flock -n 9; then
+    exit 0
+  fi
+fi
 
 # Resolve commands from charter marker first, then plugin-data cache.
 CHARTER=""
@@ -33,7 +45,7 @@ read_charter() {
   ' "${file}" | sed -E 's/^[[:space:]]*[-*][[:space:]]+//' \
               | sed -E 's/^[[:space:]]*```.*$//' \
               | sed -E 's/^[[:space:]]+|[[:space:]]+$//g' \
-              | grep -Ev '^$|^#'
+              | { grep -Ev '^$|^#' || true; }
 }
 
 CMDS=""
@@ -41,7 +53,7 @@ if [[ -n "${CHARTER}" ]] && grep -qE '<!--[[:space:]]*debt-ops:feedback[[:space:
   CMDS="$(read_charter "${CHARTER}")"
 fi
 if [[ -z "${CMDS}" && -n "${CLAUDE_PLUGIN_DATA:-}" && -s "${CLAUDE_PLUGIN_DATA}/feedback.list" ]]; then
-  CMDS="$(grep -Ev '^[[:space:]]*$|^[[:space:]]*#' "${CLAUDE_PLUGIN_DATA}/feedback.list")"
+  CMDS="$(grep -Ev '^[[:space:]]*$|^[[:space:]]*#' "${CLAUDE_PLUGIN_DATA}/feedback.list" || true)"
 fi
 
 # No commands known yet: stay silent. The SessionStart inject already asked
@@ -131,8 +143,9 @@ for i, cmd in enumerate(cmds):
                 data = open(out_path, "rb").read().decode("utf-8", errors="replace")
             except Exception:
                 data = ""
-            lines = data.splitlines()
-            tail = "\n".join(lines[-20:])
+            # Bounded context: last 10 lines, each truncated to 200 chars.
+            lines = [ln[:200] for ln in data.splitlines()[-10:]]
+            tail = "\n".join(lines)
         results[cmd] = {"status": "fail", "exit_code": rc, "output_tail": tail}
 
 # Always emit. The agent needs ground-truth pass confirmation; otherwise it

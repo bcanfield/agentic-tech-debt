@@ -1,16 +1,11 @@
 {
   "name": "debt-ops",
-  "version": "0.1.0",
   "description": "Continuous, evidence-based tech debt management for Claude Code.",
-  "author": {
-    "name": "debt-ops"
-  },
+  "author": { "name": "debt-ops" },
   "keywords": [
     "tech-debt",
     "code-quality",
     "adr",
     "feedback-loop"
-  ],
-  "userConfig": {},
-  "dependencies": []
+  ]
 }
