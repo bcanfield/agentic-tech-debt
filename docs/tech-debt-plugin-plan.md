@@ -76,6 +76,37 @@ brownfield, small team, enterprise, OSS maintainer):
 
 ---
 
+## Why this and not the alternatives
+
+Honest differentiation. v1 occupies a narrow seam, and a senior IC
+should be able to read the install case in one paragraph.
+
+- **vs. doing nothing (CLAUDE.md + a homemade `PostToolUse` hook
+  running the project's linter).** A 30-line hand-rolled hook
+  delivers most of Pillar 7. v1's incremental value over that is the
+  *registry schema* (Fowler quadrant + Google categories + payoff
+  trigger — a week of reading Kruchten/Fowler/Jaspan to invent), the
+  manifest-mtime cache invalidation in implementation gate 2 (the
+  cargo-cult-prone bit), and the disciplines packaged for team-share
+  via `/debt:init`. If you don't intend to keep a registry, write the
+  hook yourself.
+- **vs. CodeScene CodeHealth MCP Server.** Different layer.
+  CodeScene gives agents real Code Health metrics (Pillar 2
+  behavioral); v1 gives lint/type/test pass-fail and a registry. v1
+  is complementary; v3 wires the MCP.
+- **vs. CodeRabbit / Cursor review modes / Sourcegraph Cody.**
+  Different stage. Those tools review at PR or IDE-time; v1 operates
+  pre-PR, in the agent's edit cycle.
+- **vs. Claude Code's built-in `/init` + a generic review subagent.**
+  No overlap. `/init` scaffolds CLAUDE.md (v1 deliberately doesn't
+  duplicate); subagents arrive in v2.
+
+The honest pitch is *the schema and the disciplines, packaged*. If
+that combination earns its install, install. If not, the hand-rolled
+hook is the right move.
+
+---
+
 ## How it works (the whole plugin in one paragraph)
 
 On every session, a `SessionStart` hook checks the plugin's per-repo
@@ -551,9 +582,17 @@ Discipline 2 fires. Claude lazily creates `doc/adr/` (the first file in
 this dir too), writes `0001-pricing-event-trait.md` in Nygard format with
 a payoff trigger. The developer reviews and edits.
 
-**16:00, end of day.** No Stop hook. Today's debt activity is visible in
-`git diff`: one registry entry, one ADR, both under directories the
+**16:00, end of day.** No Stop hook. Today's debt activity is visible
+in `git diff`: one registry entry, one ADR, both under directories the
 plugin lazily created.
+
+**PR review (later that day).** The dev opens a PR; the diff includes
+the new registry entry and ADR. They read each entry's `payoff_trigger`
+field, glance at each ADR's "Decision" against ship reality, and decide
+keep or `git rm`. Realistic cost: ~1 minute per registry entry, ~2
+minutes per ADR. A typical day's debt artifacts add ~5 minutes to PR
+review. v1 accepts this cost; v2's `/debt:list` and `triage` reduce it
+by surfacing duplicates and stale entries before PR time.
 
 **Tomorrow.** `SessionStart` reads the cache (instant), injects
 disciplines and commands; the plugin runs.
@@ -773,9 +812,11 @@ be reversed. Each is a single counter or rate, not a dashboard.
   the leading indicator that v3's behavioral measurement (CodeScene
   MCP) is needed sooner than later.
 
-These five are the minimum to ship v1 with credibility. The full
-red-team list is in `audit/04-redteam.md`; everything else is
-acceptable v1 risk if these metrics are wired up from week one.
+These five are the minimum to ship v1 with credibility. Other edge
+cases the design considered (monorepo single-command-set spray;
+CLAUDE.md "no TODO" rule conflict; very large registries straining
+Discipline 3) are acceptable v1 risk if these metrics are wired up
+from week one.
 
 ---
 
