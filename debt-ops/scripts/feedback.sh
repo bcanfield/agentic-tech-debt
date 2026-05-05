@@ -2,8 +2,13 @@
 # debt-ops PostToolUse hook.
 #
 # Reads cached/charter quality commands, runs them in parallel under a 3 s
-# wall-clock budget, and reports {command: pass|fail|timeout|skip} as
-# additionalContext to the agent. Never blocks an edit; v1 is feedback-only.
+# wall-clock budget, and reports {command: pass|fail|timeout} as
+# additionalContext to the agent. Never blocks an edit; v1 is feedback-only
+# (Pillar 7's strict gates are deferred to v3 per the plan).
+#
+# Always emits results — including the all-pass case. The agent uses the
+# hook output as ground truth; staying silent on success would let it
+# hallucinate "tests passed" with nothing to contradict it.
 
 set -u
 umask 077
@@ -130,22 +135,27 @@ for i, cmd in enumerate(cmds):
             tail = "\n".join(lines[-20:])
         results[cmd] = {"status": "fail", "exit_code": rc, "output_tail": tail}
 
-if not any_fail and not any_timeout:
-    # All-pass: stay silent so we don't pollute the model's context on the
-    # happy path. Hooks are only useful when they say something actionable.
-    sys.exit(0)
-
+# Always emit. The agent needs ground-truth pass confirmation; otherwise it
+# can claim "tests pass" with nothing to contradict it. (See Pillar 7.)
 summary = {
     "source": "debt-ops:feedback",
     "budget_seconds": int(budget),
+    "all_pass": not any_fail and not any_timeout,
     "results": results,
 }
-context = (
-    "debt-ops PostToolUse: one or more quality commands failed or timed out. "
-    "Surface this to the user only if it's relevant to the change you just "
-    "made; otherwise note it and continue.\n\n"
-    "```json\n" + json.dumps(summary, indent=2) + "\n```"
-)
+if summary["all_pass"]:
+    framing = (
+        "debt-ops PostToolUse: all quality commands passed. Use this as "
+        "ground truth — do not claim a command passed unless it appears "
+        "here. Stay quiet about the pass; just continue."
+    )
+else:
+    framing = (
+        "debt-ops PostToolUse: one or more quality commands failed or "
+        "timed out. Surface this to the user only if it's relevant to "
+        "the change you just made; otherwise note it and continue."
+    )
+context = framing + "\n\n```json\n" + json.dumps(summary, indent=2) + "\n```"
 print(json.dumps({
     "hookSpecificOutput": {
         "hookEventName": "PostToolUse",
@@ -156,7 +166,8 @@ PY
   exit 0
 fi
 
-# Fallback (no python3): emit a minimal text-only summary.
+# Fallback (no python3): emit a minimal text-only summary. Always emits,
+# matching the python3 path.
 any_fail=0
 summary=""
 for idx in "${!CMD_LIST[@]}"; do
@@ -168,7 +179,7 @@ for idx in "${!CMD_LIST[@]}"; do
   else
     rc=$(cat "${status_path}" 2>/dev/null || echo 1)
     if [[ "${rc}" == "0" ]]; then
-      :
+      summary+="- pass: ${cmd}"$'\n'
     else
       summary+="- fail (exit ${rc}): ${cmd}"$'\n'
       any_fail=1
@@ -176,9 +187,13 @@ for idx in "${!CMD_LIST[@]}"; do
   fi
 done
 
-[[ ${any_fail} -eq 0 ]] && exit 0
+if [[ ${any_fail} -eq 0 ]]; then
+  framing="debt-ops PostToolUse: all quality commands passed."
+else
+  framing="debt-ops PostToolUse: one or more quality commands failed or timed out."
+fi
 
-esc=$(printf '%s' "debt-ops PostToolUse failures:
+esc=$(printf '%s' "${framing}
 ${summary}" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | awk 'BEGIN{ORS="\\n"}{print}')
 printf '{"hookSpecificOutput":{"hookEventName":"PostToolUse","additionalContext":"%s"}}\n' "${esc}"
 exit 0
