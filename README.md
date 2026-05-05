@@ -1,10 +1,25 @@
 # agentic-tech-debt
 
-Tech debt management for agentic codebases — surfaces debt, ranks hotspots, and uses AI agents to pay it down. Evidence-based, continuous, non-blocking.
+**Tech debt operations for AI coding agents** — a Claude Code plugin that surfaces the debt agents defer, drafts ADRs for the choices they make, and runs your project's own quality checks on every edit. Distilled from three decades of debt research (Cunningham, Fowler, Kruchten, DORA, Beck, GitClear) into a discipline an agent can hold without breaking flow.
 
-Three decades of debt research distilled into nine tool-agnostic pillars and a Claude Code plugin that implements them.
+Non-blocking. Evidence-based. Plays well with other plugins. Two skills, two hooks, two scripts, zero install footprint.
 
-- [`docs/`](./docs) — research synthesis, the nine pillars, the v1 plugin spec
-- [`claude-code/`](./claude-code) — `debt-ops` plugin for Claude Code; see its [README](./claude-code/README.md) to install
+## Install
 
-Future adapters for other agents (Cursor, Aider) sit as siblings to `claude-code/`.
+```bash
+/plugin marketplace add bcanfield/agentic-tech-debt
+/plugin install debt-ops
+```
+
+Requires Claude Code v2.1.121+ and a git repository.
+
+## What's here
+
+- **[`claude-code/`](./claude-code)** — the `debt-ops` plugin. See its [README](./claude-code/README.md) for what ships in v1 and what's deferred.
+- **[`docs/`](./docs)** — research synthesis, the nine tool-agnostic pillars, and the v1 plugin spec.
+
+Future adapters for other agents (Cursor, Aider) slot in as siblings to `claude-code/`.
+
+## License
+
+[MIT](./LICENSE).
