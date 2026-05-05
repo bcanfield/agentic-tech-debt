@@ -1,9 +1,4 @@
-# debt
-
-Working notes for an evidence-based, agentic tech debt management
-system, delivered as a Claude Code plugin.
-
-## Documents
+# Docs Index
 
 - **[`tech-debt-management.md`](./tech-debt-management.md)**: research
   synthesis. Three decades of debt research and 2024–2026 practitioner
