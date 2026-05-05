@@ -14,8 +14,9 @@ genuinely needs deterministic enforcement — which in v1 is one thing:
 running the project's quality commands after every agent edit.
 
 **What v1 ships.** Two skills (`/debt:init`, `/debt:add`), one hook
-(`PostToolUse → feedback.sh`), one tiny script, three templates. That's
-it.
+(`PostToolUse → feedback.sh`), one ~15-line script. No templates, no
+examples, no `userConfig`. Claude writes any files we'd otherwise
+ship as templates, from the prompts inside the SKILL.md files.
 
 **Hard prerequisite.** A git repository.
 
@@ -69,15 +70,18 @@ brownfield, small team, enterprise, OSS maintainer):
 `AGENTS.md` (or `CLAUDE.md`) and creates the registry and ADR
 directories. It does **not** create a charter from scratch — Claude
 Code's built-in `/init` already does that, and we don't compete with
-it. The section it adds contains short discipline instructions (when
-to register debt, when to draft an ADR, the size reminder) and a
+it. The section it adds contains short discipline instructions and a
 marker-bracketed bash block listing the project's quality commands.
 After every agent edit, `feedback.sh` greps that block from the
 charter, runs each command in parallel under a 3 s budget (tests
 async; reports at next stop), and returns structured pass/fail to
-the agent. `/debt:add` lets the developer (or the agent, when
-prompted by the charter discipline) write a registry entry from
-current context. That's the plugin.
+the agent. When Claude notices an expedient choice during normal
+work, the charter tells it to write a registry entry directly under
+`debt/registry/` and announce what it registered — no permission
+prompt. `/debt:add` is the same flow when the developer triggers it
+explicitly. The developer interacts with debt entries the way they
+interact with any other markdown file: through chat ("drop that one,
+it's not real debt") or the editor's file tree.
 
 ---
 
@@ -94,20 +98,20 @@ This project uses debt-ops for continuous tech-debt management.
 
 **Discipline.** Follow these on every session:
 
-1. When writing a `TODO`, `FIXME`, or "I'll fix later" marker, suggest
-   the developer register it via `/debt-ops:add`. Don't ship debt
-   silently.
+1. When you write a `TODO`/`FIXME`/`HACK`/`XXX` marker that's real
+   debt (known shortcut, incomplete case, fragile assumption),
+   register it via `/debt-ops:add` immediately — no permission
+   prompt, just do it and announce what you registered. Use
+   `payoff_trigger: unknown` if unsure. Trivial markers (style
+   nits) don't earn an entry; use judgment.
 2. When making an architecturally significant change (data model,
-   public interface, dep manifest, security boundary, build/release
-   pipeline), draft an ADR under `doc/adr/` using the template.
-3. Keep this section under 200 lines. If it grows past that, suggest
-   tightening.
-4. The registry lives at `debt/registry/`. Read it before proposing
-   changes that touch a flagged hotspot.
-
-**Registry entry schema.** Five required fields plus quadrant and
-category. See `doc/adr/` and `debt/registry/0001-example-debt.md` for
-shape.
+   public interface, dep manifest, security boundary, release
+   pipeline), draft an ADR under `doc/adr/` using the template in
+   that directory.
+3. Keep this charter under 200 lines total. Suggest tightening if
+   it grows past.
+4. Read entries under `debt/registry/` before changing files they
+   reference.
 
 **Quality checks.** These run automatically after every file edit.
 Keep them current as the project evolves.
@@ -129,7 +133,11 @@ what's inside the marker block — that's the trust boundary.
 ## The registry schema
 
 Each entry under `debt/registry/` is a markdown file with YAML front-
-matter:
+matter. **Entries are addressed by content in conversation** ("the
+cancelled-promotion entry," "the auth one"), not by ID. The numeric
+`id` is for tooling cross-references — PR trailers like
+`Debt-Pays-Down: 0042`, future ranking, future ADR pairings — like a
+commit SHA. Humans refer to debts by what they are; Claude resolves.
 
 ```yaml
 ---
@@ -167,7 +175,7 @@ field when the ADR introduces deliberate debt.
 
 | Pillar | v1 | Deferred |
 |---|---|---|
-| 1. Visibility | `/debt:add`; registry under `debt/registry/`; charter discipline tells Claude when to suggest registration | `/debt:list` ranking, stale aging, ADR auto-pairing (v2) |
+| 1. Visibility | `/debt:add`; registry under `debt/registry/`; charter discipline auto-registers debt when Claude spots an expedient choice | `/debt:list` ranking, stale aging, ADR auto-pairing (v2) |
 | 2. Continuous Measurement | static layer via Pillar 7's quality checks | behavioral signal, AI-touched windows, DORA, perception (v3) |
 | 3. Hotspot Prioritization | — | `/debt:list` + `triage` subagent (v2) |
 | 4. Continuous Paydown | — | `/debt:budget`, fix-it weeks, Boy Scout summary (v4) |
@@ -186,13 +194,17 @@ field when the ADR introduces deliberate debt.
 **v1 commitment.**
 
 - `/debt:add` — Claude drafts a registry entry from current context,
-  fills the schema, asks for any missing required field, writes to
-  `debt/registry/<id>-<slug>.md`. `payoff_trigger: unknown` is
-  allowed. The skill is a thin prompt that loads the schema; Claude
-  does the work.
-- Charter discipline (item 1): when Claude writes a TODO/FIXME, it
-  suggests `/debt:add`. No hook needed — Claude self-monitors because
-  it just read the charter.
+  fills the schema, marks `payoff_trigger: unknown` for any field it
+  can't determine, writes to `debt/registry/<id>-<slug>.md`, and
+  announces what it registered. The skill is a thin prompt that
+  loads the schema; Claude does the work.
+- Charter discipline (item 1): when Claude writes a TODO/FIXME/HACK
+  during normal work, it auto-registers the entry the same way —
+  no permission prompt, just write and announce. Trivial markers
+  are filtered by judgment.
+- The developer drops entries the same way they handle any markdown
+  file: ask Claude to delete one ("drop the cancelled-promotion
+  entry"), or delete the file in their editor.
 
 **Deferred to v2.** Ranking, filters, the `triage` subagent,
 `/debt:list` (chronological listing falls out of "ask Claude to read
@@ -472,20 +484,25 @@ clippy": "pass", "cargo test": "pending"}` and continues.
 agent sees them, fixes one, flags the other.
 
 **09:35 — A subtle expediency.** Claude proposes `// TODO: handle the
-cancelled-promotion case later`. Because the charter discipline tells
-Claude to suggest registering TODOs, Claude says: "Want me to register
-this with `/debt-ops:add`?" Developer: "yes." Claude runs `/debt:add`,
-fills the schema from context, marks `payoff_trigger: unknown`, files
-`debt/registry/0042-cancelled-promotion-callback.md`. Total: ~20
-seconds.
+cancelled-promotion case later`. Because the charter says to
+auto-register expedient markers, Claude writes
+`debt/registry/0042-cancelled-promotion-callback.md` from context,
+marks `payoff_trigger: unknown`, and announces: "Registered as the
+cancelled-promotion-callback entry. Tell me to drop it if it's not
+real debt." Developer keeps working; the entry stays.
+
+**10:05 — A false positive.** Claude flags `// TODO: maybe rename
+this var` and registers it. Developer: "that's just a naming nit,
+drop it." Claude deletes the entry. Done.
 
 **11:30 — Architectural fork.** Claude wants a new pricing-event
-trait. The charter discipline says to draft an ADR for that. Claude
-proposes one inline; the developer accepts; it lands at
-`doc/adr/0007-pricing-event-trait.md`.
+trait. The charter says to draft an ADR for architecturally
+significant changes. Claude proposes one inline; the developer
+accepts; it lands at `doc/adr/0007-pricing-event-trait.md`.
 
-**16:00 — End of day.** No Stop summary fires. The developer's
-session-tracking is the conversation itself plus the registry diff.
+**16:00 — End of day.** No Stop summary fires. Today's debt
+activity is two registered entries (one kept, one dropped) plus one
+ADR — visible in `git diff`, no separate dashboard.
 
 The throughline: the plugin is mostly silent; Claude does the
 reading-and-noticing; the hook only fires when there's a quality
@@ -584,8 +601,9 @@ hard-coded defaults; per-user overrides are a v2+ feature if needed.
 ## Anti-patterns we will actively watch for
 
 1. **Hook latency creep.** The 3 s aggregate budget is the line.
-2. **Skill explosion.** Anything <1×/week in dogfood is a removal
-   candidate.
+2. **Skill explosion.** Any *recurring-use* skill <1×/week in dogfood
+   is a removal candidate. (One-shot setup skills like `/debt:init`
+   are exempt — they earn their slot by being the entry point.)
 3. **Charter rot in our own dogfood.** Our `AGENTS.md`'s debt-ops
    section obeys its own size budget.
 4. **Reinventing detection.** If we add bash auto-detection logic
