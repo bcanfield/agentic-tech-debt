@@ -113,8 +113,7 @@ This project uses debt-ops for continuous tech-debt management.
 4. Read entries under `debt/registry/` before changing files they
    reference.
 
-**Quality checks.** These run automatically after every file edit.
-Keep them current as the project evolves.
+### Quality commands
 
 <!-- debt-ops:feedback start -->
 ```bash
