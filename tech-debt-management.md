@@ -20,17 +20,17 @@ The consensus among Karpathy, Willison, Beck, Anthropic, and Thoughtworks: AI re
 
 3. **The cost is large and well-quantified.** Stripe's *Developer Coefficient* recorded 13.5 hr/week on tech debt + 3.8 hr/week on bad code (~42% of a 41.1-hour week). McKinsey's CIO survey put debt at 20–40% of IT estate value before depreciation; 60% of CIOs said debt had grown perceptibly in the last three years. CISQ (2022) estimated US accumulated debt at $1.52T of a $2.41T total cost of poor software quality. Gartner has projected that organizations actively managing debt achieve 50%+ faster service delivery.
 
-4. **Working frameworks converge on a small set of practices.** SQALE (the open ISO 25010 method behind SonarQube) computes principal and interest in remediation hours. CodeScene's behavioral analysis, validated as more predictive than static analysis at the University of Ottawa and University of Victoria, prioritizes by *hotspot*: the intersection of complexity and change frequency. CAST and SIG handle portfolio scoring. All converge on the same loop: identify, quantify, prioritize by carrying cost, pay down at hotspots.
+4. **Working frameworks converge on a small set of practices.** SQALE (the open ISO 25010 method behind SonarQube) computes principal and interest in remediation hours. CodeScene's behavioral analysis prioritizes by *hotspot* — the intersection of complexity and change frequency — and a comparative study at the University of Victoria suggests it surfaces more debt than SonarQube (an Ottawa-based paper cites CodeScene more peripherally; the field has not converged). CAST and SIG handle portfolio scoring. All converge on the same loop: identify, quantify, prioritize by carrying cost, pay down at hotspots.
 
 5. **Continuous payment beats heroic rewrites.** Shopify Engineering's "25 percent rule," Microsoft's bug-cap policy, and Scrum.org / SAFe guidance all allocate **15–25% of every sprint** to debt, with the Boy Scout Rule covering incidental cleanup. Periodic fix-it weeks and Spotify-style hack weeks complement the steady allocation; they don't replace it. Justin Grant's case study contrasting Microsoft's year-long Windows XP SP2 stop-the-world effort with a continuous "tech budget" model shows the latter consistently outperforms.
 
 6. **Architecture Decision Records (ADRs)** convert *inadvertent* debt into *deliberate, documented* debt. Michael Nygard's 2011 format, now in the Thoughtworks Radar's Adopt ring, captures each architecturally significant decision as a short Markdown record (Context / Decision / Consequences) checked into the repo.
 
-7. **DORA is the right outcome layer**, especially after rework rate was added as a fifth metric in 2024. The 2024 report found AI adoption raised throughput modestly but cut delivery stability by 7.2% per 25% adoption increase. The 2026 research notes only 6.9% of teams achieve a rework rate below 2%. Thoughtworks now recommends DORA as the early-warning signal for AI-induced debt.
+7. **DORA is the right outcome layer**, especially after rework rate was added in 2024 (popularly summarized as a "fifth metric"; in practice DORA reorganized into 3 throughput + 2 stability metrics). The 2024 report found AI adoption raised throughput modestly but cut delivery stability by 7.2% per 25% adoption increase. Recent reporting cycles note only ~7% of teams achieve a rework rate below 2% (figure varies by cycle). Thoughtworks now recommends DORA as the early-warning signal for AI-induced debt.
 
 8. **AI-generated code creates a new debt class.** GitClear's 2024 and 2025 longitudinal studies (211M LOC, 2020–2024) found:
    - Refactoring/"moved" code dropped from ~25% of changed lines (2021) to <10% (2024).
-   - Copy/paste lines exceeded moved lines for the first time in two decades.
+   - Copy/paste lines exceeded moved lines for the first time in GitClear's longitudinal dataset (which begins in 2020).
    - Duplicate blocks rose ~4×; short-term churn (lines reverted within 2 weeks) ~doubled.
    - These are the symptoms classical software-engineering literature uses to predict future maintenance burden.
 
@@ -38,7 +38,7 @@ The consensus among Karpathy, Willison, Beck, Anthropic, and Thoughtworks: AI re
 
 9. **Practitioner thought leaders converge on "vibe engineering" / "augmented coding."** Karpathy coined "vibe coding" in February 2025; by mid-2025 Willison, Beck, Andrew Ng, and Thoughtworks had repositioned the responsible practice. Willison's rule: *"I won't commit any code to my repository if I couldn't explain exactly what it does to somebody else."* Beck's *augmented coding*, demonstrated in BPlusTree3, treats AI agents as "unpredictable genies" requiring TDD as a non-negotiable guardrail. Willison and Thoughtworks now use *cognitive debt*, distinct from technical debt, for the loss of human mental model when agents write faster than reviewers can comprehend.
 
-10. **Tooling has caught up.** Anthropic, Cursor, GitHub, and Google ship persistent project-instruction files (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `copilot-instructions.md`). CodeScene's CodeHealth MCP Server (2025) and IBM's CAST + agentic AI work show AI agents perform 2–5× better refactoring when given deterministic code-health feedback in their loop. AWS Transform Custom and Spotify's background coding agent (1,500+ PRs, half fully automated) demonstrate enterprises now use AI to *pay down* debt at scale.
+10. **Tooling has caught up.** Anthropic, Cursor, GitHub, and Google ship persistent project-instruction files (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `copilot-instructions.md`). CodeScene's CodeHealth MCP Server (2025; per CodeScene's own benchmarks on 25,000 files, not peer-reviewed) and IBM's CAST + agentic AI work show AI agents perform 2–5× better refactoring when given deterministic code-health feedback in their loop. AWS Transform Custom and Spotify's background coding agent (1,500+ PRs, half fully automated) demonstrate enterprises now use AI to *pay down* debt at scale.
 
 ---
 
@@ -73,7 +73,7 @@ The pragmatic recommendation in Kruchten/Nord/Ozkaya, Tornhill, and Jaspan/Green
 ### 4. Prioritization
 
 - **Fowler's quadrant for triage.** Address reckless–inadvertent debt aggressively. Leave prudent–deliberate debt only with an explicit pay-back trigger documented in an ADR.
-- **Hotspot rule (Pareto).** McKinsey reports 10–15 assets typically drive the majority of an enterprise's debt. CodeScene research shows ~20% of files generate ~80% of debt-related rework. Prioritize debt that intersects active development.
+- **Hotspot rule (Pareto).** McKinsey case studies show a small number of asset types (in one published case, around 20) drive the majority of an enterprise's debt. CodeScene research shows ~20% of files generate ~80% of debt-related rework. Prioritize debt that intersects active development.
 - **Scoring frameworks.** RICE, WSJF (Cost of Delay / job size), and SQALE remediation cost vs. business impact matrices are most commonly cited. The *Tracy* framework (arXiv:1908.00150) maps debt items to business processes for explicit ROI.
 - **One backlog, not two.** The leadership.garden / volpis / Scrum.org consensus: a separate "tech debt backlog" reliably loses to the feature backlog. Debt items belong in the same prioritized list, simply tagged.
 
@@ -84,9 +84,9 @@ The pragmatic recommendation in Kruchten/Nord/Ozkaya, Tornhill, and Jaspan/Green
 |**Boy Scout Rule** ("leave the campground cleaner")|Always; baseline practice|Robert C. Martin, *Clean Code*; *97 Things Every Programmer Should Know*|
 |**15–25% per-sprint allocation**|Default for most teams|Marty Cagan; Microsoft Azure Boards guidance; SAFe; Scrum.org; Justin Grant's "tech budget" case study; Shopify's 25 Percent Rule|
 |**Periodic refactor sprints / fix-it weeks**|Larger refactors, dependency upgrades, rare interventions|Spotify Hack Week; Atlassian ShipIt; Google fix-its|
-|**Bug cap** (e.g., 3 bugs/engineer max; new features pause until under cap)|Production-quality regulated systems|Microsoft Azure DevOps team practice|
+|**Bug cap** (a small per-engineer cap, e.g., 4 bugs/engineer per Aaron Bjork's account; new features pause until under cap)|Production-quality regulated systems|Microsoft Azure DevOps team practice|
 |**Tech-debt or platform team**|Very large enterprises|McKinsey app-modernization factories|
-|**Stop-the-world rewrite**|Last resort; high risk|Microsoft Windows XP SP2 (lost an estimated billions of upgrade revenue)|
+|**Stop-the-world rewrite**|Last resort; high risk|Microsoft Windows XP SP2 (a year-long pause that delayed Vista; widely-cited "billions in lost revenue" figures are industry estimates, not audited)|
 
 The empirical pattern: continuous + Boy Scout + the occasional fix-it week, all measured, beats every other approach.
 
@@ -100,11 +100,11 @@ Karpathy coined *vibe coding* on February 6, 2025 ("fully give in to the vibes, 
 
 **Quality regression evidence (2024–2026):**
 
-- **GitClear 2024 & 2025 (211M lines):** refactoring share fell from ~25% (2021) to <10% (2024); copy/paste exceeded moved code for the first time; duplicate-block prevalence ~4×; lines reverted within two weeks ~doubled.
+- **GitClear 2024 & 2025 (211M lines):** refactoring share fell from ~25% (2021) to <10% (2024); copy/paste exceeded moved code for the first time in the dataset (which begins in 2020); duplicate-block prevalence ~4×; lines reverted within two weeks rose from 3.1% (2020) to 5.7% (2024), nearly doubled.
 - **DORA 2024:** AI adoption raises individual productivity but cuts stability by 7.2% per 25% adoption increase.
 - **METR (arXiv 2507.09089, July 2025):** experienced OSS developers using Cursor Pro + Claude 3.5/3.7 were 19% *slower* (95% CI [+2%, +39%]) than without AI, while *believing* they were 20% faster. METR has since redesigned the experiment because so many developers refused to work without AI in 2026, biasing the population.
-- **Ahmad et al. (arXiv 2512.11922, prepared for IEEE Software):** the first peer-style empirical experience report on the flow–debt trade-off in vibe coding, attributing accumulated debt to architectural inconsistencies, security vulnerabilities, and process-level weaknesses. Manuscript "prepared for IEEE Software," not yet peer-reviewed; cite with that caveat.
-- **CodeScene benchmarks (2025):** average industry hotspot Code Health is 5.15/10; AI agents need ≥9.4/10 to keep AI-induced bugs in check; agent-driven refactoring fixes fewer smells the healthier the code already is.
+- **Waseem et al. (arXiv 2512.11922, prepared for IEEE Software):** the first peer-style empirical experience report on the flow–debt trade-off in vibe coding, attributing accumulated debt to architectural inconsistencies, security vulnerabilities, and process-level weaknesses. Manuscript "prepared for IEEE Software," not yet peer-reviewed; cite with that caveat.
+- **CodeScene benchmarks (2025; vendor whitepaper, not peer-reviewed):** average industry hotspot Code Health is 5.15/10; AI agents need ≥9.4/10 to keep AI-induced bugs in check; agent-driven refactoring fixes fewer smells the healthier the code already is.
 
 **Cognitive debt.** Distinct from technical debt: the code may be fine, but the team has lost the mental model. Articulated by Willison (February 2026) and adopted in Thoughtworks Technology Radar v34, which calls AI "introducing a wider gap between humans and software systems."
 
@@ -112,7 +112,7 @@ Karpathy coined *vibe coding* on February 6, 2025 ("fully give in to the vibes, 
 
 - **Karpathy.** Vibe coding is fine for throwaways; in production, "keep a very tight leash on this new over-eager junior intern savant."
 - **Willison ("vibe engineering," October 2025; "agentic engineering patterns," 2026).** Review every line; spec-driven; TDD; commit early and often; run multiple agents in parallel only after fundamentals are in place.
-- **Beck ("Augmented Coding: Beyond the Vibes," September 2025).** Maintain traditional engineering values (tidy code, complexity discipline, full test coverage); use TDD as a guardrail because "agents keep trying to delete tests to make them pass."
+- **Beck ("Augmented Coding: Beyond the Vibes," June 2025).** Maintain traditional engineering values (tidy code, complexity discipline, full test coverage); use TDD as a guardrail because "agents keep trying to delete tests to make them pass."
 - **Anthropic (How Anthropic Teams Use Claude Code, 2025; Best Practices docs).** Start from clean git state, commit often, use `CLAUDE.md` for persistent project context, use sub-agents for security and code review, run multiple Claude instances with writer/reviewer separation.
 - **Thoughtworks Radar v34 (2026).** Adopt: DORA metrics, ADRs, continuous compliance, curated AI instructions for software teams (`AGENTS.md`). Hold: replacing pair programming with AI; complacency with AI-generated code.
 
@@ -121,7 +121,7 @@ Karpathy coined *vibe coding* on February 6, 2025 ("fully give in to the vibes, 
 - **Persistent project rules.** `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.github/copilot-instructions.md`, `GEMINI.md`. Best practice (HumanLayer, Anthropic): keep these short (a few hundred lines max); encode coding standards, build/test commands, architectural conventions; rely on linters and formatters via hooks for the rest.
 - **Spec-driven development.** GitHub Spec Kit (September 2025), AWS-Augment Code, JetBrains Junie patterns. Specs replace prompts as the durable artifact agents work from.
 - **In-loop deterministic feedback.** Linters, type checkers, test suites, mutation testing (cargo-mutants), fuzz testing (WuppieFuzz), and code-health analyzers wired into agent post-tool-use hooks. Thoughtworks calls these "feedback sensors for coding agents."
-- **MCP-based code health.** CodeScene's CodeHealth MCP Server exposes Code Health metrics deterministically to agents; benchmarks on a 25,000-file dataset showed 2–5× more code-health improvements vs. raw Claude Code.
+- **MCP-based code health.** CodeScene's CodeHealth MCP Server exposes Code Health metrics deterministically to agents; per CodeScene's own benchmarks (vendor whitepaper, not peer-reviewed) on a 25,000-file dataset, agents using it produced 2–5× more code-health improvements vs. raw Claude Code.
 - **AI-driven paydown of legacy debt.** AWS Transform Custom (Java/Python/Node upgrades, claimed 80% time reduction), IBM CAST + agentic AI hybrid, Spotify's background coding agent (1,500+ merged PRs, half fully automated), CodeScene ACE, Moderne's Moddy, Refact.ai.
 
 ---
@@ -148,7 +148,7 @@ One approach scales from solo developer to Fortune 500: a four-layer loop follow
 2. **Boy Scout Rule** as the daily baseline. Every PR leaves touched files measurably better. This is the always-on layer.
 3. **80/20 hotspot focus.** Direct the per-sprint allocation at the top 10–20 hotspots from behavioral analysis. Skip vanity refactors.
 4. **Quarterly fix-it week** for cross-cutting items (dependency upgrades, migration completions) that don't fit a sprint.
-5. **Bug cap** (Microsoft pattern): ≤3 open bugs/engineer; exceeding it pauses new feature work.
+5. **Bug cap** (Microsoft pattern): a small per-engineer cap (Aaron Bjork's account uses 4); exceeding it pauses new feature work.
 
 ### Layer 4: Prevent (Definition of Done + agent guardrails)
 
@@ -170,7 +170,7 @@ One approach scales from solo developer to Fortune 500: a four-layer loop follow
 |---|---|---|
 |DORA Lead Time for Changes|Down|DORA|
 |DORA Change Failure Rate|Down|DORA|
-|DORA Rework Rate (5th metric, 2024)|<2% (only top 6.9% of teams achieve this)|DORA 2026|
+|DORA Rework Rate (added 2024)|<2% (only ~7% of teams achieve this; specific cycle figure varies)|DORA 2024–2025 reports|
 |Time-to-restore (MTTR)|Down|DORA|
 |% engineers reporting "hindered by debt"|Down quarter-over-quarter|Google Jaspan/Green pattern|
 |Hotspot Code Health (CodeScene scale 0–10)|≥9.0 for human-touched code; ≥9.4 for AI-touched code|CodeScene research|
@@ -184,17 +184,17 @@ One approach scales from solo developer to Fortune 500: a four-layer loop follow
 
 - **Solo or small team.** GitHub repo with `doc/adr/`, an `AGENTS.md`, SonarCloud or CodeScene Community on PRs, a single tagged backlog, a personal Boy Scout commitment, two days every ten-day sprint on debt, and Claude Code or Cursor with TDD-first prompts and a PostToolUse lint hook.
 - **Mid-size enterprise (50–500 engineers).** Add a platform team owning the Code Health MCP, an internal ADR template, the quarterly hindrance survey, DORA dashboards per team, a quarterly fix-it week, and a debt-portfolio review at engineering-leadership level.
-- **Fortune 500.** Add CAST or SIG portfolio-level scoring (the McKinsey debt-balance-sheet pattern), an application-modernization factory for the 10–15 assets driving the majority of debt, agent-based modernization tooling (AWS Transform Custom, IBM Code Transporter, Moderne, a Spotify-style background coding agent), and CFO/CIO trade-off conversations using SQALE-derived dollar figures.
+- **Fortune 500.** Add CAST or SIG portfolio-level scoring (the McKinsey debt-balance-sheet pattern), an application-modernization factory for the small set of assets driving the majority of debt (a published case-study figure is around 20 asset types), agent-based modernization tooling (AWS Transform Custom, IBM Code Transporter, Moderne, a Spotify-style background coding agent), and CFO/CIO trade-off conversations using SQALE-derived dollar figures.
 
 ---
 
 ## Caveats and open questions
 
 - **The big-dollar figures (Stripe $3T, CISQ $1.52T, McKinsey 20–40%) are top-down economic estimates**, not audited measurements. Useful for executive framing, not for budgeting any specific decision.
-- **Tool disagreement is real.** The 2021 arXiv paper *On the Lack of Consensus Among Technical Debt Detection Tools* (Lefever et al.) found commercial tools agree poorly on what code is "debt." Behavioral approaches (CodeScene) appear to outperform pure static analysis in the Ottawa and Victoria studies, but the field has not converged.
+- **Tool disagreement is real.** The 2021 arXiv paper *On the Lack of Consensus Among Technical Debt Detection Tools* (Lefever et al.) found commercial tools agree poorly on what code is "debt." A comparative University of Victoria study suggests CodeScene's behavioral approach surfaces more debt than SonarQube; the broader Ottawa/Victoria reference often cited is thinner than headlines imply, and the field has not converged.
 - **The METR study (19% slowdown) is a single RCT on 16 experienced OSS developers in early 2025.** Newer agents (Claude Sonnet 4+ / Opus 4.5+, Cursor Composer 2, Codex CLI, Gemini CLI) post-date the study. METR has been unable to reproduce the design in 2026 because of selection bias from refusal to work without AI. Read it as evidence that AI productivity claims are noisier than vendor reports suggest, not as a settled finding.
 - **GitClear's data is observational.** It correlates AI-tool adoption with quality regressions but cannot fully isolate the AI effect from confounders (more junior developers, higher delivery pressure, etc.).
-- **Vibe-coding debt projections** circulating in 2026 trade press ("$1.5T by 2027," "vibe-coded projects accumulate debt 3× faster") are vendor-blog projections, not peer-reviewed; treat them as illustrative. The peer-reviewed evidence base on agentic-coding debt is still thin. The most credible items are the GitClear longitudinal studies, the METR RCT, the DORA 2024 report, and the Ahmad et al. IEEE Software experience report.
+- **Vibe-coding debt projections** circulating in 2026 trade press ("$1.5T by 2027," "vibe-coded projects accumulate debt 3× faster") are vendor-blog projections, not peer-reviewed; treat them as illustrative. The peer-reviewed evidence base on agentic-coding debt is still thin. The most credible items are the GitClear longitudinal studies, the METR RCT, the DORA 2024 report, and the Waseem et al. IEEE Software experience report.
 - **MCP-based and agent-driven refactoring tooling is brand new.** CodeScene's CodeHealth MCP, AWS Transform Custom, IBM's CAST + agent fusion, and Spotify's background coding agent are all 2025–2026 products. Long-run effectiveness is not yet independently validated.
 - **Cultural and incentive issues dominate.** McKinsey, Google, and Scrum.org all stress that the technical solutions are well understood; the persistent failure mode is leadership pressure that lets feature work eat the 15–20% allocation. Without executive-level commitment to protect debt time, no framework holds.
 - **The trade-off curve may be shifting.** McKinsey (2025) and Anthropic argue AI is changing the economics of debt: legacy modernization that previously took years can be 40–50% faster and cheaper with agentic AI. If that holds, the right strategic move for some enterprises is more aggressive paydown now, funded by AI productivity gains, rather than the historical "manage it indefinitely" posture. This is a strategic bet, not a settled fact.

@@ -36,10 +36,11 @@ is implemented.
    where evidence justifies blocking. It treats the developer as a
    collaborator, not a defendant. Google's internal guidance: "improvement,
    not perfection."
-3. **Evidence-based over opinion.** Behavioral hotspots beat static rules
-   alone (Ottawa/Victoria validations of CodeScene). DORA + rework rate is
-   the outcome layer. Engineer-perception surveys catch what tools cannot.
-   The system leans on this stack, not on individual taste.
+3. **Evidence-based over opinion.** Behavioral hotspots are a stronger
+   signal than static rules alone (one comparative University of Victoria
+   study supports this; the field has not converged). DORA + rework rate
+   is the outcome layer. Engineer-perception surveys catch what tools
+   cannot. The system leans on this stack, not on individual taste.
 4. **Visible over hidden.** Debt lives in the same backlog as features,
    tagged but not segregated. Separate backlogs reliably lose
    (Scrum.org / leadership.garden / volpis consensus). ADRs make
@@ -131,16 +132,20 @@ signal.
 **Research foundation.**
 - The 2021 *Lack of Consensus Among Technical Debt Detection Tools* paper:
   static tools disagree heavily. No single tool is sufficient.
-- Behavioral / hotspot analysis (CodeScene, Adam Tornhill) outperforms pure
-  static analysis in University of Ottawa and University of Victoria
-  studies, because it weights complexity by *change frequency*.
-- DORA's five metrics (lead time, deployment frequency, change failure rate,
-  MTTR, **rework rate** added 2024) are the outcome layer; only 6.9% of
-  teams achieve rework rate <2%.
+- Behavioral / hotspot analysis (CodeScene, Adam Tornhill): a comparative
+  study at the University of Victoria suggests it surfaces more debt than
+  pure static analysis, because it weights complexity by *change frequency*
+  (an Ottawa-based paper cites CodeScene more peripherally; the field has
+  not converged).
+- DORA's metrics (lead time, deployment frequency, change failure rate,
+  MTTR, plus **rework rate** added in 2024 and popularly called the "fifth
+  metric") are the outcome layer; only ~7% of teams achieve rework rate
+  <2% across recent reporting cycles.
 - Google's quarterly engineer-hindrance survey catches debt no tool can see
   (docs, expertise, planning).
-- CodeScene benchmarks: average industry hotspot Code Health is 5.15/10;
-  AI-touched code needs ≥9.4/10 to keep AI-induced bugs in check.
+- CodeScene benchmarks (vendor whitepaper, not peer-reviewed): average
+  industry hotspot Code Health is 5.15/10; AI-touched code needs ≥9.4/10
+  to keep AI-induced bugs in check.
 
 **Required functionality.**
 - A static-analysis layer in CI (rule-based quality, e.g., the SQALE model).
@@ -174,9 +179,10 @@ signal.
   (Pillar 1) and obtaining a payoff trigger.
 
 **Failure mode without it.** Debt grows silently. AI-induced regressions
-(GitClear's 4× clone rate, doubled 14-day churn) accumulate as undetected
-maintenance cost. The team relies on lagging incidents to discover what
-should have been a leading indicator.
+(GitClear's observed correlations — 4× clones, ~doubled 14-day churn;
+observational, not causal) accumulate as undetected maintenance cost.
+The team relies on lagging incidents to discover what should have been a
+leading indicator.
 
 ---
 
@@ -190,8 +196,9 @@ debt in those hotspots is paid down first; prudent–deliberate debt
 elsewhere waits for its trigger.
 
 **Research foundation.**
-- Pareto pattern: McKinsey reports 10–15 assets drive the majority of an
-  enterprise's tech debt; CodeScene shows ~20% of files generate ~80% of
+- Pareto pattern: McKinsey case studies report a small number of asset
+  types (in one published case, around 20) drive the majority of an
+  enterprise's debt; CodeScene shows ~20% of files generate ~80% of
   debt-related rework.
 - Fowler's quadrant for triage: reckless–inadvertent first;
   prudent–deliberate only with an ADR-documented payoff trigger.
@@ -249,8 +256,9 @@ allocation. A bug cap acts as a forcing function when paydown lapses.
   measurably better. Baseline practice.
 - Fix-it weeks (Spotify Hack Week, Atlassian ShipIt, Google fix-its) handle
   cross-cutting items that don't fit a sprint.
-- Microsoft's bug cap (≤3 bugs/engineer; new feature work pauses if
-  exceeded) is the forcing function.
+- Microsoft's bug cap (a small per-engineer cap, e.g., 4 bugs/engineer per
+  Aaron Bjork's account; new feature work pauses if exceeded) is the
+  forcing function.
 - Stop-the-world rewrites are last resort and historically expensive
   (Windows XP SP2).
 - Cultural reality: McKinsey, Google, and Scrum.org all warn that the
@@ -425,12 +433,13 @@ in-loop.
   calls these "feedback sensors for coding agents."
 - CodeScene CodeHealth MCP Server: deterministic Code Health exposure to
   agents. Benchmarks on a 25,000-file dataset showed 2–5× more code-health
-  improvements vs. raw Claude Code.
+  improvements vs. raw Claude Code (vendor benchmark, not peer-reviewed).
 - DORA 2024: AI adoption increased throughput modestly but reduced delivery
   stability by 7.2% per 25% adoption increase, the regression these gates
   are designed to recover.
-- IBM CAST + agentic AI: agents perform 2–5× better refactoring when given
-  deterministic code-health feedback in their loop.
+- IBM CAST + agentic AI work reports a similar 2–5× refactoring uplift
+  with deterministic code-health feedback. Treat as the same vendor
+  pattern as the CodeScene benchmark, not an independent corroboration.
 
 **Required functionality.**
 - A hook layer that fires after every meaningful agent edit (file write,
@@ -469,9 +478,10 @@ in-loop.
 - The agent cannot achieve a green test suite by deleting tests.
 
 **Failure mode without it.** The 2024 DORA stability regression and
-GitClear's churn doubling are the symptoms. Without deterministic in-loop
-feedback, agents ship code that compiles in their head but breaks in the
-build. Humans become unpaid reviewers of trivia. Stability decays.
+GitClear's observed churn doubling (correlational evidence, not causal)
+are the symptoms. Without deterministic in-loop feedback, agents ship
+code that compiles in their head but breaks in the build. Humans become
+unpaid reviewers of trivia. Stability decays.
 
 ---
 
@@ -487,7 +497,7 @@ ends only when the human author can explain the resulting code.
 - Spec-driven development (GitHub Spec Kit, September 2025; AWS-Augment
   Code; JetBrains Junie patterns): specs replace prompts as the durable
   artifact.
-- Beck (September 2025): augmented coding requires traditional engineering
+- Beck (June 2025): augmented coding requires traditional engineering
   values (tidy code, complexity discipline, full test coverage) and TDD as
   a non-negotiable guardrail.
 - Willison (October 2025 onward): "I won't commit any code to my repository
@@ -542,9 +552,11 @@ ends only when the human author can explain the resulting code.
 
 **Failure mode without it.** This is the cognitive-debt scenario Willison
 and Thoughtworks named: code accumulates faster than understanding. The
-team can ship and cannot debug. The METR study's 19% slowdown, *while
-developers believed they were 20% faster*, is the perception-reality gap
-this pillar closes.
+team can ship and cannot debug. The METR study's 19% slowdown (one RCT,
+n=16, early-2025 tools), *while developers believed they were 20% faster*,
+is the perception-reality gap this pillar is designed to close — read it
+as evidence the productivity claims are noisier than vendor reports
+suggest, not as a settled measurement.
 
 ---
 
@@ -566,10 +578,10 @@ allocation (Pillar 4).
 - CodeScene ACE; Moderne's Moddy; Refact.ai: an emerging category of
   agent-driven debt paydown.
 - McKinsey 2025: AI is changing the economics of debt; legacy modernization
-  that took years can be 40–50% faster and cheaper. The strategic
-  implication is to pay down more aggressively now, funded by the
-  productivity gains, rather than the historical "manage indefinitely"
-  posture.
+  that took years can be 40–50% faster and cheaper (a strategic projection,
+  not a settled outcome). The strategic implication is to pay down more
+  aggressively now, funded by the productivity gains, rather than the
+  historical "manage indefinitely" posture.
 - Counterweight: GitClear shows naive AI usage increases debt. This pillar
   is what turns AI from a debt accelerant into a debt amortizer.
 
