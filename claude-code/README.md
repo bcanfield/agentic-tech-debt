@@ -10,7 +10,7 @@ On every session, a hook injects three disciplines (auto-register debt markers, 
 
 ```bash
 # from this marketplace:
-/plugin marketplace add github:bcanfield/agentic-tech-debt
+/plugin marketplace add bcanfield/agentic-tech-debt
 /plugin install debt-ops
 
 # or for local development:
@@ -30,10 +30,10 @@ claude --plugin-dir /path/to/agentic-tech-debt/claude-code
 
 ## What appears in your repo
 
-| Path | When |
-|---|---|
-| `debt/registry/<id>-<slug>.md` | Claude calls `/debt-ops:add` |
-| `doc/adr/<n>-<title>.md` | Claude drafts an ADR |
+| Path                                             | When                               |
+| ------------------------------------------------ | ---------------------------------- |
+| `debt/registry/<id>-<slug>.md`                   | Claude calls `/debt-ops:add`       |
+| `doc/adr/<n>-<title>.md`                         | Claude drafts an ADR               |
 | `## Tech debt operations` section in `CLAUDE.md` | Only when you run `/debt-ops:init` |
 
 The plugin never modifies anything else in your repo, never blocks an edit, and never adds files on install.
