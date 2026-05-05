@@ -426,9 +426,9 @@ v1 is the relaxed-by-construction version. No rejections. Just feedback.
 ## Plugin layout (v1)
 
 ```
-debt-ops/
+claude-code/                     # adapter folder; sibling adapters (cursor/, aider/) slot in beside this
 ├── .claude-plugin/
-│   └── plugin.json              # name + description; version omitted while iterating
+│   └── plugin.json              # name: debt-ops (the slash-command namespace); description; version omitted while iterating
 ├── skills/
 │   ├── add/SKILL.md             # /debt:add (registry schema embedded in prompt)
 │   └── init/SKILL.md            # /debt:init (disable-model-invocation: true; writes section to CLAUDE.md)
