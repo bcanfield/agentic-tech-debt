@@ -3,6 +3,13 @@
 Working notes for an evidence-based, agentic tech debt management
 system, delivered as a Claude Code plugin.
 
+## The plugin
+
+- **[`debt-ops/`](./debt-ops/)**: v1 implementation. Two skills
+  (`/debt-ops:add`, `/debt-ops:init`), two hooks (`SessionStart`,
+  `PostToolUse`), two scripts (`session-start.sh`, `feedback.sh`). Zero
+  install footprint. See [`debt-ops/README.md`](./debt-ops/README.md).
+
 ## Documents
 
 - **[`tech-debt-management.md`](./tech-debt-management.md)**: research
