@@ -19,7 +19,11 @@ required.
 examples, no `userConfig`, no required CLAUDE.md modifications.
 
 **Hard prerequisite.** A git repository. **Targets Claude Code v2.1.121
-or later.**
+or later** — the two CC features the version gate protects are
+`hookSpecificOutput.additionalContext` (used by both hooks) and
+`disable-model-invocation` on skills (used by `/debt:init`). Without
+them v1's quiet-by-default posture and opt-in `/debt:init` behavior
+both regress.
 
 ## The two non-negotiables
 
@@ -100,48 +104,43 @@ shares one source of truth; solo users skip it.
 
 ## The disciplines (injected by `SessionStart`)
 
-These six short instructions are what `SessionStart` injects into
-Claude's context every session. They live inside `session-start.sh`,
-which emits a JSON envelope `{"hookSpecificOutput": {"hookEventName":
-"SessionStart", "additionalContext": "<text>"}}`; there is no separate
-`disciplines.md` file. If `CLAUDE.md` already has a `## Tech debt
-operations` section (because `/debt:init` was run), those instructions
-take precedence; the inject is the fallback. (Claude Code auto-loads
-`CLAUDE.md` and related memory files; it does not auto-load `AGENTS.md`
-— see Pillar 6 mapping below.)
+These three instructions live inside `session-start.sh`'s heredoc and
+orient the model. The developer never reads them; the user-visible
+surface is one-line announcements at registration time, the registry
+directory, and ADR files. The script emits a JSON envelope
+`{"hookSpecificOutput": {"hookEventName": "SessionStart",
+"additionalContext": "<text>"}}`; there is no separate `disciplines.md`
+file. If `CLAUDE.md` already has a `## Tech debt operations` section
+(because `/debt:init` was run), those instructions take precedence; the
+inject is the fallback. (Claude Code auto-loads `CLAUDE.md` and related
+memory files; it does not auto-load `AGENTS.md` — see Pillar 6 mapping
+below.)
 
-Items 1–4 cover Pillars 1 and 5 (visibility, ADRs). Items 5–6 are the
-v1 footprint of Pillar 8 (spec-first, TDD-shaped) — the lightest
-possible coverage of the pillar that closes the METR perception/reality
-gap. The full Pillar 8 disciplines (fresh-context review,
-comprehensibility gate, security review) arrive in v2/v3.
+The disciplines cover Pillars 1 and 5 (visibility, deliberate
+architecture). Pillar 8 (spec / TDD / fresh-context review /
+comprehensibility) is *not* covered by v1 disciplines; the
+"What v1 accepts as residual risk" subsection below names the failure
+mode v1 accepts there. v2 brings `/debt:spec`, `reviewer`, and
+`security-reviewer` as a coherent set.
 
 1. If you write a `TODO`, `FIXME`, `HACK`, or `XXX` marker, register it
-   via `/debt-ops:add` immediately. No permission prompt; just do it and
-   announce. Use `payoff_trigger: unknown` if unsure. The developer can
-   drop entries in one message; you cannot recover an unregistered
-   shortcut, so err toward registering.
-2. When making an architecturally significant change (data model, public
-   interface, dep manifest, security boundary, release pipeline), draft
-   an ADR under `doc/adr/` in Nygard format (Context, Decision,
-   Consequences, Alternatives, Payoff trigger). Create the directory if
-   needed. Draft an ADR only when there were two credible alternatives;
-   if you cannot list two, it is a comment, not an ADR. If the ADR
-   introduces deliberate debt (a payoff trigger that fires later), also
-   call `/debt-ops:add` so the registry entry mirrors the ADR.
+   via `/debt-ops:add` immediately. No permission prompt; just do it.
+   Use `payoff_trigger: unknown` if unsure. Announce as one line:
+   `+1 entry: <slug> (drop?)`. The developer can reply "drop it" in
+   one message and you'll delete the entry; treat over-registering as
+   cheap.
+2. When making an architecturally significant change — a data model,
+   public interface, security boundary, release pipeline, or a
+   dep-manifest change that is a major-version bump or a *new*
+   top-level dependency — draft an ADR under `doc/adr/` in Nygard
+   format (Context, Decision, Consequences, Alternatives, Payoff
+   trigger). Create the directory if needed. Draft an ADR only when
+   there were two credible alternatives; if you cannot list two, it is
+   a comment, not an ADR. If the ADR introduces deliberate debt (a
+   payoff trigger that fires later), also call `/debt-ops:add` so the
+   registry entry mirrors the ADR.
 3. Read entries under `debt/registry/` before changing files they
    reference.
-4. Refer to debt entries and ADRs by content in conversation, not by ID
-   (UX choice; not derived from a pillar). IDs are for tooling
-   cross-references like commit SHAs.
-5. **Spec before edit on non-trivial work.** Before editing for any task
-   that is not a one-liner, write a 2–3 sentence spec stating input,
-   output, and the edge case you most expect to break. The spec lives in
-   the chat, not a file.
-6. **Registering debt is not a substitute for fixing it.** If a shortcut
-   you are about to take would fail an obvious test, write the test
-   first and then make it pass. Register debt only when the shortcut is
-   *known* and *deferred*, not when it is *unverified*.
 
 ---
 
@@ -193,7 +192,7 @@ Free-form prose: the debt, recurrence, observed symptoms.
 | 5. Deliberate Architecture | SessionStart inject tells Claude to draft Nygard-format ADRs for significant changes; lazy `doc/adr/` creation | `/debt:adr` skill, index regen, template-ship (v2) |
 | 6. Curated Agent Context | rely on Claude Code's native `CLAUDE.md` loading (CC does not auto-load `AGENTS.md`); `/debt:init` (opt-in) writes a debt-ops section into CLAUDE.md for team-share | enforced size budget, freshness checks (v2) |
 | 7. In-Loop Deterministic Feedback | `PostToolUse → feedback.sh` runs commands cached by SessionStart (or read from CLAUDE.md if `/debt:init` ran) | test-integrity rule, AI-touched hotspot floor rule, `/debt:override` (v3) |
-| 8. Spec → Test → Review → Comprehend | SessionStart inject items 5–6 (spec-before-edit on non-trivial work; "registering debt is not a substitute for a failing test") — lightest possible coverage | `/debt:spec`, `/debt:explain`, `reviewer`, `security-reviewer` (v2/v3) |
+| 8. Spec → Test → Review → Comprehend | — (named as accepted residual risk; v1 disciplines do not cover Pillar 8) | `/debt:spec`, `/debt:explain`, `reviewer`, `security-reviewer` (v2/v3) |
 | 9. AI as Paydown Engine | — | `/debt:paydown`, GH Actions recipe (v3) |
 
 ---
@@ -233,13 +232,14 @@ ships knowing this, with a dogfood detection plan.
    Code Health gate waits for v3's MCP. **Mitigation:** human at PR
    time. **Detection:** per-edit test-count delta in `feedback.sh`
    output.
-5. **Partial spec / no fresh-context review / no comprehensibility
-   gate (Pillar 8 failure mode).** v1 inject items 5–6 cover spec and
-   "registering ≠ fixing"; writer/reviewer separation, security review,
-   and the comprehensibility gate all wait for v2/v3. The METR
-   perception/reality gap is partially addressed at the fast-loop layer
-   only. **Mitigation:** human review at PR. **Detection:** % of
-   agent-authored diffs the developer rewrites materially.
+5. **No spec / no fresh-context review / no comprehensibility gate
+   (Pillar 8 failure mode).** v1 ships no Pillar 8 disciplines. The
+   METR perception/reality gap, the most-cited piece of evidence in
+   the synthesis, is uncovered at the v1 inject layer. **Mitigation:**
+   human review at PR; v2 brings `/debt:spec`, `reviewer`, and
+   `security-reviewer` as a coherent set. **Detection:** % of
+   agent-authored diffs the developer rewrites materially; if high,
+   v2 is needed sooner.
 6. **No agentic paydown (Pillar 9 failure mode).** Asymmetry persists:
    agents accelerate creation, no one redirects to paydown. Pillar 9
    depends on 3, 7, 8 being live; v1 cannot ship it. **Detection:** v1
@@ -335,9 +335,10 @@ heuristic detection.
   the disciplines per-session. Nothing is written to the repo.
 
 **Honest caveat.** Pillar 6 calls for an *enforced* size budget and
-freshness checks. v1 has neither; we trust Claude's reading of whatever
-charter exists. Size-budget enforcement returns in v2 if dogfood shows
-charter bloat is a real problem.
+freshness checks. v1 has neither. The testable consequence: if your
+CLAUDE.md exceeds ~10k tokens, expect discipline-firing rates to drop —
+that is the dogfood signal that v2's size budget is needed. Until then
+we trust Claude's reading of whatever charter exists.
 
 ---
 
@@ -356,10 +357,13 @@ charter bloat is a real problem.
   write the cache. On subsequent sessions: read the cache instantly. If
   `CLAUDE.md` has a `<!-- debt-ops:feedback v1 -->` marker block
   (because `/debt:init` ran), the cache is overridden by that; CLAUDE.md
-  is the source of truth when present. The marker is a self-imposed
-  convention; CC has no cross-plugin marker contract, so other plugins
-  that touch CLAUDE.md may not respect it — `/debt:init` writes
-  defensively and `feedback.sh` reads tolerantly.
+  is the source of truth when present. `/debt:init` writes the marker
+  block with a self-explaining first line so a teammate without the
+  plugin can read it: `<!-- this section is auto-managed by the
+  debt-ops Claude Code plugin; safe to edit, run /debt-ops:init to
+  regenerate -->`. The marker is a self-imposed convention; CC has no
+  cross-plugin marker contract, so `/debt:init` writes defensively and
+  `feedback.sh` reads tolerantly.
 - `PostToolUse` matcher (`Write|Edit|MultiEdit`, an exact-list match,
   not regex) calls `feedback.sh`. The script (~15 lines) reads commands
   from cache or charter, runs each in parallel under a self-imposed 3 s
@@ -534,13 +538,13 @@ continues; the full test suite runs at PR time, not on every edit.
 **09:35, a subtle expediency.** Claude proposes `// TODO: handle the
 cancelled-promotion case later`. Discipline 1 fires. Claude invokes
 `/debt-ops:add`, lazily creates `debt/registry/` (the first file ever in
-this dir), writes `0001-cancelled-promotion-callback.md` with
-`payoff_trigger: unknown`, and announces: "Registered the
-cancelled-promotion entry. Tell me to drop it if it's not real debt."
+this dir), writes the entry (timestamp-shaped id per impl-gate 4) with
+`payoff_trigger: unknown`, and announces in one line:
+`+1 entry: cancelled-promotion-callback (drop?)`.
 
-**10:05, a false positive.** Claude flags `// TODO: maybe rename this var`
-and registers it. Developer: "that's just a naming nit, drop it." Claude
-deletes the entry. Done.
+**10:05, a false positive.** Claude writes `// TODO: maybe rename this
+var` and announces `+1 entry: rename-this-var (drop?)`. Developer:
+"drop." Claude deletes the entry. Done.
 
 **11:30, an architectural fork.** Claude wants a new pricing-event trait.
 Discipline 2 fires. Claude lazily creates `doc/adr/` (the first file in
@@ -707,38 +711,71 @@ them prevent week-one bugs.
    re-runs discovery. Without this, the cache silently serves stale
    commands when lockfiles change overnight.
 3. **Test-integrity warning in `feedback.sh`.** SessionStart's
-   discovery prompt also asks Claude to record an approximate test-file
-   count for the repo (the discovery cache picks up a `find`/`fd`-style
-   one-liner the project would use). `feedback.sh` recomputes the count
-   on every invocation; if the count *dropped* in a single edit, it
-   emits a `WARNING: this edit removed N test files/blocks` line in
-   the structured `additionalContext`. This is non-blocking — fully in
-   the spirit of "lean relaxed over strict" — but it closes Beck's
-   "agents will try to delete tests to make them pass" attack vector
-   for the v1→v3 window. Without it, the team is exposed to that
-   attack for months.
+   discovery prompt asks Claude to count test-shaped filenames in the
+   repo using a portable pattern (filenames matching `test_*`,
+   `*_test.*`, `*.test.*`, or `*.spec.*`) and cache the count.
+   `feedback.sh` recomputes on every invocation; if the count
+   *dropped* in a single edit, it emits a `WARNING: this edit removed
+   N test files` line in the structured `additionalContext`. File-name
+   counting is intentionally coarse — a renamed file looks like
+   delete + add and won't trigger; that's acceptable for v1 because
+   the goal is catching the gross "agent removes the tests file"
+   pattern Beck described. Block-level counting waits for v3. This is
+   non-blocking — fully in the spirit of "lean relaxed over strict" —
+   but it closes Beck's attack vector for the v1→v3 window. Without
+   it, the team is exposed for months.
 4. **Race-safe `/debt:add` IDs.** The skill must not pick the next id
    by globbing `debt/registry/[0-9]{4}-*.md` and incrementing — two
    concurrent sessions both pick `0001` and write conflicting files.
    Use a timestamp-shaped id (`YYYYMMDDhhmmss`) or a short content
    hash. The plan's framing ("the id is for tooling cross-references
    like commit SHAs") already supports this.
-5. **Discovery prompt asks for changed-file-scoped commands; cache
-   format is one-command-per-line.** SessionStart's discovery prompt
-   must explicitly ask Claude for commands that operate on changed
-   files (e.g., `eslint $CHANGED_FILES`, `cargo clippy --no-deps -p
-   $CHANGED_PACKAGE`), not project-wide. Project-wide commands exceed
-   the 3 s budget on any non-trivial repo, returning `timeout` for
-   every edit, training the agent to ignore the feedback. The cache
-   file format is one command per line; comments (`#`) and empty lines
-   are skipped; malformed lines are dropped silently. This is robust
-   to truncation by construction.
+5. **Discovery prompt is load-bearing for fast-loop correctness.**
+   SessionStart's discovery prompt is *the* mechanism that determines
+   whether Pillar 7 actually delivers a fast loop. The prompt must
+   explicitly tell Claude: (a) **prefer** commands that accept a
+   changed-file or changed-package argument (`eslint $CHANGED_FILES`,
+   `cargo clippy --no-deps -p $CHANGED_PACKAGE`, `pytest path/to/dir`)
+   over project-wide ones; (b) **reject** any command whose typical
+   wall-clock on this repo exceeds 3 s; (c) **record a wall-clock
+   estimate** alongside each cached command. Project-wide commands
+   exceed the budget on any non-trivial repo, return `timeout` on
+   every edit, and train the agent to ignore feedback. This is the v1
+   difference between "Pillar 7 works" and "Pillar 7 looks like it
+   works." The cache file format is one command per line; comments
+   (`#`) and empty lines are skipped; malformed lines are dropped
+   silently. Robust to truncation by construction.
+
+### Dogfood metrics (wire up from day one)
+
+These five metrics determine whether v1 is succeeding, what v2 should
+build, and whether any of the cuts (notably the `Stop` hook) need to
+be reversed. Each is a single counter or rate, not a dashboard.
+
+- **Discipline firing rate** — registrations per session and ADRs per
+  session. If registrations drop after week one, the inject is being
+  downweighted under long context (the `Stop` hook returns as a v2
+  safety net).
+- **Marker-without-registry rate** — TODO/FIXME/HACK/XXX markers
+  Claude wrote in a session minus the count of registry entries it
+  created the same session. Non-zero means Discipline 1 is not firing
+  reliably; this is the explicit dogfood detection for the `Stop` hook
+  cut.
+- **ADR creation rate** — ADRs per week. Below ~0.1/week or above
+  ~1/day means the architectural-significance heuristic in Discipline
+  2 is broken; v2's `adr-author` subagent is the structural fix.
+- **`feedback.sh` action rate** — fraction of edits where the agent
+  visibly self-corrects after a non-pass result. If <50%, the
+  `additionalContext`-acted-on-same-turn assumption (an open question
+  since the audit) is false; escalate to v2.
+- **Registry growth and AI-touched share** — total entries over time
+  and the share with `ai_authored: true`. Rising AI-touched share is
+  the leading indicator that v3's behavioral measurement (CodeScene
+  MCP) is needed sooner than later.
 
 These five are the minimum to ship v1 with credibility. The full
 red-team list is in `audit/04-redteam.md`; everything else is
-acceptable v1 risk if dogfood metrics are wired up from day one
-(discipline firing rates, ADR creation rate, edits per `feedback.sh`
-output, registry size over time).
+acceptable v1 risk if these metrics are wired up from week one.
 
 ---
 
