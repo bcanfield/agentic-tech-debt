@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "agentic-tech-debt",
+  "description": "Plugins implementing the agentic-tech-debt system across coding agents.",
+  "owner": {
+    "name": "Brandin Canfield",
+    "email": "brandincanfield@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "debt-ops",
+      "description": "Tech debt management for agentic codebases — surfaces debt, ranks hotspots, and uses AI agents to pay it down. Evidence-based, continuous, non-blocking.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Brandin Canfield",
+        "email": "brandincanfield@gmail.com"
+      },
+      "source": "./claude-code",
+      "category": "productivity"
+    }
+  ]
+}
