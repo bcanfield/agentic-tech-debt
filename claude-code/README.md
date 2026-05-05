@@ -10,7 +10,7 @@ On every session, a hook injects three disciplines (auto-register debt markers, 
 
 ```bash
 # from this marketplace:
-/plugin marketplace add github:<owner>/agentic-tech-debt
+/plugin marketplace add github:bcanfield/agentic-tech-debt
 /plugin install debt-ops
 
 # or for local development:

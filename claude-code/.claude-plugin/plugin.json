@@ -1,4 +1,8 @@
 {
   "name": "debt-ops",
-  "description": "Continuous, evidence-based tech debt management for Claude Code."
+  "description": "Tech debt management for agentic codebases — surfaces debt, ranks hotspots, and uses AI agents to pay it down. Evidence-based, continuous, non-blocking.",
+  "author": {
+    "name": "Brandin Canfield",
+    "email": "brandincanfield@gmail.com"
+  }
 }
