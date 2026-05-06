@@ -20,7 +20,8 @@ claude --plugin-dir /path/to/agentic-tech-debt/claude-code
 ## Prerequisites
 
 - A git repository (the plugin idles outside one)
-- Bash; on macOS `brew install coreutils` is recommended for accurate timeouts; on Windows use WSL or Git Bash
+- Python 3.10 or later (used by both hooks; standard library only)
+- Bash on PATH (hooks shell out to `bash -c` to run your project's quality commands)
 - Claude Code v2.1.121 or later
 
 ## Commands
