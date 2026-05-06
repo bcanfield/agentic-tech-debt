@@ -8,7 +8,7 @@
 - **Be refreshingly concise.** Nobody likes overly wordy AI slop. Speak and comment like a co-worker.
 - **Python over Bash for plugin scripts.** Stdlib `json`, `re`, and `subprocess.run(..., timeout=...)` beat hand-rolled JSON escaping, a `jq` dependency, and the BSD/GNU `timeout` portability dance — and run on Windows without WSL.
 - **Conventional commits.** Plugin version auto-bumps via release-please (config in `.github/`); use `feat:` / `fix:` / `feat!:` prefixes — anything else is ignored by the bumper. Don't hand-edit `version` in `plugin.json`.
-
+- **We like humanlike, concise inline comments** For example, a single line above a function or code block very simply and concisely saying what the code is doing so that the code is easy for a human to understand
 ## Debugging
 
 Set `DEBT_OPS_DEBUG=1` before launching Claude Code to log every PostToolUse fire and command result:
