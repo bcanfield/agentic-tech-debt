@@ -1,6 +1,6 @@
 ---
 name: Register tech-debt entry
-description: This skill should be used when (a) the user invokes /debt-ops:add explicitly, or (b) you have just written a TODO, FIXME, HACK, or XXX marker during normal work — Discipline 1 of the debt-ops SessionStart inject directs registration in that case. Treat over-registering as cheap; the developer drops entries by replying "drop it" or by deleting the file.
+description: Use when the user invokes /debt-ops:add OR you just deferred work — a TODO/FIXME/HACK/XXX marker, a stub, a loosened type, a bypassed check, a "future"/"later"/"someday" comment, or any decision the code leaves for later. Register the deferral; over-register freely (developer drops with "drop it").
 allowed-tools: Write, Bash(date *)
 ---
 
