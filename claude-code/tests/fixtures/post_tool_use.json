@@ -1,0 +1,12 @@
+{
+  "session_id": "test-session-0001",
+  "transcript_path": "/tmp/transcript.json",
+  "cwd": "/tmp/repo",
+  "tool_name": "Edit",
+  "tool_input": {
+    "file_path": "src/example.ts"
+  },
+  "tool_response": {
+    "success": true
+  }
+}
