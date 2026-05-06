@@ -126,6 +126,11 @@ def main():
         f"{DISCIPLINES}\n\n"
         f"{commands_block(cache_dir, cache_base, manifest_hash(toplevel), has_charter(toplevel), stateless)}"
     )
+    if not stateless:
+        context += (
+            f"\n\nDebug: set DEBT_OPS_DEBUG=1 in the environment to log every hook fire "
+            f"and command result to {cache_dir}/debug.log (tab-separated; tail -f to watch)."
+        )
     emit(context)
     return 0
 
