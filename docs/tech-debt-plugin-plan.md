@@ -118,10 +118,10 @@ the repo and cache the result; on subsequent sessions it reads the
 cache instantly. The same hook injects the disciplines (auto-register
 debt, draft ADRs in Nygard format), emitted via the documented
 `hookSpecificOutput.additionalContext` envelope (10,000-char cap).
-After every agent edit, `PostToolUse → feedback.sh` runs the cached
+After every agent edit, `PostToolUse → feedback.py` runs the cached
 commands in parallel under a self-imposed 3 s budget (Claude Code's
 default hook timeout is 600 s; the plugin enforces 3 s itself via
-`timeout 3 …` per command) and returns structured pass/fail. When
+`subprocess.run(..., timeout=3)` per command) and returns structured pass/fail. When
 Claude writes an expedient marker during normal work, the discipline
 tells it to invoke `/debt-ops:add` immediately; the skill loads the
 schema, lazily creates `debt/registry/`, writes the entry, and
@@ -135,7 +135,7 @@ shares one source of truth; solo users skip it.
 
 ## The disciplines (injected by `SessionStart`)
 
-These three instructions live inside `session-start.sh`'s heredoc and
+These three instructions live inside `session-start.py` as a module-level string and
 orient the model. The developer never reads them; the user-visible
 surface is one-line announcements at registration time, the registry
 directory, and ADR files. The script emits a JSON envelope
@@ -222,7 +222,7 @@ Free-form prose: the debt, recurrence, observed symptoms.
 | 4. Continuous Paydown | — | `/debt:budget`, fix-it weeks, Boy Scout summary (v4) |
 | 5. Deliberate Architecture | SessionStart inject tells Claude to draft Nygard-format ADRs for significant changes; lazy `doc/adr/` creation | `/debt:adr` skill, index regen, template-ship (v2) |
 | 6. Curated Agent Context | rely on Claude Code's native `CLAUDE.md` loading (CC does not auto-load `AGENTS.md`); `/debt:init` (opt-in) writes a debt-ops section into CLAUDE.md for team-share | enforced size budget, freshness checks (v2) |
-| 7. In-Loop Deterministic Feedback | `PostToolUse → feedback.sh` runs commands cached by SessionStart (or read from CLAUDE.md if `/debt:init` ran) | test-integrity rule, AI-touched hotspot floor rule, `/debt:override` (v3) |
+| 7. In-Loop Deterministic Feedback | `PostToolUse → feedback.py` runs commands cached by SessionStart (or read from CLAUDE.md if `/debt:init` ran) | test-integrity rule, AI-touched hotspot floor rule, `/debt:override` (v3) |
 | 8. Spec → Test → Review → Comprehend | — (named as accepted residual risk; v1 disciplines do not cover Pillar 8) | `/debt:spec`, `/debt:explain`, `reviewer`, `security-reviewer` (v2/v3) |
 | 9. AI as Paydown Engine | — | `/debt:paydown`, GH Actions recipe (v3) |
 
@@ -258,10 +258,10 @@ ships knowing this, with a dogfood detection plan.
 4. **No test-integrity / Code Health gates (Pillar 7 failure mode).**
    The pillars doc marks two rules "non-bypassable"; v1 ships zero
    rejections. The implementation gate set below adds a non-blocking
-   test-count *warning* in `feedback.sh` so Beck's "agents try to delete
+   test-count *warning* in `feedback.py` so Beck's "agents try to delete
    tests to make them pass" is at least visible — not enforced. The
    Code Health gate waits for v3's MCP. **Mitigation:** human at PR
-   time. **Detection:** per-edit test-count delta in `feedback.sh`
+   time. **Detection:** per-edit test-count delta in `feedback.py`
    output.
 5. **No spec / no fresh-context review / no comprehensibility gate
    (Pillar 8 failure mode).** v1 ships no Pillar 8 disciplines. The
@@ -377,7 +377,7 @@ we trust Claude's reading of whatever charter exists.
 
 **v1 commitment.**
 
-- `SessionStart` hook (`session-start.sh`) detects this repo's quality
+- `SessionStart` hook (`session-start.py`) detects this repo's quality
   commands and caches them in
   `${CLAUDE_PLUGIN_DATA}/cache/<repo-hash>/feedback.list`. The
   `<repo-hash>` is a short hash of the git toplevel (e.g.,
@@ -394,11 +394,11 @@ we trust Claude's reading of whatever charter exists.
   debt-ops Claude Code plugin; safe to edit, run /debt-ops:init to
   regenerate -->`. The marker is a self-imposed convention; CC has no
   cross-plugin marker contract, so `/debt:init` writes defensively and
-  `feedback.sh` reads tolerantly.
+  `feedback.py` reads tolerantly.
 - `PostToolUse` matcher (`Write|Edit|MultiEdit`, an exact-list match,
-  not regex) calls `feedback.sh`. The script (~15 lines) reads commands
+  not regex) calls `feedback.py`. The script reads commands
   from cache or charter, runs each in parallel under a self-imposed 3 s
-  wall-clock budget per command (`timeout 3 …`), and returns structured
+  wall-clock budget per command (`subprocess.run(..., timeout=3)`), and returns structured
   JSON to the agent inside an `additionalContext` payload. CC's default
   hook timeout is 600 s; `hooks.json` sets `timeout: 5` as a CC-level
   guard so a stuck script can't hang the edit cycle. Other plugins'
@@ -435,8 +435,8 @@ claude-code/                     # adapter folder; sibling adapters (cursor/, ai
 ├── hooks/
 │   └── hooks.json               # SessionStart + PostToolUse; commands use ${CLAUDE_PLUGIN_ROOT}/scripts/...
 ├── scripts/
-│   ├── session-start.sh         # detects + caches commands; injects disciplines via additionalContext
-│   └── feedback.sh              # ~15 lines: read commands, run in parallel under timeout 3 each, return JSON
+│   ├── session-start.py         # detects + caches commands; injects disciplines via additionalContext
+│   └── feedback.py              # read commands, run in parallel under a 3 s subprocess timeout each, return JSON
 └── README.md
 ```
 
@@ -465,8 +465,8 @@ install-time questions.
 
 | Event | Matcher | Script (under `${CLAUDE_PLUGIN_ROOT}/scripts/`) | What it does |
 |---|---|---|---|
-| `SessionStart` | — | `session-start.sh` | emit JSON envelope with `hookSpecificOutput.additionalContext` containing the disciplines; if `${CLAUDE_PLUGIN_DATA}/cache/<repo-hash>/feedback.list` exists, also include the command list; otherwise include a one-time prompt asking Claude to detect and write the cache |
-| `PostToolUse` | `Write\|Edit\|MultiEdit` (exact-list match) | `feedback.sh` | read commands (CLAUDE.md marker block if present, else per-repo cache); run each in parallel (`timeout 3` each); return structured JSON via `additionalContext`. `hooks.json` sets `timeout: 5` so a stuck script can't hang the edit cycle. |
+| `SessionStart` | — | `session-start.py` | emit JSON envelope with `hookSpecificOutput.additionalContext` containing the disciplines; if `${CLAUDE_PLUGIN_DATA}/cache/<repo-hash>/feedback.list` exists, also include the command list; otherwise include a one-time prompt asking Claude to detect and write the cache |
+| `PostToolUse` | `Write\|Edit\|MultiEdit` (exact-list match) | `feedback.py` | read commands (CLAUDE.md marker block if present, else per-repo cache); run each in parallel (3 s `subprocess.run` timeout each); return structured JSON via `additionalContext`. `hooks.json` sets `timeout: 5` so a stuck script can't hang the edit cycle. |
 
 Two hooks, both small. Disciplines that don't need deterministic
 enforcement live in the SessionStart inject; the one thing that does
@@ -496,7 +496,7 @@ Every cut is recoverable. Nothing is permanently off the table.
 | `.mcp.json` | skip | No code-health MCP needed yet. | v3 (Code Health signal). |
 | Local hotspot scorer | skip | "Lines × git frequency" is a misleading complexity proxy. | Tree-sitter-based scoring as a no-MCP fallback. |
 | Bash auto-detection table | skip | Claude detects via the SessionStart inject, smarter than bash globbing. | Non-interactive contexts. |
-| `templates/` directory | skip | Disciplines live inline in `session-start.sh`; ADR format is in the inject text. | If a template grows complex enough to warrant a file. |
+| `templates/` directory | skip | Disciplines live inline in `session-start.py`; ADR format is in the inject text. | If a template grows complex enough to warrant a file. |
 | `examples/` directory | skip | The schema example for registry entries lives inside `/debt:add`'s `SKILL.md`. | If users ask for human-readable example files in their repo. |
 | Charter bootstrap (creating CLAUDE.md from scratch) | skip | Claude Code's built-in `/init` already scaffolds CLAUDE.md. | Never; overlap with native is the failure mode. |
 | Pre-creating `debt/registry/` and `doc/adr/` on install | skip | Lazy creation on first use; install footprint is zero. | We would choose lazy again. |
@@ -552,14 +552,14 @@ project files (`Cargo.toml`, etc.) and write them to
 `${CLAUDE_PLUGIN_DATA}/cache/<repo-hash>/feedback.list`." Claude does so
 silently: `cargo check`, `cargo clippy --no-deps -- -D warnings`. The
 cache is now warm. Total: ~3 s. The developer sees nothing. (Note: the
-3 s budget is per-command inside `feedback.sh`; the discovery prompt
+3 s budget is per-command inside `feedback.py`; the discovery prompt
 itself runs once and is not bounded by it.)
 
 **09:15, start the work.** They tell Claude to refactor a callback chain
 in `pricing/engine.rs`.
 
-**09:17, first edit lands.** `feedback.sh` reads the cache, runs `cargo
-check` and `cargo clippy` in parallel under `timeout 3` each (1.4 s).
+**09:17, first edit lands.** `feedback.py` reads the cache, runs `cargo
+check` and `cargo clippy` in parallel under a 3 s timeout each (1.4 s).
 `cargo test` is *not* in the per-edit cache because the bare `cargo
 test` exceeds the 3 s budget on this codebase; the discovery step
 recorded only the fast-feedback commands (Pillar 7's "fast loop" intent).
@@ -632,7 +632,7 @@ until the developer asks for something.
 
 ### v3: enforcement + paydown engine
 
-- `feedback.sh` extends with: test-integrity rule, AI-touched hotspot
+- `feedback.py` extends with: test-integrity rule, AI-touched hotspot
   floor rule, AI-touched tagging, charter-tampering rule.
 - `/debt:override <reason>` skill.
 - `code-health` MCP wiring (`code_health_mcp_endpoint` userConfig).
@@ -700,8 +700,8 @@ Per-user overrides return in v2+ if needed.
 
 ## Anti-patterns we will actively watch for
 
-1. **Hook latency creep.** The 3 s per-command budget inside `feedback.sh`
-   (enforced via `timeout 3 …`, with `hooks.json` setting `timeout: 5`
+1. **Hook latency creep.** The 3 s per-command budget inside `feedback.py`
+   (enforced via `subprocess.run(..., timeout=3)`, with `hooks.json` setting `timeout: 5`
    as a CC-level guard) is the line. Note: this budget is plugin-self-
    imposed, not CC-enforced; CC's default `command` hook timeout is 600 s.
 2. **Skill explosion.** Any *recurring-use* skill <1×/week in dogfood is a
@@ -729,31 +729,32 @@ specific failure mode the audit identified; each is a small fix
 (~5–30 lines). None of them changes v1's architectural shape; all of
 them prevent week-one bugs.
 
-1. **Robust `session-start.sh` and `feedback.sh`.** Both scripts must
-   open with `set -euo pipefail`. `session-start.sh` must check
+1. **Robust `session-start.py` and `feedback.py`.** Both scripts wrap
+   their entry point in a top-level `try/except` that exits 0 — a hook
+   bug must never block the tool cycle. `session-start.py` must check
    `git rev-parse --show-toplevel`'s exit code; on non-git repos, emit
    `additionalContext` "debt-ops: not a git repo, plugin idle this
    session" and exit clean (the audit found the naive
    `git rev-parse | shasum` collapses every non-git directory's cache
-   to one shared key — silent corruption). On macOS, `timeout` is GNU
-   coreutils and not present by default; both scripts must detect
-   `timeout` vs. `gtimeout` and fall back to a portable
-   `(cmd & PID=$!; sleep 3 && kill $PID 2>/dev/null) wait` shim.
+   to one shared key — silent corruption). Per-command timeouts use
+   `subprocess.run(..., timeout=3)`, which is portable across macOS,
+   Linux, and Windows without depending on GNU coreutils.
    `${CLAUDE_PLUGIN_DATA}` may be read-only (containers); on first
    write failure, log "debt-ops: cache disabled, running in stateless
    mode" and skip cache logic. The README must state the plugin
-   requires bash; on Windows, it expects WSL or Git Bash.
+   requires Python 3.10+ and bash on PATH (the hooks shell out to
+   `bash -c` to run quality commands).
 2. **Cache invalidation on manifest mtime.** SessionStart hashes the
    project's manifest files (`Cargo.toml`, `package.json`,
    `pyproject.toml`, `Makefile`, `go.mod`, `Gemfile`) and stores the
    hash beside `feedback.list`. On mismatch with the stored hash, it
    re-runs discovery. Without this, the cache silently serves stale
    commands when lockfiles change overnight.
-3. **Test-integrity warning in `feedback.sh`.** SessionStart's
+3. **Test-integrity warning in `feedback.py`.** SessionStart's
    discovery prompt asks Claude to count test-shaped filenames in the
    repo using a portable pattern (filenames matching `test_*`,
    `*_test.*`, `*.test.*`, or `*.spec.*`) and cache the count.
-   `feedback.sh` recomputes on every invocation; if the count
+   `feedback.py` recomputes on every invocation; if the count
    *dropped* in a single edit, it emits a `WARNING: this edit removed
    N test files` line in the structured `additionalContext`. File-name
    counting is intentionally coarse — a renamed file looks like
@@ -803,7 +804,7 @@ be reversed. Each is a single counter or rate, not a dashboard.
 - **ADR creation rate** — ADRs per week. Below ~0.1/week or above
   ~1/day means the architectural-significance heuristic in Discipline
   2 is broken; v2's `adr-author` subagent is the structural fix.
-- **`feedback.sh` action rate** — fraction of edits where the agent
+- **`feedback.py` action rate** — fraction of edits where the agent
   visibly self-corrects after a non-pass result. If <50%, the
   `additionalContext`-acted-on-same-turn assumption (an open question
   since the audit) is false; escalate to v2.
