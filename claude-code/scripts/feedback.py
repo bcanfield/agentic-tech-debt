@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -92,19 +93,38 @@ def read_commands(toplevel, cache_dir):
     return ""
 
 
-def run_one(line, env):
-    if "$CHANGED_FILES" in line and not env.get("CHANGED_FILES"):
+def run_one(line, changed_files, env):
+    has_var = "$CHANGED_FILES" in line or "${CHANGED_FILES}" in line
+    if has_var and not changed_files:
         return line, "SKIP_NO_FILE", ""
+
+    try:
+        args = shlex.split(line)
+    except ValueError as e:
+        return line, "FAIL", f"parse error: {e}"
+    if not args:
+        return line, "SKIP_NO_FILE", ""
+
+    # Only $CHANGED_FILES is expanded; other shell features (pipes, &&, globs)
+    # are not, so we don't need bash on PATH. Wrap in `bash -c '...'` to opt in.
+    if changed_files:
+        args = [
+            tok.replace("${CHANGED_FILES}", changed_files).replace("$CHANGED_FILES", changed_files)
+            for tok in args
+        ]
+
     try:
         result = subprocess.run(
-            ["bash", "-c", line],
+            args,
             capture_output=True, text=True,
             timeout=PER_COMMAND_TIMEOUT, env=env,
         )
     except subprocess.TimeoutExpired:
         return line, "TIMEOUT", ""
-    except (OSError, FileNotFoundError):
-        return line, "FAIL", "could not invoke bash"
+    except FileNotFoundError:
+        return line, "FAIL", f"command not found: {args[0]}"
+    except OSError as e:
+        return line, "FAIL", str(e)[:SNIPPET_LEN]
     if result.returncode == 0:
         return line, "PASS", ""
     snippet = ((result.stdout or "") + (result.stderr or ""))[:SNIPPET_LEN]
@@ -132,8 +152,9 @@ def main():
     cache_base = Path(os.environ.get("CLAUDE_PLUGIN_DATA") or (Path.home() / ".cache" / "debt-ops"))
     cache_dir = cache_base / "cache" / repo_hash(toplevel)
 
+    changed = changed_file_from_stdin()
     env = os.environ.copy()
-    env["CHANGED_FILES"] = changed_file_from_stdin()
+    env["CHANGED_FILES"] = changed
 
     raw = read_commands(toplevel, cache_dir)
     commands = [
@@ -145,7 +166,7 @@ def main():
         return 0
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(commands)) as pool:
-        results = list(pool.map(lambda c: run_one(c, env), commands))
+        results = list(pool.map(lambda c: run_one(c, changed, env), commands))
 
     summary_lines = []
     for cmd, status, snippet in results:

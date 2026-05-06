@@ -741,9 +741,12 @@ them prevent week-one bugs.
    Linux, and Windows without depending on GNU coreutils.
    `${CLAUDE_PLUGIN_DATA}` may be read-only (containers); on first
    write failure, log "debt-ops: cache disabled, running in stateless
-   mode" and skip cache logic. The README must state the plugin
-   requires Python 3.10+ and bash on PATH (the hooks shell out to
-   `bash -c` to run quality commands).
+   mode" and skip cache logic. The hook runs each command via
+   `subprocess.run` with `shell=False` and expands only
+   `$CHANGED_FILES` itself, so no shell is required on PATH; users who
+   need shell features (pipes, `&&`, globs) opt in by wrapping the
+   line in `bash -c '...'`. The README states the plugin requires
+   Python 3.10+.
 2. **Cache invalidation on manifest mtime.** SessionStart hashes the
    project's manifest files (`Cargo.toml`, `package.json`,
    `pyproject.toml`, `Makefile`, `go.mod`, `Gemfile`) and stores the
