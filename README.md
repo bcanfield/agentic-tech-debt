@@ -8,3 +8,4 @@ Three decades of debt research distilled into nine tool-agnostic pillars and a C
 - [`claude-code/`](./claude-code) — `debt-ops` plugin for Claude Code; see its [README](./claude-code/README.md) to install
 
 Future adapters for other agents (Cursor, Aider) sit as siblings to `claude-code/`.
+
