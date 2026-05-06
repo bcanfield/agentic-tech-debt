@@ -64,7 +64,7 @@ These run after every edit under a 3 s budget per command. Edit freely; the plug
 
 ## Marker contract — do not deviate
 
-- `<!-- debt-ops:feedback v1 -->` is the open marker `feedback.sh` keys on. Exact string; the `v1` is part of the marker.
+- `<!-- debt-ops:feedback v1 -->` is the open marker `feedback.py` keys on. Exact string; the `v1` is part of the marker.
 - `<!-- /debt-ops:feedback -->` is the close marker.
 - The self-explaining `<!-- this section is auto-managed by … -->` line is mandatory — a teammate without the plugin reads that to understand what they're seeing.
 - Never touch any byte outside the `## Tech debt operations` section.

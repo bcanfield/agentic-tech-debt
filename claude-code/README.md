@@ -20,8 +20,10 @@ claude --plugin-dir /path/to/agentic-tech-debt/claude-code
 ## Prerequisites
 
 - A git repository (the plugin idles outside one)
-- Bash; on macOS `brew install coreutils` is recommended for accurate timeouts; on Windows use WSL or Git Bash
+- Python 3.10 or later (used by both hooks; standard library only)
 - Claude Code v2.1.121 or later
+
+If a quality command in `feedback.list` needs shell features (pipes, `&&`, globs), wrap that line in `bash -c '...'` explicitly. By default the hook expands `$CHANGED_FILES` itself and runs the command without a shell, so bash is not required on PATH.
 
 ## Commands
 
