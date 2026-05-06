@@ -9,12 +9,14 @@ import re
 import shlex
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 MARKER_OPEN = "<!-- debt-ops:feedback v1 -->"
 MARKER_CLOSE = "<!-- /debt-ops:feedback -->"
 PER_COMMAND_TIMEOUT = 3
 SNIPPET_LEN = 200
+DEBUG_ENV = "DEBT_OPS_DEBUG"
 SKIP_DIRS = {".git", "node_modules", "target", "dist", "build"}
 TEST_PATTERNS = (
     re.compile(r"^test_"),
@@ -93,6 +95,23 @@ def read_commands(toplevel, cache_dir):
     return ""
 
 
+def debug_path(cache_dir):
+    if not os.environ.get(DEBUG_ENV):
+        return None
+    return cache_dir / "debug.log"
+
+
+def dlog(path, *fields):
+    if path is None:
+        return
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    try:
+        with path.open("a", encoding="utf-8") as f:
+            f.write("\t".join((ts, *fields)) + "\n")
+    except OSError:
+        pass
+
+
 def run_one(line, changed_files, env):
     has_var = "$CHANGED_FILES" in line or "${CHANGED_FILES}" in line
     if has_var and not changed_files:
@@ -165,8 +184,17 @@ def main():
     if not commands:
         return 0
 
+    dpath = debug_path(cache_dir)
+    dlog(dpath, "FIRE", f"changed={changed or '<none>'}", f"cmds={len(commands)}")
+
+    def run_and_log(c):
+        start = time.monotonic()
+        cmd, status, snippet = run_one(c, changed, env)
+        dlog(dpath, status, f"{time.monotonic() - start:.2f}s", cmd)
+        return cmd, status, snippet
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(commands)) as pool:
-        results = list(pool.map(lambda c: run_one(c, changed, env), commands))
+        results = list(pool.map(run_and_log, commands))
 
     summary_lines = []
     for cmd, status, snippet in results:
