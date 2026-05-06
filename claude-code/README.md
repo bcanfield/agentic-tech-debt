@@ -40,6 +40,25 @@ If a quality command in `feedback.list` needs shell features (pipes, `&&`, globs
 
 The plugin never modifies anything else in your repo, never blocks an edit, and never adds files on install.
 
+## Debugging
+
+Set `DEBT_OPS_DEBUG=1` before launching Claude Code to log every PostToolUse fire and command result:
+
+```bash
+DEBT_OPS_DEBUG=1 claude
+```
+
+Each fire appends tab-separated lines to `<cache>/debug.log` — the exact path is printed in the SessionStart context block. Format:
+
+```
+2026-05-06T16:00:34Z	FIRE	changed=src/foo.ts	cmds=3
+2026-05-06T16:00:34Z	PASS	0.01s	tsc --noEmit
+2026-05-06T16:00:37Z	TIMEOUT	3.00s	pytest tests/
+2026-05-06T16:00:37Z	FAIL	0.42s	eslint $CHANGED_FILES
+```
+
+Tail it in a separate terminal pane: `tail -f ~/.cache/debt-ops/cache/<repo-hash>/debug.log`. With the env var unset (default), nothing is written.
+
 ## Design rationale
 
 See [`../docs/tech-debt-plugin-plan.md`](../docs/tech-debt-plugin-plan.md) for the v1 spec and [`../docs/tech-debt-pillars.md`](../docs/tech-debt-pillars.md) for the principles.
