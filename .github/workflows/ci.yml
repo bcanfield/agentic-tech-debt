@@ -1,0 +1,20 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck
+        run: |
+          shellcheck --version
+          shellcheck -S warning -x claude-code/scripts/*.sh claude-code/tests/*.sh
+
+      - name: tests
+        run: claude-code/tests/run.sh
