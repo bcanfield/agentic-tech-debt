@@ -4,7 +4,7 @@ Continuous, evidence-based tech debt management for Claude Code. Two skills, two
 
 ## What it does
 
-On every session, a hook injects three disciplines (auto-register debt markers, draft ADRs for architecturally significant changes, read the registry before changing referenced files) and detects the project's quality commands. After every agent edit, those commands run in parallel under a 3 s budget per command and return pass/fail to Claude. When Claude writes a `TODO` / `FIXME` / `HACK` / `XXX`, it auto-invokes `/debt-ops:add` to register the debt under `debt/registry/`. Nothing is created in your repo until Claude has a reason to write it.
+On every session, a hook injects three disciplines (auto-register deferrals, draft ADRs for architecturally significant changes, read the registry before changing referenced files) and detects the project's quality commands. After every agent edit, those commands run in parallel under a 3 s budget per command and return pass/fail to Claude. When Claude defers work — a `TODO`/`FIXME`/`HACK`/`XXX` marker, a stub, a loosened type, a "future"/"later" comment, or any decision left for later — it auto-invokes `/debt-ops:add` to register the entry under `debt/registry/`. Nothing is created in your repo until Claude has a reason to write it.
 
 ## Install
 
@@ -27,7 +27,7 @@ If a quality command in `feedback.list` needs shell features (pipes, `&&`, globs
 
 ## Commands
 
-- **`/debt-ops:add`** — register a debt entry. Auto-invoked by Discipline 1 when Claude writes an expedient marker. Drop entries by replying "drop it" or deleting the file.
+- **`/debt-ops:add`** — register a debt entry. Auto-invoked by Discipline 1 when Claude defers work (marker, stub, loosened type, "future" comment, or any decision left for later). Drop entries by replying "drop it" or deleting the file.
 - **`/debt-ops:init`** *(opt-in)* — persist the disciplines and quality commands into `./CLAUDE.md` so the team shares one source of truth. Re-run to regenerate.
 
 ## What appears in your repo

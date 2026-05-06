@@ -154,12 +154,12 @@ comprehensibility) is *not* covered by v1 disciplines; the
 mode v1 accepts there. v2 brings `/debt:spec`, `reviewer`, and
 `security-reviewer` as a coherent set.
 
-1. If you write a `TODO`, `FIXME`, `HACK`, or `XXX` marker, register it
-   via `/debt-ops:add` immediately. No permission prompt; just do it.
-   Use `payoff_trigger: unknown` if unsure. Announce as one line:
-   `+1 entry: <slug> (drop?)`. The developer can reply "drop it" in
-   one message and you'll delete the entry; treat over-registering as
-   cheap.
+1. If you defer work — decision unmade, stub, loosened type,
+   "future"/"later" comment, or `TODO`/`FIXME`/`HACK`/`XXX` marker —
+   register via `/debt-ops:add` immediately. Test: would a future
+   reader ask "why this way?" If yes, register. No prompt. Use
+   `payoff_trigger: unknown` if unsure. Announce: `+1 entry: <slug>
+   (drop?)`. Over-register freely; the developer drops with "drop it".
 2. When making an architecturally significant change — a data model,
    public interface, security boundary, release pipeline, or a
    dep-manifest change that is a major-version bump or a *new*
