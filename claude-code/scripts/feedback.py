@@ -27,6 +27,7 @@ TEST_PATTERNS = (
 HEADING_RE = re.compile(r"^##\s")
 
 
+# Wraps text in the JSON envelope Claude Code expects from a PostToolUse hook.
 def emit(context):
     payload = {
         "hookSpecificOutput": {
@@ -37,6 +38,7 @@ def emit(context):
     sys.stdout.write(json.dumps(payload) + "\n")
 
 
+# Repo root, or None if we're not in a git repo.
 def git_toplevel():
     try:
         out = subprocess.run(
@@ -49,10 +51,12 @@ def git_toplevel():
         return None
 
 
+# Short stable hash of the repo path — used as the cache subdirectory name.
 def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
 
+# Pulls the just-edited file path out of the hook's stdin JSON payload.
 def changed_file_from_stdin():
     try:
         raw = sys.stdin.read()
@@ -67,6 +71,7 @@ def changed_file_from_stdin():
     return (data.get("tool_input") or {}).get("file_path") or ""
 
 
+# Loads quality commands. CLAUDE.md marker block wins if present; otherwise the cached list.
 def read_commands(toplevel, cache_dir):
     claude_md = toplevel / "CLAUDE.md"
     if claude_md.is_file():
@@ -95,12 +100,14 @@ def read_commands(toplevel, cache_dir):
     return ""
 
 
+# Debug log path — only when DEBT_OPS_DEBUG=1 is set in the environment.
 def debug_path(cache_dir):
     if not os.environ.get(DEBUG_ENV):
         return None
     return cache_dir / "debug.log"
 
 
+# Appends one tab-separated line to the debug log; silently no-ops on failure.
 def dlog(path, *fields):
     if path is None:
         return
@@ -112,6 +119,7 @@ def dlog(path, *fields):
         pass
 
 
+# Runs one quality command under a 3s timeout. Returns (cmd, status, snippet).
 def run_one(line, changed_files, env):
     has_var = "$CHANGED_FILES" in line or "${CHANGED_FILES}" in line
     if has_var and not changed_files:
@@ -150,6 +158,30 @@ def run_one(line, changed_files, env):
     return line, "FAIL", snippet
 
 
+# How many .md entries currently live in debt/registry/.
+def registry_count(toplevel):
+    reg = toplevel / "debt" / "registry"
+    if not reg.is_dir():
+        return 0
+    try:
+        return sum(1 for p in reg.iterdir() if p.is_file() and p.suffix == ".md")
+    except OSError:
+        return 0
+
+
+# Appends one JSON line to metrics.jsonl in the cache dir; silent no-op on failure.
+def log_metric(cache_dir, payload):
+    if not cache_dir.is_dir():
+        return
+    payload["ts"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    try:
+        with (cache_dir / "metrics.jsonl").open("a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, separators=(",", ":")) + "\n")
+    except OSError:
+        pass
+
+
+# Counts test-shaped filenames anywhere in the repo (test_*, *_test.*, *.test.*, *.spec.*).
 def test_count(toplevel):
     try:
         n = 0
@@ -164,6 +196,7 @@ def test_count(toplevel):
 
 
 def main():
+    # Idle out cleanly if we're not in a git repo.
     toplevel = git_toplevel()
     if toplevel is None:
         return 0
@@ -175,6 +208,14 @@ def main():
     env = os.environ.copy()
     env["CHANGED_FILES"] = changed
 
+    # One line per edit — the dogfood tripwire signal (edits vs registry growth).
+    log_metric(cache_dir, {
+        "event": "edit",
+        "file": changed,
+        "registry_count": registry_count(toplevel),
+    })
+
+    # Nothing to run? Done.
     raw = read_commands(toplevel, cache_dir)
     commands = [
         line.rstrip()
@@ -193,9 +234,15 @@ def main():
         dlog(dpath, status, f"{time.monotonic() - start:.2f}s", cmd)
         return cmd, status, snippet
 
+    # Run all commands in parallel; per-command 3s timeout enforces the budget.
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(commands)) as pool:
         results = list(pool.map(run_and_log, commands))
 
+    # Log overall result so /debt-ops:metrics can detect FAIL → PASS self-corrections.
+    agg = "fail" if any(s in ("FAIL", "TIMEOUT") for _, s, _ in results) else "pass"
+    log_metric(cache_dir, {"event": "feedback", "file": changed, "result": agg})
+
+    # Format pass/fail/snippet per command for the agent-facing summary.
     summary_lines = []
     for cmd, status, snippet in results:
         if status == "FAIL" and snippet:
@@ -204,6 +251,7 @@ def main():
             summary_lines.append(f"{cmd}\t{status}")
     summary = "\n".join(summary_lines)
 
+    # Warn if this edit dropped the test-file count (Beck's "agent deletes tests" anti-pattern).
     warn = ""
     test_count_file = cache_dir / "test-count"
     now = test_count(toplevel)
