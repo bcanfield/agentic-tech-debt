@@ -238,6 +238,10 @@ def main():
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(commands)) as pool:
         results = list(pool.map(run_and_log, commands))
 
+    # Log overall result so /debt-ops:metrics can detect FAIL → PASS self-corrections.
+    agg = "fail" if any(s in ("FAIL", "TIMEOUT") for _, s, _ in results) else "pass"
+    log_metric(cache_dir, {"event": "feedback", "file": changed, "result": agg})
+
     # Format pass/fail/snippet per command for the agent-facing summary.
     summary_lines = []
     for cmd, status, snippet in results:
