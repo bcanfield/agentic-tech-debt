@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.1.2...debt-ops-v0.2.0) (2026-05-11)
+
+
+### Features
+
+* add Stop hook to nudge unregistered TODO/FIXME/HACK markers ([4b26d47](https://github.com/bcanfield/agentic-tech-debt/commit/4b26d47969231f5d39e85fd1f211950bbcaa7e62))
+
+
+### Bug Fixes
+
+* skill name fields must be lowercase folder slug ([218e873](https://github.com/bcanfield/agentic-tech-debt/commit/218e8732070a2cce99713d39e89a06fbc3de628a))
+* skills locate plugin cache without CLAUDE_PLUGIN_DATA ([ce03453](https://github.com/bcanfield/agentic-tech-debt/commit/ce03453f4200d4817180fea42e47e83a9f91087c))
+
 ## [0.1.2](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.1.1...debt-ops-v0.1.2) (2026-05-07)
 
 
