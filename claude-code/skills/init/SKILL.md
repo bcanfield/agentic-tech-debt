@@ -1,5 +1,5 @@
 ---
-name: Initialize tech-debt operations charter
+name: init
 description: This skill should be used ONLY when the user explicitly invokes /debt-ops:init. It writes the debt-ops disciplines + cached quality commands into CLAUDE.md as a `## Tech debt operations` section so a team shares one source of truth. Opt-in by design; solo users skip it (the SessionStart inject covers the same ground per-session). Re-running regenerates only the managed section, never touches other sections.
 disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash

@@ -1,5 +1,5 @@
 ---
-name: Show debt-ops dogfood metrics
+name: metrics
 description: Use when the user invokes /debt-ops:metrics. Reads the plugin's metrics log and prints a short health summary covering registration rate, hook feedback action rate, ADR creation, and AI-authored share. Read-only — never writes the log.
 allowed-tools: Bash, Read
 ---
