@@ -27,4 +27,4 @@ Each fire appends tab-separated lines to `<cache>/debug.log` — the exact path 
 2026-05-06T16:00:37Z	FAIL	0.42s	eslint $CHANGED_FILES
 ```
 
-Tail it in a separate terminal pane: `tail -f ~/.cache/debt-ops/cache/<repo-hash>/debug.log`. With the env var unset (default), nothing is written.
+Tail it in a separate terminal pane: `tail -f ~/.claude/plugins/data/debt-ops-agentic-tech-debt/cache/<repo-hash>/debug.log` (the exact path is printed in the SessionStart context block). With the env var unset (default), nothing is written.

@@ -13,8 +13,24 @@ Read the hidden metrics log and tell the user whether v1's tripwires are trippin
 ```bash
 TOPLEVEL=$(git rev-parse --show-toplevel)
 REPO_HASH=$(printf '%s' "$TOPLEVEL" | shasum | cut -c1-12)
-LOG="${CLAUDE_PLUGIN_DATA:-$HOME/.cache/debt-ops}/cache/$REPO_HASH/metrics.jsonl"
-test -f "$LOG" && tail -n 500 "$LOG" || echo "MISSING: $LOG"
+
+# Locate this repo's plugin cache. CLAUDE_PLUGIN_DATA is set in hook
+# subprocesses but NOT in the skill's bash env, so glob the standard
+# Claude Code plugin-data dirs and fall back to the legacy cache path.
+CACHE_DIR=""
+for D in \
+    ${CLAUDE_PLUGIN_DATA:+"$CLAUDE_PLUGIN_DATA/cache/$REPO_HASH"} \
+    "$HOME/.claude/plugins/data"/debt-ops*/cache/"$REPO_HASH" \
+    "$HOME/.cache/debt-ops/cache/$REPO_HASH"; do
+  [ -d "$D" ] && { CACHE_DIR="$D"; break; }
+done
+
+LOG="$CACHE_DIR/metrics.jsonl"
+if [ -n "$CACHE_DIR" ] && [ -f "$LOG" ]; then
+  tail -n 500 "$LOG"
+else
+  echo "MISSING: no metrics.jsonl found for repo hash $REPO_HASH"
+fi
 ```
 
 If the file is missing or empty, tell the user the hooks haven't fired yet in this repo and stop.
