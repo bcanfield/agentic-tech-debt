@@ -29,7 +29,7 @@ If a quality command in `feedback.list` needs shell features (pipes, `&&`, globs
 
 - **`/debt-ops:add`** — register a debt entry. Auto-invoked by Discipline 1 when Claude defers work (marker, stub, loosened type, "future" comment, or any decision left for later). Drop entries by replying "drop it" or deleting the file.
 - **`/debt-ops:init`** *(opt-in)* — persist the disciplines and quality commands into `./CLAUDE.md` so the team shares one source of truth. Re-run to regenerate.
-- **`/debt-ops:metrics`** — print a short health summary of the plugin's own dogfood log: edits per session, registry growth, ADR rate, hook fail→pass rate. Read-only. Reads `${CLAUDE_PLUGIN_DATA:-~/.cache/debt-ops}/cache/<repo-hash>/metrics.jsonl`, written quietly by the hooks on every edit and session start.
+- **`/debt-ops:metrics`** — print a short health summary of the plugin's own dogfood log: edits per session, registry growth, ADR rate, hook fail→pass rate. Read-only. Reads `${CLAUDE_PLUGIN_DATA}/cache/<repo-hash>/metrics.jsonl` (typically `~/.claude/plugins/data/debt-ops-agentic-tech-debt/cache/<repo-hash>/metrics.jsonl`; the exact path is printed in the SessionStart context block). The skill auto-locates it; you only need the path if tailing it yourself.
 
 ## What appears in your repo
 

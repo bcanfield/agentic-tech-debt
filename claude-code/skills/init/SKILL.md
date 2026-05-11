@@ -14,8 +14,20 @@ Write or update a `## Tech debt operations` section in `./CLAUDE.md`. Idempotent
 ```bash
 TOPLEVEL=$(git rev-parse --show-toplevel)
 REPO_HASH=$(printf '%s' "$TOPLEVEL" | shasum | cut -c1-12)
-test -f "${CLAUDE_PLUGIN_DATA}/cache/$REPO_HASH/feedback.list" \
-  && cat "${CLAUDE_PLUGIN_DATA}/cache/$REPO_HASH/feedback.list"
+
+# Locate this repo's plugin cache. CLAUDE_PLUGIN_DATA is set in hook
+# subprocesses but NOT in the skill's bash env, so glob the standard
+# Claude Code plugin-data dirs and fall back to the legacy cache path.
+CACHE_DIR=""
+for D in \
+    ${CLAUDE_PLUGIN_DATA:+"$CLAUDE_PLUGIN_DATA/cache/$REPO_HASH"} \
+    "$HOME/.claude/plugins/data"/debt-ops*/cache/"$REPO_HASH" \
+    "$HOME/.cache/debt-ops/cache/$REPO_HASH"; do
+  [ -d "$D" ] && { CACHE_DIR="$D"; break; }
+done
+
+LIST="$CACHE_DIR/feedback.list"
+[ -n "$CACHE_DIR" ] && [ -f "$LIST" ] && cat "$LIST"
 ```
 
 If the file doesn't exist, the SessionStart discovery prompt hasn't run yet. Tell the developer:
