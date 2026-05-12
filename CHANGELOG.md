@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.2.1...debt-ops-v0.3.0) (2026-05-12)
+
+
+### Features
+
+* stop hook stage 2 — broad-judgment block for non-marker debt ([71cb57b](https://github.com/bcanfield/agentic-tech-debt/commit/71cb57bba20c25ace716f65870eeddb2d0e3a1bb))
+
 ## [0.2.1](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.2.0...debt-ops-v0.2.1) (2026-05-12)
 
 
