@@ -21,7 +21,10 @@ from pathlib import Path
 
 DEBUG_ENV = "DEBT_OPS_DEBUG"
 MARKER_RE = re.compile(r"\b(TODO|FIXME|HACK|XXX)\b")
-EXCLUDED_PREFIXES = ("debt/registry/", "doc/adr/")
+# Excluded paths: plugin artifacts (registry, ADRs) and the plugin's own
+# source — `claude-code/` mentions the markers as documentation prose, not
+# as code deferrals, and would tripwire on every plugin-dev edit.
+EXCLUDED_PREFIXES = ("debt/registry/", "doc/adr/", "claude-code/")
 MAX_UNTRACKED_BYTES = 1_000_000
 
 
@@ -247,24 +250,23 @@ def main():
             "debt/registry/. Before stopping, review your diff and apply "
             "Discipline 1's full scope — register every deferral you introduced "
             "via /debt-ops:add. Discipline 1 is broader than explicit markers; "
-            "it includes:\n"
-            "  - Stubs / partial implementations (handlers returning 501 / "
-            "\"not implemented\", placeholder values, empty function bodies)\n"
-            "  - Loosened types (`as any`, `as unknown as X`, `@ts-ignore`, "
-            "`@ts-expect-error`)\n"
-            "  - Bypassed checks (`.skip()`, `xit()`, `if (false)` guards, "
-            "commented-out validations)\n"
-            "  - Swallowed errors (`catch {}`, `catch (e) { /* ignore */ }`, "
-            "ignored Promise rejections)\n"
-            "  - Decisions deferred via prose (`// for now`, `// later`, "
-            "`// follow-up`, `// fix this`, `// hack`, `// figure out`)\n"
-            "  - Mocked integrations or hardcoded values where a real call "
-            "belongs\n"
+            "common shapes (whatever syntax your language uses):\n"
+            "  - Stubs and partial implementations (placeholder values, empty "
+            "bodies, \"not implemented\" handlers)\n"
+            "  - Loosened types or suppressed checks (untyped escapes, "
+            "ignore/suppress directives)\n"
+            "  - Skipped or disabled tests, guards, or validations\n"
+            "  - Swallowed errors (empty exception handlers, ignored return "
+            "codes, unhandled promises/futures)\n"
+            "  - Decisions deferred via prose comments (\"for now\", "
+            "\"later\", \"follow-up\", \"figure out\")\n"
             "  - Any other \"I'll come back to this\"\n"
-            "Run /debt-ops:add for each — one entry per deferral. If you "
-            "genuinely introduced no deferrals (pure refactor, rename, "
-            "formatting), acknowledge that and continue. Over-register freely — "
-            "the developer drops spurious entries with \"drop it\"."
+            "Test: would a future reader ask \"why this "
+            "way?\" If yes, register. Run /debt-ops:add for each — one entry "
+            "per deferral. If you genuinely introduced no deferrals (pure "
+            "refactor, rename, formatting), acknowledge that and continue. "
+            "Over-register freely — the developer drops spurious entries "
+            "with \"drop it\"."
         )
         emit(reason)
         return 0
