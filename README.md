@@ -9,3 +9,4 @@ Three decades of debt research distilled into nine tool-agnostic pillars and a C
 
 Future adapters for other agents (Cursor, Aider) sit as siblings to `claude-code/`.
 
+
