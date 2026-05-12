@@ -173,6 +173,48 @@ def has_code_changes(toplevel):
     return False
 
 
+# Fingerprint of the current decidable state. The Stop hook re-runs at the
+# end of every assistant turn; without this, stages 1 and 2 would re-fire
+# every turn on an unchanged pending diff and trap the agent in an
+# "Acknowledged, no changes" loop until the user commits.
+def state_fingerprint(toplevel, stage, markers, entries):
+    h = hashlib.sha1()
+    h.update(f"{stage}|{markers}|{entries}|".encode())
+    try:
+        out = subprocess.run(
+            ["git", "diff", "HEAD"],
+            cwd=toplevel, capture_output=True, text=True, timeout=2,
+        )
+        h.update(out.stdout.encode("utf-8", errors="replace"))
+    except (subprocess.SubprocessError, FileNotFoundError):
+        pass
+    h.update(b"\x00")
+    try:
+        out = subprocess.run(
+            ["git", "ls-files", "-o", "--exclude-standard"],
+            cwd=toplevel, capture_output=True, text=True, timeout=2,
+        )
+        h.update(out.stdout.encode("utf-8", errors="replace"))
+    except (subprocess.SubprocessError, FileNotFoundError):
+        pass
+    return h.hexdigest()
+
+
+def already_nudged(state_path, fingerprint):
+    try:
+        return state_path.read_text(encoding="utf-8").strip() == fingerprint
+    except OSError:
+        return False
+
+
+def record_nudge(state_path, fingerprint):
+    try:
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+        state_path.write_text(fingerprint, encoding="utf-8")
+    except OSError:
+        pass
+
+
 # Counts new (untracked or staged-add) .md files under debt/registry/.
 # Pathspec scopes the call so `--untracked-files=all` (needed to walk into
 # fully-untracked debt/registry/ dirs) doesn't expand work over the whole repo.
@@ -221,12 +263,18 @@ def main():
     cache_base = Path(os.environ.get("CLAUDE_PLUGIN_DATA") or (Path.home() / ".cache" / "debt-ops"))
     cache_dir = cache_base / "cache" / repo_hash(toplevel)
     dpath = debug_path(cache_dir)
+    state_path = cache_dir / "stop-state"
 
     markers = markers_in_diff(toplevel) + markers_in_untracked(toplevel)
     entries = new_registry_entries(toplevel)
 
     if markers > entries:
         # Stage 1: specific marker-count block.
+        fp = state_fingerprint(toplevel, "stage1", markers, entries)
+        if already_nudged(state_path, fp):
+            dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=1", "skipped=dup")
+            return 0
+        record_nudge(state_path, fp)
         dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=1")
         delta = markers - entries
         reason = (
@@ -244,6 +292,11 @@ def main():
     # judge whether the diff contains broader Discipline 1 deferrals (stubs,
     # loosened types, swallowed errors, deferred-via-prose, mocked calls).
     if markers == 0 and entries == 0 and has_code_changes(toplevel):
+        fp = state_fingerprint(toplevel, "stage2", markers, entries)
+        if already_nudged(state_path, fp):
+            dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=2", "skipped=dup")
+            return 0
+        record_nudge(state_path, fp)
         dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=2")
         reason = (
             "debt-ops: this turn changed code but registered no new entries under "
