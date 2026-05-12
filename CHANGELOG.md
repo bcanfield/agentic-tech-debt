@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.2.0...debt-ops-v0.2.1) (2026-05-12)
+
+
+### Bug Fixes
+
+* stop hook ([1bdddf6](https://github.com/bcanfield/agentic-tech-debt/commit/1bdddf6da1b30393e0ae4e41875b6097a179e2e5))
+
 ## [0.2.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.1.2...debt-ops-v0.2.0) (2026-05-11)
 
 
