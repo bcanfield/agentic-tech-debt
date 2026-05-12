@@ -1,6 +1,6 @@
 ---
 name: add
-description: Use when the user invokes /debt-ops:add OR you just deferred work — a TODO/FIXME/HACK/XXX marker, a stub, a loosened type, a bypassed check, a "future"/"later"/"someday" comment, or any decision the code leaves for later. Register the deferral; over-register freely (developer drops with "drop it").
+description: Use when the user invokes /debt-ops:add OR you just deferred work — a TODO/FIXME/HACK/XXX marker, a stub, a loosened type, a bypassed check, a swallowed error, a "future"/"later"/"someday" comment, or any decision the code leaves for later. Register the deferral; over-register freely (developer drops with "drop it").
 allowed-tools: Write, Bash(date *)
 ---
 
