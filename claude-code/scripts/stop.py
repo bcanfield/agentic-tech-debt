@@ -139,6 +139,37 @@ def markers_in_untracked(toplevel):
     return n
 
 
+# True if this turn produced any tracked-or-untracked file change outside
+# the excluded paths (registry/ADR). Used to gate stage-2 broad-judgment
+# blocks so we don't fire on no-op turns or doc-only edits.
+def has_code_changes(toplevel):
+    try:
+        out = subprocess.run(
+            ["git", "diff", "--name-only", "HEAD"],
+            cwd=toplevel,
+            capture_output=True, text=True, timeout=2,
+        )
+    except (subprocess.SubprocessError, FileNotFoundError):
+        out = None
+    if out and out.returncode in (0, 1):
+        for path in out.stdout.splitlines():
+            if path.strip() and not is_excluded(path):
+                return True
+    try:
+        out2 = subprocess.run(
+            ["git", "ls-files", "-o", "--exclude-standard"],
+            cwd=toplevel,
+            capture_output=True, text=True, timeout=2,
+        )
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return False
+    if out2.returncode == 0:
+        for path in out2.stdout.splitlines():
+            if path.strip() and not is_excluded(path):
+                return True
+    return False
+
+
 # Counts new (untracked or staged-add) .md files under debt/registry/.
 # Pathspec scopes the call so `--untracked-files=all` (needed to walk into
 # fully-untracked debt/registry/ dirs) doesn't expand work over the whole repo.
@@ -190,9 +221,10 @@ def main():
 
     markers = markers_in_diff(toplevel) + markers_in_untracked(toplevel)
     entries = new_registry_entries(toplevel)
-    dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}")
 
     if markers > entries:
+        # Stage 1: specific marker-count block.
+        dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=1")
         delta = markers - entries
         reason = (
             f"debt-ops: this turn added {markers} new TODO/FIXME/HACK/XXX marker "
@@ -203,6 +235,41 @@ def main():
             f"\"drop it\")."
         )
         emit(reason)
+        return 0
+
+    # Stage 2: no markers and no registrations, but code changed — let Claude
+    # judge whether the diff contains broader Discipline 1 deferrals (stubs,
+    # loosened types, swallowed errors, deferred-via-prose, mocked calls).
+    if markers == 0 and entries == 0 and has_code_changes(toplevel):
+        dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=2")
+        reason = (
+            "debt-ops: this turn changed code but registered no new entries under "
+            "debt/registry/. Before stopping, review your diff and apply "
+            "Discipline 1's full scope — register every deferral you introduced "
+            "via /debt-ops:add. Discipline 1 is broader than explicit markers; "
+            "it includes:\n"
+            "  - Stubs / partial implementations (handlers returning 501 / "
+            "\"not implemented\", placeholder values, empty function bodies)\n"
+            "  - Loosened types (`as any`, `as unknown as X`, `@ts-ignore`, "
+            "`@ts-expect-error`)\n"
+            "  - Bypassed checks (`.skip()`, `xit()`, `if (false)` guards, "
+            "commented-out validations)\n"
+            "  - Swallowed errors (`catch {}`, `catch (e) { /* ignore */ }`, "
+            "ignored Promise rejections)\n"
+            "  - Decisions deferred via prose (`// for now`, `// later`, "
+            "`// follow-up`, `// fix this`, `// hack`, `// figure out`)\n"
+            "  - Mocked integrations or hardcoded values where a real call "
+            "belongs\n"
+            "  - Any other \"I'll come back to this\"\n"
+            "Run /debt-ops:add for each — one entry per deferral. If you "
+            "genuinely introduced no deferrals (pure refactor, rename, "
+            "formatting), acknowledge that and continue. Over-register freely — "
+            "the developer drops spurious entries with \"drop it\"."
+        )
+        emit(reason)
+        return 0
+
+    dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "silent")
     return 0
 
 
