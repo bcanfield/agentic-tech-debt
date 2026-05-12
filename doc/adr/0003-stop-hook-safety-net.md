@@ -9,7 +9,9 @@ v1 deliberately cut the Stop hook on the bet that the SessionStart "additionalCo
 
 ## Decision
 
-Add a `Stop` hook (`claude-code/scripts/stop.py`) that fires at the end of every turn. It scans `git diff HEAD` plus untracked files for newly-added `TODO`/`FIXME`/`HACK`/`XXX` marker lines, compares to new entries under `debt/registry/`, and emits an `additionalContext` nudge on Claude's next turn if there's a delta. Tripwire, not precision instrument: paths under `debt/registry/` and `doc/adr/` are excluded; false positives cost a "drop it" reply, false negatives defeat the point.
+Add a `Stop` hook (`claude-code/scripts/stop.py`) that fires at the end of every turn. It scans `git diff HEAD` plus untracked files for newly-added `TODO`/`FIXME`/`HACK`/`XXX` marker lines, compares to new entries under `debt/registry/`, and emits a `decision: "block"` + `reason` when there's a delta — Claude must register the unregistered deferrals before the turn can end. Tripwire, not precision instrument: paths under `debt/registry/` and `doc/adr/` are excluded; false positives cost a "drop it" reply, false negatives defeat the point.
+
+**Schema note (discovered at first test):** Claude Code's Stop-hook output schema does *not* support `hookSpecificOutput.additionalContext` (that field is reserved for `PreToolUse`/`UserPromptSubmit`/`PostToolUse`/`PostToolBatch`). The first implementation emitted `additionalContext` and was rejected with a validation error. `decision: "block"` is the only documented mechanism for surfacing a nudge — which means *blocking* is the only available behavior, not an opt-in promotion path.
 
 ## What this means for you
 
@@ -21,10 +23,10 @@ Add a `Stop` hook (`claude-code/scripts/stop.py`) that fires at the end of every
 
 - **Strengthen the SessionStart inject only.** Tighter wording would help marginally but wouldn't fix the root issue: any one-shot inject loses weight under long-context pressure. Same failure mode we just observed.
 - **Write disciplines into `~/.claude/CLAUDE.md` globally.** Research across Anthropic's official plugins showed only two write to `CLAUDE.md` and both require explicit user invocation. Plugin-driven `CLAUDE.md` modification is against the grain of the platform's conventions.
-- **Make the Stop hook blocking** (`decision: "block"`). More forceful but interrupts Claude mid-flow on what may be a false positive. Start observational; promote to blocking only if dogfood shows the nudge is routinely ignored.
+- **Observational nudge via `additionalContext`** (what we originally planned). Less forceful, doesn't interrupt mid-flow on false positives. **Not available**: the Stop-hook schema doesn't accept `additionalContext`. We'd have to invent our own out-of-band channel (e.g., write a file Claude reads later), which is more complexity than the false-positive cost is worth.
 
 ## When to revisit
 
 - If false-positive rate is annoying (>1 spurious nudge per session in normal use), narrow the marker regex or add path-based exclusions for `tests/`, `docs/`, generated files, etc.
-- If the nudge fires but Claude routinely ignores it (visible as a new "markers stayed unregistered turn-over-turn" tripwire in `metrics.jsonl`), promote to `decision: "block"` so Claude must register before the turn ends.
+- If blocking proves too disruptive in practice (e.g., it fires on false positives often enough to interrupt real work), explore an out-of-band channel: write the nudge to a file the SessionStart hook re-injects on the next session, or emit a `systemMessage` (semantics of that Stop-hook field are not yet verified).
 - If broader deferral patterns (`as any`, `@ts-ignore`, `// later`, swallowed exceptions) start showing up in dogfood as common un-registered debt, extend the sniff beyond markers — or accept that those rely on Discipline 1's session-start inject only.

@@ -25,13 +25,13 @@ EXCLUDED_PREFIXES = ("debt/registry/", "doc/adr/")
 MAX_UNTRACKED_BYTES = 1_000_000
 
 
-# Emit additionalContext that Claude reads on the next turn.
-def emit(context):
+# Emit a block decision. Claude Code's Stop-hook schema doesn't support
+# additionalContext; `decision: "block"` + `reason` is the documented way
+# to make Claude continue working on the supplied message before stopping.
+def emit(reason):
     payload = {
-        "hookSpecificOutput": {
-            "hookEventName": "Stop",
-            "additionalContext": context,
-        }
+        "decision": "block",
+        "reason": reason,
     }
     sys.stdout.write(json.dumps(payload) + "\n")
 
@@ -194,14 +194,15 @@ def main():
 
     if markers > entries:
         delta = markers - entries
-        msg = (
-            f"debt-ops: this turn's working tree adds {markers} new TODO/FIXME/HACK/XXX "
-            f"marker line(s) but only {entries} new entry/entries under debt/registry/. "
-            f"Per Discipline 1, register the {delta} unregistered deferral(s) NOW via "
-            f"/debt-ops:add — no prompt, no confirmation, over-register freely; the "
-            f"developer drops with \"drop it\"."
+        reason = (
+            f"debt-ops: this turn added {markers} new TODO/FIXME/HACK/XXX marker "
+            f"line(s) but only {entries} new entry/entries under debt/registry/. "
+            f"Before stopping, register the {delta} unregistered deferral(s) via "
+            f"/debt-ops:add — one entry per marker. No prompt, no confirmation; "
+            f"over-register freely (the developer drops spurious entries with "
+            f"\"drop it\")."
         )
-        emit(msg)
+        emit(reason)
     return 0
 
 
