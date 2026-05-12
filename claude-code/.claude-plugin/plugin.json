@@ -1,6 +1,6 @@
 {
   "name": "debt-ops",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Tech debt management for agentic codebases — surfaces debt, ranks hotspots, and uses AI agents to pay it down. Evidence-based, continuous, non-blocking.",
   "author": {
     "name": "Brandin Canfield",
