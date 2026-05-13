@@ -12,7 +12,7 @@ from pathlib import Path
 CHARTER_MARKER = "<!-- debt-ops:feedback v1 -->"
 MANIFEST_FILES = ("Cargo.toml", "package.json", "pyproject.toml", "Makefile", "go.mod", "Gemfile")
 
-DISCIPLINES = """1. If you defer work — decision unmade, stub, loosened type, "future"/"later" comment, or `TODO`/`FIXME`/`HACK`/`XXX` marker — register via /debt-ops:add immediately. Test: would a future reader ask "why this way?" If yes, register. No prompt. Use `payoff_trigger: unknown` if unsure. Announce: `+1 entry: <slug> (drop?)`. Over-register freely; the developer drops with "drop it".
+DISCIPLINES = """1. If you defer work — decision unmade, stub, loosened type, "future"/"later" comment, or `TODO`/`FIXME`/`HACK`/`XXX` marker — register via /debt-ops:add immediately. Test: would a future reader ask "why this way?" If yes, register. No prompt. Use `payoff_trigger: unknown` if unsure. The helper prints one line: `+1 entry: <slug> (<letter>)` — don't paraphrase or add commentary. Over-register freely; the developer drops with `drop A`, `drop A,C`, `drop all`, or `drop <slug>`.
 
 2. When making an architecturally significant change — a data model, public interface, security boundary, release pipeline, or a dep-manifest change that is a major-version bump or a *new* top-level dependency — draft an ADR under doc/adr/ in Nygard format (Context, Decision, Consequences, Alternatives, Payoff trigger). Create the directory if needed. Only draft an ADR when there are two credible alternatives; if you cannot list two, it is a comment, not an ADR. If the ADR introduces deliberate debt, also call /debt-ops:add so the registry entry mirrors the ADR.
 
