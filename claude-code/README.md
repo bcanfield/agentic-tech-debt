@@ -1,6 +1,6 @@
 # debt-ops
 
-Continuous, evidence-based tech debt management for Claude Code. Two skills, two hooks, two scripts, zero install footprint.
+Continuous, evidence-based tech debt management for Claude Code. A few skills, a few hooks, zero install footprint.
 
 ## What it does
 
@@ -27,7 +27,7 @@ If a quality command in `feedback.list` needs shell features (pipes, `&&`, globs
 
 ## Commands
 
-- **`/debt-ops:add`** — register a debt entry. Auto-invoked by Discipline 1 when Claude defers work (marker, stub, loosened type, "future" comment, or any decision left for later). Drop entries by replying "drop it" or deleting the file.
+- **`/debt-ops:add`** — register a debt entry. Auto-invoked by Discipline 1 when Claude defers work (marker, stub, loosened type, "future" comment, or any decision left for later). Each capture surfaces as a one-liner with a batch letter: `+1 entry: <slug> (A)`. Drop the just-captured batch with `drop A`, `drop A,C`, or `drop all`; drop older entries by slug (`drop foo-slug`) or by deleting the file.
 - **`/debt-ops:init`** *(opt-in)* — persist the disciplines and quality commands into `./CLAUDE.md` so the team shares one source of truth. Re-run to regenerate.
 - **`/debt-ops:metrics`** — print a short health summary of the plugin's own dogfood log: edits per session, registry growth, ADR rate, hook fail→pass rate. Read-only. Reads `${CLAUDE_PLUGIN_DATA}/cache/<repo-hash>/metrics.jsonl` (typically `~/.claude/plugins/data/debt-ops-agentic-tech-debt/cache/<repo-hash>/metrics.jsonl`; the exact path is printed in the SessionStart context block). The skill auto-locates it; you only need the path if tailing it yourself.
 

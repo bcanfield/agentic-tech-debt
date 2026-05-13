@@ -26,6 +26,12 @@ MARKER_RE = re.compile(r"\b(TODO|FIXME|HACK|XXX)\b")
 # as code deferrals, and would tripwire on every plugin-dev edit.
 EXCLUDED_PREFIXES = ("debt/registry/", "doc/adr/", "claude-code/")
 MAX_UNTRACKED_BYTES = 1_000_000
+# Hard cap on Stop-hook blocks per session. After this many blocks fire
+# for a given session_id, all subsequent Stop calls in that session stay
+# silent — bounds any pathological loop and respects the "more behind
+# the scenes" posture. SessionStart resets the counter implicitly via a
+# new session_id from Claude Code's hook payload.
+SESSION_BLOCK_CAP = 1
 
 
 # Emit a block decision. Claude Code's Stop-hook schema doesn't support
@@ -249,12 +255,51 @@ def new_registry_entries(toplevel):
     return n
 
 
-def main():
-    # Drain stdin so the hook process exits cleanly even if the caller pipes a payload.
+def parse_stdin():
     try:
-        sys.stdin.read()
+        raw = sys.stdin.read()
+    except OSError:
+        return {}
+    if not raw:
+        return {}
+    try:
+        return json.loads(raw)
+    except (json.JSONDecodeError, ValueError):
+        return {}
+
+
+# Read the per-session block counter. Returns 0 if file missing OR stored
+# session_id doesn't match — the latter implicitly resets the count on a
+# new session without needing SessionStart to do anything.
+def session_block_count(path, session_id):
+    if not path.is_file():
+        return 0
+    try:
+        text = path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return 0
+    parts = text.split("\t", 1)
+    if len(parts) != 2:
+        return 0
+    if parts[0] != session_id:
+        return 0
+    try:
+        return int(parts[1])
+    except ValueError:
+        return 0
+
+
+def record_session_block(path, session_id, count):
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"{session_id}\t{count}", encoding="utf-8")
     except OSError:
         pass
+
+
+def main():
+    data = parse_stdin()
+    session_id = str(data.get("session_id") or "")
 
     toplevel = git_toplevel()
     if toplevel is None:
@@ -264,9 +309,16 @@ def main():
     cache_dir = cache_base / "cache" / repo_hash(toplevel)
     dpath = debug_path(cache_dir)
     state_path = cache_dir / "stop-state"
+    session_blocks_path = cache_dir / "session-blocks"
 
     markers = markers_in_diff(toplevel) + markers_in_untracked(toplevel)
     entries = new_registry_entries(toplevel)
+
+    # Per-session block cap (outer gate). If we've already blocked once
+    # this session, stay silent regardless of state — bounds loops and
+    # respects the "more behind the scenes" posture.
+    blocks_this_session = session_block_count(session_blocks_path, session_id)
+    capped = blocks_this_session >= SESSION_BLOCK_CAP
 
     if markers > entries:
         # Stage 1: specific marker-count block.
@@ -274,16 +326,16 @@ def main():
         if already_nudged(state_path, fp):
             dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=1", "skipped=dup")
             return 0
+        if capped:
+            dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=1", f"skipped=cap({blocks_this_session})")
+            return 0
         record_nudge(state_path, fp)
+        record_session_block(session_blocks_path, session_id, blocks_this_session + 1)
         dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=1")
         delta = markers - entries
         reason = (
-            f"debt-ops: this turn added {markers} new TODO/FIXME/HACK/XXX marker "
-            f"line(s) but only {entries} new entry/entries under debt/registry/. "
-            f"Before stopping, register the {delta} unregistered deferral(s) via "
-            f"/debt-ops:add — one entry per marker. No prompt, no confirmation; "
-            f"over-register freely (the developer drops spurious entries with "
-            f"\"drop it\")."
+            f"debt-ops: {markers} marker(s), {entries} entry/entries — "
+            f"register {delta} more via /debt-ops:add."
         )
         emit(reason)
         return 0
@@ -296,36 +348,40 @@ def main():
         if already_nudged(state_path, fp):
             dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=2", "skipped=dup")
             return 0
+        if capped:
+            dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=2", f"skipped=cap({blocks_this_session})")
+            return 0
         record_nudge(state_path, fp)
+        record_session_block(session_blocks_path, session_id, blocks_this_session + 1)
         dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=2")
+        # One-line nudge — the loaded add skill carries the full definition.
         reason = (
-            "debt-ops: this turn changed code but registered no new entries under "
-            "debt/registry/. Before stopping, review your diff and apply "
-            "Discipline 1's full scope — register every deferral you introduced "
-            "via /debt-ops:add. Discipline 1 is broader than explicit markers; "
-            "common shapes (whatever syntax your language uses):\n"
-            "  - Stubs and partial implementations (placeholder values, empty "
-            "bodies, \"not implemented\" handlers)\n"
-            "  - Loosened types or suppressed checks (untyped escapes, "
-            "ignore/suppress directives)\n"
-            "  - Skipped or disabled tests, guards, or validations\n"
-            "  - Swallowed errors (empty exception handlers, ignored return "
-            "codes, unhandled promises/futures)\n"
-            "  - Decisions deferred via prose comments (\"for now\", "
-            "\"later\", \"follow-up\", \"figure out\")\n"
-            "  - Any other \"I'll come back to this\"\n"
-            "Test: would a future reader ask \"why this "
-            "way?\" If yes, register. Run /debt-ops:add for each — one entry "
-            "per deferral. If you genuinely introduced no deferrals (pure "
-            "refactor, rename, formatting), acknowledge that and continue. "
-            "Over-register freely — the developer drops spurious entries "
-            "with \"drop it\"."
+            "debt-ops: turn changed code, no entries registered — "
+            "review your diff for deferrals."
         )
         emit(reason)
         return 0
 
+    # Rotate this turn's batch into last-batch.txt so `drop A` resolves
+    # against the just-completed turn on the next UserPromptSubmit. Only
+    # runs on clean stops (stage 1/2 didn't fire) so re-fires under a
+    # blocked stop don't clobber an earlier batch before Claude resolves.
+    rotate_batch(cache_dir)
     dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "silent")
     return 0
+
+
+# Move current-turn.txt -> last-batch.txt atomically. Silent no-op if there's
+# nothing to rotate.
+def rotate_batch(cache_dir):
+    src = cache_dir / "current-turn.txt"
+    dst = cache_dir / "last-batch.txt"
+    if not src.is_file():
+        return
+    try:
+        os.replace(src, dst)
+    except OSError:
+        pass
 
 
 if __name__ == "__main__":

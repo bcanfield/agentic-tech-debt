@@ -1,62 +1,54 @@
 ---
 name: add
-description: Use when the user invokes /debt-ops:add OR you just deferred work — a TODO/FIXME/HACK/XXX marker, a stub, a loosened type, a bypassed check, a swallowed error, a "future"/"later"/"someday" comment, or any decision the code leaves for later. Register the deferral; over-register freely (developer drops with "drop it").
-allowed-tools: Write, Bash(date *)
+description: Use when the user invokes /debt-ops:add OR you just deferred work — a TODO/FIXME/HACK/XXX marker, a stub, a loosened type, a bypassed check, a swallowed error, a "future"/"later"/"someday" comment, or any decision the code leaves for later. Register the deferral; over-register freely (developer drops with "drop A", "drop A,C", or "drop all").
+allowed-tools: Bash(python3 *), Bash(rm *)
 ---
 
 # /debt-ops:add — register a tech-debt entry
 
-Write a Markdown file with YAML frontmatter under `debt/registry/`. Lazily create the directory if it doesn't exist (the Write tool creates parent dirs).
+Call `register.py` via Bash. The helper writes the entry under `debt/registry/`, assigns a short batch letter (A, B, C…), and prints exactly one line: `+1 entry: <slug> (<letter>)`. That stdout IS the user-facing announcement — add no commentary before or after.
 
-## Step 1 — generate a timestamp ID
+## The call
 
-Run `date +%Y%m%d%H%M%S` in Bash. Use the output verbatim as the entry's `id`. Do NOT scan the directory and pick the next integer — concurrent sessions collide on `0001`. Timestamp IDs are intentionally sortable, globally unique, and treated like commit SHAs (see plan §"v1 implementation requirements" #4).
-
-## Step 2 — pick a slug
-
-A 1–4 word kebab-case label of what the debt is. Examples: `cancelled-promotion-callback`, `legacy-auth-shim`, `unfinished-rate-limiter`. Keep it short — the body carries the context.
-
-## Step 3 — fill the schema
-
-Front-matter, all fields required (use `unknown` if you cannot determine a field):
-
-```yaml
----
-id: <YYYYMMDDhhmmss from step 1>
-title: <slug from step 2>
-principal: <effort to fix, e.g., 2d, 1w, unknown>
-interest: <ongoing cost, e.g., +30min/incident, unknown>
-hotspot: <path or module, e.g., pricing/engine.ts, unknown>
-business_capability: <e.g., checkout, billing, unknown>
-payoff_trigger: <concrete trigger, or `unknown`>
-quadrant: <one of: reckless-inadvertent, reckless-deliberate, prudent-inadvertent, prudent-deliberate>
-category: <one of: migration, documentation, testing, code_quality, dead_code, code_rot, expertise, release, infrastructure, planning>
-ai_authored: <true if you (an AI) introduced this, false otherwise>
-created: <today's date YYYY-MM-DD>
----
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/register.py \
+  --slug <slug> \
+  --principal <effort, e.g. 2d, 1w, unknown> \
+  --interest <ongoing cost, e.g. "+30min/incident", unknown> \
+  --hotspot <path or module, e.g. pricing/engine.ts, unknown> \
+  --business-capability <e.g. checkout, billing, unknown> \
+  --payoff-trigger <concrete trigger, or "unknown"> \
+  --quadrant <reckless-inadvertent|reckless-deliberate|prudent-inadvertent|prudent-deliberate> \
+  --category <migration|documentation|testing|code_quality|dead_code|code_rot|expertise|release|infrastructure|planning> \
+  --ai-authored <true|false> <<'EOF'
+<body: 2-5 sentences — what the debt is, why it exists, observed symptoms>
+EOF
 ```
 
-Body: free-form prose — what the debt is, why it exists, observed symptoms. Two to five sentences is plenty.
+The helper:
+- Generates the timestamp `id` itself (no `date` call needed).
+- Resolves filename collisions when two registrations land in the same second.
+- Tracks the letter mapping in `$CLAUDE_PLUGIN_DATA/cache/<repo-hash>/current-turn.txt` so the user can drop by letter.
 
-## Step 4 — write the file
+## Slug
 
-Write to `debt/registry/<id>-<slug>.md`.
-
-## Step 5 — announce, one line
-
-`+1 entry: <slug> (drop?)`
-
-If the developer replies "drop it" or "drop", delete the file. Treat dropping as cheap — over-registering is the intended posture.
+1–4 word kebab-case label of what the debt is. Examples: `cancelled-promotion-callback`, `legacy-auth-shim`, `unfinished-rate-limiter`. Keep it short — the body carries the context.
 
 ## Schema notes
 
 - **Quadrant** (Fowler): `reckless-inadvertent` (didn't know better), `reckless-deliberate` (knew, did it anyway), `prudent-inadvertent` (learned afterward), `prudent-deliberate` (deliberate, with a payoff plan).
 - **Category** (Google / Jaspan-Green): pick the closest match.
-- **payoff_trigger: unknown** is first-class. Don't manufacture a trigger to fill the field — `unknown` ages into stale review at v2 and that's the point.
-- **ai_authored: true** is the leading signal for v3's behavioral measurement — be honest.
+- **payoff_trigger: unknown** is first-class. Don't manufacture a trigger to fill the field — `unknown` ages into stale review and that's the point.
+- **ai_authored: true** is the leading behavioral signal — be honest.
+
+## Drops
+
+- `drop A`, `drop A,C`, `drop all` — the user types this; a UserPromptSubmit hook deletes the matching entries and surfaces a one-line confirmation. You don't act on those.
+- `drop it` or `drop <slug>` — you delete it yourself: `rm debt/registry/<id>-<slug>.md`. Treat dropping as cheap — over-registering is the intended posture.
 
 ## Don't
 
 - Don't ask the developer for confirmation before writing. Discipline 1 says "no permission prompt; just do it."
-- Don't pick the next integer ID — use the timestamp.
+- Don't use the `Write` tool to create the file directly — letter assignment depends on going through `register.py`.
+- Don't echo or paraphrase the helper's output. The Bash tool result is already visible to the user.
 - Don't fill `payoff_trigger` with a guess to seem certain.
