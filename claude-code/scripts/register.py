@@ -22,6 +22,21 @@ REQUIRED_FIELDS = (
     "business_capability", "payoff_trigger", "quadrant", "category", "ai_authored",
 )
 
+DEFAULT_REGISTRY_DIR = "debt/registry"
+
+
+# Read session-start.py's cached registry-dir path; default if missing/empty.
+def read_registry_dir(cache_dir):
+    f = cache_dir / "registry-dir"
+    if f.is_file():
+        try:
+            val = f.read_text(encoding="utf-8").strip()
+            if val:
+                return val
+        except OSError:
+            pass
+    return DEFAULT_REGISTRY_DIR
+
 
 def git_toplevel():
     try:
@@ -99,7 +114,10 @@ def main():
     entry_id = time.strftime("%Y%m%d%H%M%S", now)
     created = time.strftime("%Y-%m-%d", now)
 
-    registry = toplevel / "debt" / "registry"
+    cache_base = Path(os.environ.get("CLAUDE_PLUGIN_DATA") or (Path.home() / ".cache" / "debt-ops"))
+    cache_dir = cache_base / "cache" / repo_hash(toplevel)
+    registry_rel = read_registry_dir(cache_dir)
+    registry = toplevel / registry_rel
     registry.mkdir(parents=True, exist_ok=True)
 
     # Collision-safe path: parallel registrations within the same second get -2, -3, ...
@@ -127,8 +145,6 @@ def main():
     candidate.write_text(frontmatter + body + "\n", encoding="utf-8")
 
     # Assign a turn-batch letter by counting existing rows in current-turn.txt.
-    cache_base = Path(os.environ.get("CLAUDE_PLUGIN_DATA") or (Path.home() / ".cache" / "debt-ops"))
-    cache_dir = cache_base / "cache" / repo_hash(toplevel)
     try:
         cache_dir.mkdir(parents=True, exist_ok=True)
     except OSError:
