@@ -27,6 +27,21 @@ DROP_RE = re.compile(
     re.IGNORECASE,
 )
 
+DEFAULT_REGISTRY_DIR = "debt/registry"
+
+
+# Read session-start.py's cached registry-dir path; default if missing/empty.
+def read_registry_dir(cache_dir):
+    f = cache_dir / "registry-dir"
+    if f.is_file():
+        try:
+            val = f.read_text(encoding="utf-8").strip()
+            if val:
+                return val
+        except OSError:
+            pass
+    return DEFAULT_REGISTRY_DIR
+
 
 def git_toplevel():
     try:
@@ -138,6 +153,7 @@ def main():
     else:
         letters = [t.upper() for t in tokens]
 
+    registry_dir = toplevel / read_registry_dir(cache_dir)
     deleted = []
     not_found = []
     for L in letters:
@@ -145,7 +161,7 @@ def main():
             not_found.append(L)
             continue
         slug, fname = mapping[L]
-        target = toplevel / "debt" / "registry" / fname
+        target = registry_dir / fname
         try:
             target.unlink(missing_ok=True)
             deleted.append(slug)

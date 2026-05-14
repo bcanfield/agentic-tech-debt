@@ -158,15 +158,31 @@ def run_one(line, changed_files, env):
     return line, "FAIL", snippet
 
 
-# How many .md entries currently live in debt/registry/.
-def registry_count(toplevel):
-    reg = toplevel / "debt" / "registry"
+# How many .md entries currently live in the (cached or default) registry dir.
+def registry_count(toplevel, registry_dir):
+    reg = toplevel / registry_dir
     if not reg.is_dir():
         return 0
     try:
         return sum(1 for p in reg.iterdir() if p.is_file() and p.suffix == ".md")
     except OSError:
         return 0
+
+
+DEFAULT_REGISTRY_DIR = "debt/registry"
+
+
+# Read session-start.py's cached registry-dir path; default if missing/empty.
+def read_registry_dir(cache_dir):
+    f = cache_dir / "registry-dir"
+    if f.is_file():
+        try:
+            val = f.read_text(encoding="utf-8").strip()
+            if val:
+                return val
+        except OSError:
+            pass
+    return DEFAULT_REGISTRY_DIR
 
 
 # Appends one JSON line to metrics.jsonl in the cache dir; silent no-op on failure.
@@ -208,11 +224,13 @@ def main():
     env = os.environ.copy()
     env["CHANGED_FILES"] = changed
 
+    registry_dir = read_registry_dir(cache_dir)
+
     # One line per edit — the dogfood tripwire signal (edits vs registry growth).
     log_metric(cache_dir, {
         "event": "edit",
         "file": changed,
-        "registry_count": registry_count(toplevel),
+        "registry_count": registry_count(toplevel, registry_dir),
     })
 
     # Nothing to run? Done.

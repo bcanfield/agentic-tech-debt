@@ -21,10 +21,12 @@ from pathlib import Path
 
 DEBUG_ENV = "DEBT_OPS_DEBUG"
 MARKER_RE = re.compile(r"\b(TODO|FIXME|HACK|XXX)\b")
-# Excluded paths: plugin artifacts (registry, ADRs) and the plugin's own
-# source — `claude-code/` mentions the markers as documentation prose, not
-# as code deferrals, and would tripwire on every plugin-dev edit.
-EXCLUDED_PREFIXES = ("debt/registry/", "doc/adr/", "claude-code/")
+# Plugin-source prefix is always excluded; debt-registry and ADR prefixes
+# are looked up per-repo from the cache files written by session-start.py
+# (adr-dir / registry-dir). See build_excluded_prefixes below.
+STATIC_EXCLUDED_PREFIXES = ("claude-code/",)
+DEFAULT_REGISTRY_DIR = "debt/registry"
+DEFAULT_ADR_DIR = "doc/adr"
 MAX_UNTRACKED_BYTES = 1_000_000
 # Hard cap on Stop-hook blocks per session. After this many blocks fire
 # for a given session_id, all subsequent Stop calls in that session stay
@@ -82,13 +84,33 @@ def dlog(path, *fields):
         pass
 
 
+# Resolve registry/ADR paths from cache (written by session-start.py); fall
+# back to defaults if cache missing. Returns ("debt/registry", "doc/adr") shape.
+def resolve_dirs(cache_dir):
+    def read(name, default):
+        p = cache_dir / name
+        if p.is_file():
+            try:
+                val = p.read_text(encoding="utf-8").strip()
+                if val:
+                    return val
+            except OSError:
+                pass
+        return default
+    return read("registry-dir", DEFAULT_REGISTRY_DIR), read("adr-dir", DEFAULT_ADR_DIR)
+
+
+def build_excluded_prefixes(registry_dir, adr_dir):
+    return tuple(f"{d.rstrip('/')}/" for d in (registry_dir, adr_dir)) + STATIC_EXCLUDED_PREFIXES
+
+
 # True if the file path is excluded from marker counting.
-def is_excluded(path):
-    return any(path.startswith(p) for p in EXCLUDED_PREFIXES)
+def is_excluded(path, excluded_prefixes):
+    return any(path.startswith(p) for p in excluded_prefixes)
 
 
 # Counts marker hits in `+` lines from `git diff HEAD` (modified-tracked files).
-def markers_in_diff(toplevel):
+def markers_in_diff(toplevel, excluded_prefixes):
     try:
         out = subprocess.run(
             ["git", "diff", "HEAD", "--", "."],
@@ -112,7 +134,7 @@ def markers_in_diff(toplevel):
             continue
         if not line.startswith("+"):
             continue
-        if current_path is None or is_excluded(current_path):
+        if current_path is None or is_excluded(current_path, excluded_prefixes):
             continue
         if MARKER_RE.search(line):
             n += 1
@@ -120,7 +142,7 @@ def markers_in_diff(toplevel):
 
 
 # Counts marker hits in untracked files (whole file = new lines).
-def markers_in_untracked(toplevel):
+def markers_in_untracked(toplevel, excluded_prefixes):
     try:
         out = subprocess.run(
             ["git", "ls-files", "-o", "--exclude-standard"],
@@ -133,7 +155,7 @@ def markers_in_untracked(toplevel):
         return 0
     n = 0
     for path in out.stdout.splitlines():
-        if is_excluded(path):
+        if is_excluded(path, excluded_prefixes):
             continue
         full = toplevel / path
         try:
@@ -151,7 +173,7 @@ def markers_in_untracked(toplevel):
 # True if this turn produced any tracked-or-untracked file change outside
 # the excluded paths (registry/ADR). Used to gate stage-2 broad-judgment
 # blocks so we don't fire on no-op turns or doc-only edits.
-def has_code_changes(toplevel):
+def has_code_changes(toplevel, excluded_prefixes):
     try:
         out = subprocess.run(
             ["git", "diff", "--name-only", "HEAD"],
@@ -162,7 +184,7 @@ def has_code_changes(toplevel):
         out = None
     if out and out.returncode in (0, 1):
         for path in out.stdout.splitlines():
-            if path.strip() and not is_excluded(path):
+            if path.strip() and not is_excluded(path, excluded_prefixes):
                 return True
     try:
         out2 = subprocess.run(
@@ -174,7 +196,7 @@ def has_code_changes(toplevel):
         return False
     if out2.returncode == 0:
         for path in out2.stdout.splitlines():
-            if path.strip() and not is_excluded(path):
+            if path.strip() and not is_excluded(path, excluded_prefixes):
                 return True
     return False
 
@@ -221,13 +243,14 @@ def record_nudge(state_path, fingerprint):
         pass
 
 
-# Counts new (untracked or staged-add) .md files under debt/registry/.
+# Counts new (untracked or staged-add) .md files under the registry dir.
 # Pathspec scopes the call so `--untracked-files=all` (needed to walk into
-# fully-untracked debt/registry/ dirs) doesn't expand work over the whole repo.
-def new_registry_entries(toplevel):
+# fully-untracked registry dirs) doesn't expand work over the whole repo.
+def new_registry_entries(toplevel, registry_dir):
+    pathspec = f"{registry_dir.rstrip('/')}/"
     try:
         out = subprocess.run(
-            ["git", "status", "--porcelain", "--untracked-files=all", "--", "debt/registry/"],
+            ["git", "status", "--porcelain", "--untracked-files=all", "--", pathspec],
             cwd=toplevel,
             capture_output=True, text=True, timeout=2,
         )
@@ -247,7 +270,7 @@ def new_registry_entries(toplevel):
         # Strip git's quoting around paths with special chars.
         if path.startswith('"') and path.endswith('"'):
             path = path[1:-1]
-        if not path.startswith("debt/registry/") or not path.endswith(".md"):
+        if not path.startswith(pathspec) or not path.endswith(".md"):
             continue
         # New = untracked (??) or any add in either status column.
         if status == "??" or "A" in status:
@@ -311,8 +334,11 @@ def main():
     state_path = cache_dir / "stop-state"
     session_blocks_path = cache_dir / "session-blocks"
 
-    markers = markers_in_diff(toplevel) + markers_in_untracked(toplevel)
-    entries = new_registry_entries(toplevel)
+    registry_dir, adr_dir = resolve_dirs(cache_dir)
+    excluded_prefixes = build_excluded_prefixes(registry_dir, adr_dir)
+
+    markers = markers_in_diff(toplevel, excluded_prefixes) + markers_in_untracked(toplevel, excluded_prefixes)
+    entries = new_registry_entries(toplevel, registry_dir)
 
     # Per-session block cap (outer gate). If we've already blocked once
     # this session, stay silent regardless of state — bounds loops and
@@ -343,7 +369,7 @@ def main():
     # Stage 2: no markers and no registrations, but code changed — let Claude
     # judge whether the diff contains broader Discipline 1 deferrals (stubs,
     # loosened types, swallowed errors, deferred-via-prose, mocked calls).
-    if markers == 0 and entries == 0 and has_code_changes(toplevel):
+    if markers == 0 and entries == 0 and has_code_changes(toplevel, excluded_prefixes):
         fp = state_fingerprint(toplevel, "stage2", markers, entries)
         if already_nudged(state_path, fp):
             dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "stage=2", "skipped=dup")
