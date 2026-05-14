@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.3.0...debt-ops-v0.4.0) (2026-05-14)
+
+
+### Features
+
+* adaptive ADR and registry path detection ([503e2bc](https://github.com/bcanfield/agentic-tech-debt/commit/503e2bce0e71f7159c5ce6cbdcdb76b92dcbdfc7))
+* terse capture, letter-coded drops, and per-session block cap ([33591b8](https://github.com/bcanfield/agentic-tech-debt/commit/33591b8a0ee1de2051a9b934e8d60f4fc2bffcf6))
+
+
+### Bug Fixes
+
+* prevent stop-hook infinite loop with per-state fingerprint cache ([20679ee](https://github.com/bcanfield/agentic-tech-debt/commit/20679eef848f64bedc51b355b6cecdab2bd675b3))
+* Tweak skill ([f440029](https://github.com/bcanfield/agentic-tech-debt/commit/f44002990f9b90812e795eed59b77cf49b5997e1))
+
 ## [0.3.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.2.1...debt-ops-v0.3.0) (2026-05-12)
 
 
