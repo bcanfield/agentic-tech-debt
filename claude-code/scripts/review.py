@@ -114,6 +114,21 @@ def days_since(date_str):
         return 0
 
 
+# Body preview: first non-empty line of prose after the frontmatter, ~85 chars.
+def body_preview(text, max_chars=85):
+    if text.startswith("---"):
+        end = text.find("\n---", 3)
+        if end >= 0:
+            text = text[end + 4:]
+    for ln in text.splitlines():
+        s = ln.strip()
+        if s and not s.startswith("#"):
+            if len(s) <= max_chars:
+                return s
+            return s[: max_chars - 1].rstrip() + "…"
+    return ""
+
+
 # A, B, ..., Z, AA, AB — base-26 column-style (matches register.py).
 def letter_for(n):
     s = ""
@@ -153,6 +168,7 @@ def audit_entry(toplevel, entry_path):
         "ai_authored": ai_authored,
         "file_exists": file_exists,
         "churn_since_created": churn,
+        "preview": body_preview(text),
     }
 
 
@@ -239,6 +255,8 @@ def print_report(stale_map, top, cold, active_kept_count):
             lines.append(
                 f"  • {e['slug']:<40} {e['hotspot']} · {e['quadrant']} · churn={e['churn_since_created']}{tag}"
             )
+            if e["preview"]:
+                lines.append(f"    {e['preview']}")
         lines.append("")
 
     if cold:
