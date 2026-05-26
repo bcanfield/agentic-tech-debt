@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.4.0...debt-ops-v0.5.0) (2026-05-26)
+
+
+### Features
+
+* audit and triage ([b487f6a](https://github.com/bcanfield/agentic-tech-debt/commit/b487f6a84fd19725844fe6d5c7907cfffb43c174))
+
 ## [0.4.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.3.0...debt-ops-v0.4.0) (2026-05-14)
 
 
