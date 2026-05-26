@@ -6,7 +6,9 @@ allowed-tools: Bash(python3 *)
 
 # /debt-ops:review — audit + triage the registry
 
-Call `review.py` via Bash. The helper does all the deterministic work: it reads every entry under the cached `registry-dir`, audits each one against Git, ranks the survivors, writes letter codes for stale entries to `current-turn.txt` (so the existing `drop A,B` UX from ADR 0004 keeps working), and prints a three-bucket report. That stdout IS the user-facing reply — add no commentary before or after.
+Call `review.py` via Bash. The helper does all the deterministic work: it reads every entry under the cached `registry-dir`, audits each one against Git, ranks the survivors, writes letter codes for stale entries to `current-turn.txt` (so the existing `drop A,B` UX from ADR 0004 keeps working), and prints a three-bucket report.
+
+**Then re-emit the helper's stdout verbatim as your response text, inside a fenced code block.** Claude Code collapses long bash outputs behind a `+N lines, ctrl+o to expand` placeholder, so if you don't print the report yourself, the user never sees it. Copy the stdout exactly — no preamble, no summary, no follow-up suggestions. The fenced code block preserves the monospace alignment of the columns.
 
 ## The call
 
@@ -32,5 +34,5 @@ The marker-presence check ("does this file still have TODO/FIXME?") was delibera
 ## Don't
 
 - Don't ask the user to confirm before running. The helper is read-only on the registry except for the letter mapping; nothing is deleted until the user types `drop`.
-- Don't summarize, recap, or paraphrase the helper's output. The Bash tool result is already visible.
-- Don't suggest follow-ups inline ("want me to fix the top one?"). Let the user drive the rhythm.
+- Don't paraphrase, reformat, or summarize the helper's stdout. Copy it exactly into the fenced code block. The report's column alignment and letter codes only work if reproduced verbatim.
+- Don't suggest follow-ups inline ("want me to fix the top one?"). The user picks the next move; your job ends when the report is on screen.
