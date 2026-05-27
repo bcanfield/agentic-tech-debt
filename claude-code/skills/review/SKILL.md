@@ -1,6 +1,6 @@
 ---
 name: review
-description: Use when the user invokes /debt-ops:review. Audit the debt registry — drop hotspot files that no longer exist as stale, deprioritize files unchanged in 90+ days, rank the rest by churn × Fowler quadrant — and surface a top-3 paydown list. Stale entries get letter codes so the user can drop them with `drop A,B,C` (ADR 0007).
+description: Audit and triage the debt registry — drop missing files as stale, deprioritize files unchanged 90+ days, rank survivors by churn × Fowler quadrant, surface a top-3 paydown list. Use when the user asks to review/triage debt, see what to pay down, or invokes /debt-ops:review. Stale entries get letter codes for `drop A,B,C` (ADR 0007).
 allowed-tools: Bash(python3 *)
 ---
 

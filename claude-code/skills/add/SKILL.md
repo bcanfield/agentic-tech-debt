@@ -1,6 +1,6 @@
 ---
 name: add
-description: Use when the user invokes /debt-ops:add OR you just deferred work — a TODO/FIXME/HACK/XXX marker, a stub, a loosened type, a bypassed check, a swallowed error, a "future"/"later"/"someday" comment, or any decision the code leaves for later. Register the deferral; over-register freely (developer drops with "drop A", "drop A,C", or "drop all").
+description: Register a deferred decision in the debt registry — TODO/FIXME/HACK/XXX markers, stubs, loosened types, bypassed checks, swallowed errors, or "future"/"later"/"someday" comments. Trigger immediately whenever you defer work, or when the user invokes /debt-ops:add. Over-register freely; the developer drops with "drop A", "drop A,C", or "drop all".
 allowed-tools: Bash(python3 *), Bash(rm *)
 ---
 

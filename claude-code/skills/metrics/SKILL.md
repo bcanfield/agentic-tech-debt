@@ -1,6 +1,6 @@
 ---
 name: metrics
-description: Use when the user invokes /debt-ops:metrics. Reads the plugin's metrics log and prints a short health summary covering registration rate, hook feedback action rate, ADR creation, and AI-authored share. Read-only — never writes the log.
+description: Print a debt-ops health summary from the metrics log — registration rate, hook feedback action rate, ADR creation, AI-authored share. Use when the user asks for "debt-ops metrics", "debt health", "registry stats", or invokes /debt-ops:metrics. Read-only — never writes the log.
 allowed-tools: Bash, Read
 ---
 

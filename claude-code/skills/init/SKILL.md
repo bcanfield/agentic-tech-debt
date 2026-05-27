@@ -1,6 +1,6 @@
 ---
 name: init
-description: This skill should be used ONLY when the user explicitly invokes /debt-ops:init. It writes the debt-ops disciplines + cached quality commands into CLAUDE.md as a `## Tech debt operations` section so a team shares one source of truth. Opt-in by design; solo users skip it (the SessionStart inject covers the same ground per-session). Re-running regenerates only the managed section, never touches other sections.
+description: Write or refresh the `## Tech debt operations` section in CLAUDE.md so a team shares one source of truth for debt-ops disciplines and cached quality commands. Idempotent — only the managed section changes; other sections are untouched. Invoked explicitly via /debt-ops:init (solo users get the same content from the SessionStart inject).
 disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash
 ---
