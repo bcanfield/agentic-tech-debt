@@ -43,6 +43,15 @@ QUADRANT_WEIGHT = {
     "prudent-deliberate": 1,
 }
 
+# Plain-language labels for display. The canonical Fowler quadrant stays in the
+# frontmatter + scoring; developers read these instead of the academic terms.
+QUADRANT_PLAIN = {
+    "reckless-inadvertent": "accidental",
+    "reckless-deliberate": "knowing shortcut",
+    "prudent-inadvertent": "came up later",
+    "prudent-deliberate": "planned tradeoff",
+}
+
 
 def git_toplevel():
     try:
@@ -274,8 +283,11 @@ def print_report(stale_map, top, cold, active_kept_count):
         lines.append(f"top {len(top)} to pay down")
         for e in top:
             tag = " [ai]" if e["ai_authored"] else ""
+            plain = QUADRANT_PLAIN.get(e["quadrant"], e["quadrant"])
+            n = e["churn_since_created"]
+            edits = f"{n} edit{'' if n == 1 else 's'} since logged"
             lines.append(
-                f"  • {e['slug']:<40} {e['hotspot']} · {e['quadrant']} · churn={e['churn_since_created']}{tag}"
+                f"  • {e['slug']:<40} {e['hotspot']} · {plain} · {edits}{tag}"
             )
             if e["preview"]:
                 lines.append(f"    {e['preview']}")

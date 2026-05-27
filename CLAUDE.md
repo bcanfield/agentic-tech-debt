@@ -11,6 +11,11 @@
 - **Conventional commits.** Plugin version auto-bumps via release-please (config in `.github/`); use `feat:` / `fix:` / `feat!:` prefixes — anything else is ignored by the bumper. Don't hand-edit `version` in `plugin.json`.
 - **We like humanlike, concise inline comments** For example, a single line above a function or code block very simply and concisely saying what the code is doing so that the code is easy for a human to understand
 - **Record decisions as ADRs.** When we make a choice with two credible alternatives — a new convention, a tradeoff worth remembering — drop a short note in [`doc/adr/`](./doc/adr/) using the format in its [README](./doc/adr/README.md).
+
+## Demo GIF
+
+The README hero (`demo/debt-ops.gif`) is "terminal GIFs as code" via [VHS](https://github.com/charmbracelet/vhs). The fabricated session lives in [`demo/scene.bash`](./demo/scene.bash); the recording script is [`demo/debt-ops.tape`](./demo/debt-ops.tape). Regenerate from the repo root with `vhs demo/debt-ops.tape` (needs `vhs`, `ttyd`, `ffmpeg`, and the JetBrains Mono font).
+
 ## Debugging
 
 Set `DEBT_OPS_DEBUG=1` before launching Claude Code to log every PostToolUse fire and command result:
