@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.3](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.6.2...debt-ops-v0.6.3) (2026-05-27)
+
+
+### Bug Fixes
+
+* review ([f54af17](https://github.com/bcanfield/agentic-tech-debt/commit/f54af1733088b7f6848a8bcfec1533be38b06aae))
+
 ## [0.6.2](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.6.1...debt-ops-v0.6.2) (2026-05-27)
 
 
