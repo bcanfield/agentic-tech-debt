@@ -15,6 +15,9 @@
   guide for Claude Code plugin internals: manifest, skills, agents,
   hooks, MCP, LSP, monitors, marketplaces. Used while designing the
   plugin.
+- **[`adr/`](./adr/)**: Architecture Decision Records — short notes on
+  the choices that shape how the plugin behaves. See
+  [`adr/README.md`](./adr/README.md) for the format.
 
 ## Reading order
 

@@ -10,7 +10,7 @@
 - **Python over Bash for plugin scripts.** Stdlib `json`, `re`, and `subprocess.run(..., timeout=...)` beat hand-rolled JSON escaping, a `jq` dependency, and the BSD/GNU `timeout` portability dance — and run on Windows without WSL.
 - **Conventional commits.** Plugin version auto-bumps via release-please (config in `.github/`); use `feat:` / `fix:` / `feat!:` prefixes — anything else is ignored by the bumper. Don't hand-edit `version` in `plugin.json`.
 - **We like humanlike, concise inline comments** For example, a single line above a function or code block very simply and concisely saying what the code is doing so that the code is easy for a human to understand
-- **Record decisions as ADRs.** When we make a choice with two credible alternatives — a new convention, a tradeoff worth remembering — drop a short note in [`doc/adr/`](./doc/adr/) using the format in its [README](./doc/adr/README.md).
+- **Record decisions as ADRs.** When we make a choice with two credible alternatives — a new convention, a tradeoff worth remembering — drop a short note in [`docs/adr/`](./docs/adr/) using the format in its [README](./docs/adr/README.md).
 
 ## Demo GIF
 
