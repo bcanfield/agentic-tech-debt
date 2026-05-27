@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.5.2...debt-ops-v0.6.0) (2026-05-27)
+
+
+### Features
+
+* debt paydown ([c114f71](https://github.com/bcanfield/agentic-tech-debt/commit/c114f71bfd5d2c0ae5d64fa16b6513fa716d69a1))
+
 ## [0.5.2](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.5.1...debt-ops-v0.5.2) (2026-05-26)
 
 
