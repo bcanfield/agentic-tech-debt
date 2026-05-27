@@ -1,13 +1,15 @@
-# agentic-tech-debt
+# debt-ops
 
-**Tech-debt discipline for AI coding agents. Runs in Claude Code, never blocks an edit.**
+**Catches tech debt as your AI agent writes it, then stays out of your way until you're ready to tackle it. Backed by decades of research.**
 
-As your agent codes, debt-ops catches tech debt as it's written.
+[![MIT License](https://img.shields.io/github/license/bcanfield/agentic-tech-debt?color=blue)](./LICENSE)
+[![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](./claude-code)
 
 ## What it does
 
 - **Logs every shortcut** to a debt registry: a TODO, a stub, a loosened type, a "fix it later."
 - **Writes a short decision record** when your agent makes an architectural call.
+- **Reads what's already logged** before changing a file, so your agent stops re-litigating settled decisions.
 - **Runs your linter, type-checker, and tests** on each agentic edit, fixing failures before they reach your diff.
 - **Ranks what to clean up first** by how active each file is, so effort goes to the hotspots.
 
@@ -22,7 +24,7 @@ Watch it run — an edit logs the shortcuts it took while your gates fire in the
 /plugin install debt-ops
 ```
 
-Needs a git repo, Python 3.10+ (stdlib only), and Claude Code v2.1.121+. Full setup in the [plugin README](./claude-code/README.md).
+Needs a git repo, Python 3.10+ (stdlib only), and Claude Code v2.1.121+. For local development, point Claude at the plugin dir instead: `claude --plugin-dir /path/to/agentic-tech-debt/claude-code`.
 
 Nothing is written on install. Files appear only when there's a reason, and it follows your existing convention (`doc/adr`, `docs/`) if you have one:
 
@@ -31,6 +33,13 @@ Nothing is written on install. Files appear only when there's a reason, and it f
 | `docs/debt/<id>-<slug>.md`               | Claude registers a debt entry    |
 | `docs/adr/<n>-<title>.md`                | Claude drafts an ADR             |
 | `## Tech debt operations` in `CLAUDE.md` | Only if you run `/debt-ops:init` |
+
+## Commands
+
+- **`/debt-ops:add`** — register a debt entry. Auto-invoked when your agent defers work; each capture is a one-liner with a batch letter (`+1 entry: <slug> (A)`). Drop with `drop A`, `drop A,C`, or `drop all`.
+- **`/debt-ops:review`** — audit and triage the registry: flags stale entries, deprioritizes cold files, ranks the rest by change frequency and risk. Run when it feels heavy.
+- **`/debt-ops:init`** *(opt-in)* — write the disciplines and your quality commands into `CLAUDE.md` so the team shares one source of truth.
+- **`/debt-ops:metrics`** — a read-only health summary of the plugin's own log: edits per session, registry growth, ADR rate, hook fail→pass rate.
 
 ## Why it exists
 
