@@ -54,6 +54,29 @@ def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
 
+# Locate this repo's plugin cache. CLAUDE_PLUGIN_DATA is set for hook
+# subprocesses but NOT for skill Bash (where this script runs), so fall back to
+# the standard plugin-data dir, then the legacy cache path — same resolution
+# order as init/SKILL.md. Returns the first existing dir, else the preferred
+# write location. Without this the script can't read the cached registry-dir
+# (so entries land in the wrong place) and its letter file diverges from the
+# one drop.py reads (ADR 0006/0009).
+def resolve_cache_dir(toplevel):
+    h = repo_hash(toplevel)
+    candidates = []
+    pd = os.environ.get("CLAUDE_PLUGIN_DATA")
+    if pd:
+        candidates.append(Path(pd) / "cache" / h)
+    candidates += sorted(
+        (Path.home() / ".claude" / "plugins" / "data").glob(f"debt-ops*/cache/{h}")
+    )
+    candidates.append(Path.home() / ".cache" / "debt-ops" / "cache" / h)
+    for c in candidates:
+        if c.is_dir():
+            return c
+    return candidates[0]
+
+
 # A, B, ..., Z, AA, AB, ..., ZZ, AAA — base-26 column-style labels.
 def letter_for(n):
     s = ""
@@ -114,8 +137,7 @@ def main():
     entry_id = time.strftime("%Y%m%d%H%M%S", now)
     created = time.strftime("%Y-%m-%d", now)
 
-    cache_base = Path(os.environ.get("CLAUDE_PLUGIN_DATA") or (Path.home() / ".cache" / "debt-ops"))
-    cache_dir = cache_base / "cache" / repo_hash(toplevel)
+    cache_dir = resolve_cache_dir(toplevel)
     registry_rel = read_registry_dir(cache_dir)
     registry = toplevel / registry_rel
     registry.mkdir(parents=True, exist_ok=True)
