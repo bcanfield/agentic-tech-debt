@@ -60,6 +60,28 @@ def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
 
+# Locate this repo's plugin cache. CLAUDE_PLUGIN_DATA is set for hook
+# subprocesses but NOT for skill Bash (where this script runs), so fall back to
+# the standard plugin-data dir, then the legacy cache path — same resolution
+# order as init/SKILL.md. Returns the first existing dir, else the preferred
+# write location. Without this the script can't read the cached registry-dir
+# and silently defaults (ADR 0006/0009).
+def resolve_cache_dir(toplevel):
+    h = repo_hash(toplevel)
+    candidates = []
+    pd = os.environ.get("CLAUDE_PLUGIN_DATA")
+    if pd:
+        candidates.append(Path(pd) / "cache" / h)
+    candidates += sorted(
+        (Path.home() / ".claude" / "plugins" / "data").glob(f"debt-ops*/cache/{h}")
+    )
+    candidates.append(Path.home() / ".cache" / "debt-ops" / "cache" / h)
+    for c in candidates:
+        if c.is_dir():
+            return c
+    return candidates[0]
+
+
 # Read session-start.py's cached registry-dir path; default if missing.
 def read_registry_dir(cache_dir):
     f = cache_dir / "registry-dir"
@@ -287,8 +309,7 @@ def main():
         sys.stderr.write("debt-ops: not in a git repo\n")
         return 2
 
-    cache_base = Path(os.environ.get("CLAUDE_PLUGIN_DATA") or (Path.home() / ".cache" / "debt-ops"))
-    cache_dir = cache_base / "cache" / repo_hash(toplevel)
+    cache_dir = resolve_cache_dir(toplevel)
     registry = toplevel / read_registry_dir(cache_dir)
 
     if not registry.is_dir():
