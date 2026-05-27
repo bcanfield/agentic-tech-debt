@@ -3,7 +3,7 @@
 
 Fires at the end of every turn. Counts newly-added marker lines
 (TODO/FIXME/HACK/XXX) in the working tree vs newly-added entries
-under `debt/registry/`. If markers > registrations, nudges Claude
+under the registry dir. If markers > registrations, nudges Claude
 on the next turn via additionalContext.
 
 Tripwire, not precision: false positives are cheap (the dev drops
@@ -25,8 +25,8 @@ MARKER_RE = re.compile(r"\b(TODO|FIXME|HACK|XXX)\b")
 # are looked up per-repo from the cache files written by session-start.py
 # (adr-dir / registry-dir). See build_excluded_prefixes below.
 STATIC_EXCLUDED_PREFIXES = ("claude-code/",)
-DEFAULT_REGISTRY_DIR = "debt/registry"
-DEFAULT_ADR_DIR = "doc/adr"
+DEFAULT_REGISTRY_DIR = "docs/debt"
+DEFAULT_ADR_DIR = "docs/adr"
 MAX_UNTRACKED_BYTES = 1_000_000
 # Hard cap on Stop-hook blocks per session. After this many blocks fire
 # for a given session_id, all subsequent Stop calls in that session stay
@@ -85,7 +85,7 @@ def dlog(path, *fields):
 
 
 # Resolve registry/ADR paths from cache (written by session-start.py); fall
-# back to defaults if cache missing. Returns ("debt/registry", "doc/adr") shape.
+# back to defaults if cache missing. Returns ("docs/debt", "docs/adr") shape.
 def resolve_dirs(cache_dir):
     def read(name, default):
         p = cache_dir / name

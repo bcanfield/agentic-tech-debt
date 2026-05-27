@@ -22,7 +22,7 @@ REQUIRED_FIELDS = (
     "business_capability", "payoff_trigger", "quadrant", "category", "ai_authored",
 )
 
-DEFAULT_REGISTRY_DIR = "debt/registry"
+DEFAULT_REGISTRY_DIR = "docs/debt"
 
 
 # Read session-start.py's cached registry-dir path; default if missing/empty.

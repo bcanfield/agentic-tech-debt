@@ -27,7 +27,7 @@ DROP_RE = re.compile(
     re.IGNORECASE,
 )
 
-DEFAULT_REGISTRY_DIR = "debt/registry"
+DEFAULT_REGISTRY_DIR = "docs/debt"
 
 
 # Read session-start.py's cached registry-dir path; default if missing/empty.

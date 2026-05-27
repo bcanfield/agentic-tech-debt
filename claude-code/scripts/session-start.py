@@ -26,12 +26,14 @@ ADR_CANDIDATE_PATHS = (
 )
 
 REGISTRY_CANDIDATE_PATHS = (
+    "docs/debt", "docs/registry", "doc/debt",
     "debt/registry", "tech-debt/registry", "debt-registry", "registry",
 )
 
 ADR_FILENAME_RE = re.compile(r"^\d+[-_].*\.md$", re.IGNORECASE)
-DEFAULT_ADR_DIR = "doc/adr"
-DEFAULT_REGISTRY_DIR = "debt/registry"
+# Co-located default home (ADR 0009): both artifacts under one `docs/` parent.
+DEFAULT_ADR_DIR = "docs/adr"
+DEFAULT_REGISTRY_DIR = "docs/debt"
 
 
 def emit(context):
@@ -175,21 +177,55 @@ def probe_registry_dir(toplevel):
     return None
 
 
-# Asks Claude to find the ADR directory semantically. Same pattern as the
-# quality-commands first-session detection — silent, writes the result to a
-# cache file the other hooks read.
-def adr_detection_instruction(cache_dir):
-    return (
-        "ADR directory: not detected by quick probe. Please find it silently — no announcement:\n"
-        "1. Scan this repo for any directory containing markdown files that look like ADRs: "
-        "filenames matching `NNNN-title.md` / `NNN-title.md`, or bodies with Nygard sections "
-        "(`## Status`, `## Context`, `## Decision`, `## Consequences`).\n"
-        "2. Common conventions include `doc/adr`, `docs/adr`, `adr`, `architecture/decisions`, "
-        "but accept any directory that matches the shape — including non-standard ones.\n"
-        f"3. If found, write the repo-relative path to {cache_dir}/adr-dir on a single line.\n"
-        f"4. If genuinely no ADRs exist yet, write `{DEFAULT_ADR_DIR}` to {cache_dir}/adr-dir — "
-        "Discipline 2 will create it on first use."
+# When the ADR or registry dir doesn't exist yet, the inject states the
+# co-location convention as fact and lets Claude pick the home — it reads the
+# repo's doc conventions better than a fixed probe (ADR 0009). Claude writes
+# the resolved repo-relative path(s) to the cache file(s) the other hooks read.
+def placement_instruction(cache_dir, adr_dir, registry_dir):
+    lines = ["Directory placement — resolve silently, no announcement:"]
+    if adr_dir:
+        lines.append(f"- ADRs already live at `{adr_dir}`.")
+    if registry_dir:
+        lines.append(f"- The debt registry already lives at `{registry_dir}`.")
+    # ADRs vary more than the plugin-owned registry; check for a non-standard
+    # existing dir before treating it as greenfield.
+    if adr_dir is None:
+        lines.append(
+            "- No ADR directory was detected. First check whether one already exists "
+            "in a non-standard spot — a dir of markdown with numbered filenames "
+            "(`NNNN-title.md`) or Nygard sections (`## Context`, `## Decision`, "
+            "`## Consequences`). Use it if it exists."
+        )
+    lines.append(
+        "- debt-ops co-locates ADRs and the debt registry under one documentation "
+        "home. When creating either from scratch, prefer an existing docs home "
+        "(`docs/`, `documentation/`, or `doc/`); otherwise the home is `docs/`."
     )
+    if adr_dir is None and registry_dir is None:
+        lines.append(
+            f"- With no home yet, use `<home>/adr` and `<home>/debt` "
+            f"(defaults: `{DEFAULT_ADR_DIR}` + `{DEFAULT_REGISTRY_DIR}`)."
+        )
+    elif adr_dir is None:
+        lines.append(
+            f"- Place the ADR dir under the same home as the registry above so they "
+            f"stay co-located, or default to `{DEFAULT_ADR_DIR}`."
+        )
+    else:
+        lines.append(
+            f"- Place the registry dir under the same home as the ADRs above so they "
+            f"stay co-located, or default to `{DEFAULT_REGISTRY_DIR}`."
+        )
+    targets = []
+    if adr_dir is None:
+        targets.append(f"the ADR path to {cache_dir}/adr-dir")
+    if registry_dir is None:
+        targets.append(f"the registry path to {cache_dir}/registry-dir")
+    lines.append(
+        "- Write " + " and ".join(targets) + ", repo-relative, one path per file. "
+        "Directories are created lazily on first write — no need to create them now."
+    )
+    return "\n".join(lines)
 
 
 def commands_block(cache_dir, cache_base, manifest, charter, stateless):
@@ -269,9 +305,9 @@ def main():
     except OSError:
         stateless = True
 
-    # Resolve ADR and registry paths: cached → probe → default. ADR may end
-    # up unresolved here (None) — in that case the inject below asks Claude
-    # to fill in <cache>/adr-dir semantically.
+    # Resolve ADR and registry paths: cached → existing-content probe. Either
+    # may stay None (greenfield) — the placement inject below then has Claude
+    # choose a co-located home and write the cache file(s). See ADR 0009.
     adr_cache = cache_dir / "adr-dir"
     registry_cache = cache_dir / "registry-dir"
 
@@ -285,29 +321,31 @@ def main():
 
     registry_dir = read_cached_dir(registry_cache, toplevel)
     if registry_dir is None:
-        probed = probe_registry_dir(toplevel) or DEFAULT_REGISTRY_DIR
-        registry_dir = probed
-        if not stateless:
-            write_cached_dir(registry_cache, probed)
+        probed = probe_registry_dir(toplevel)
+        if probed:
+            registry_dir = probed
+            if not stateless:
+                write_cached_dir(registry_cache, probed)
 
     effective_adr_dir = adr_dir or DEFAULT_ADR_DIR
+    effective_registry_dir = registry_dir or DEFAULT_REGISTRY_DIR
 
     log_metric(cache_dir, {
         "event": "session",
-        "registry_count": md_count(toplevel / registry_dir),
+        "registry_count": md_count(toplevel / effective_registry_dir),
         "adr_count": md_count(toplevel / effective_adr_dir),
-        "ai_authored_count": ai_authored_count(toplevel / registry_dir),
+        "ai_authored_count": ai_authored_count(toplevel / effective_registry_dir),
         "adr_dir": effective_adr_dir,
-        "registry_dir": registry_dir,
+        "registry_dir": effective_registry_dir,
     })
 
     context = (
         "Tech-debt-operations disciplines (debt-ops plugin):\n\n"
-        f"{disciplines_text(effective_adr_dir, registry_dir)}\n\n"
+        f"{disciplines_text(effective_adr_dir, effective_registry_dir)}\n\n"
         f"{commands_block(cache_dir, cache_base, manifest_hash(toplevel), has_charter(toplevel), stateless)}"
     )
-    if adr_dir is None and not stateless:
-        context += "\n\n" + adr_detection_instruction(cache_dir)
+    if (adr_dir is None or registry_dir is None) and not stateless:
+        context += "\n\n" + placement_instruction(cache_dir, adr_dir, registry_dir)
     if not stateless:
         context += (
             f"\n\nDebug: set DEBT_OPS_DEBUG=1 in the environment to log every hook fire "

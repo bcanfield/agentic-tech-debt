@@ -35,7 +35,7 @@ import sys
 import time
 from pathlib import Path
 
-DEFAULT_REGISTRY_DIR = "debt/registry"
+DEFAULT_REGISTRY_DIR = "docs/debt"
 QUADRANT_WEIGHT = {
     "reckless-inadvertent": 3,
     "reckless-deliberate": 2,

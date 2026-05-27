@@ -28,6 +28,13 @@ done
 
 LIST="$CACHE_DIR/feedback.list"
 [ -n "$CACHE_DIR" ] && [ -f "$LIST" ] && cat "$LIST"
+
+# Detected ADR/registry dirs (ADR 0006/0009). Fall back to the co-located
+# defaults if the cache files aren't written yet.
+ADR_DIR=$( [ -s "$CACHE_DIR/adr-dir" ] && cat "$CACHE_DIR/adr-dir" || echo "docs/adr" )
+REGISTRY_DIR=$( [ -s "$CACHE_DIR/registry-dir" ] && cat "$CACHE_DIR/registry-dir" || echo "docs/debt" )
+echo "adr-dir: $ADR_DIR"
+echo "registry-dir: $REGISTRY_DIR"
 ```
 
 If the file doesn't exist, the SessionStart discovery prompt hasn't run yet. Tell the developer:
@@ -38,7 +45,7 @@ If the file doesn't exist, the SessionStart discovery prompt hasn't run yet. Tel
 
 ## 2. Compose the section (template)
 
-Substitute `{{COMMANDS}}` with the cache contents verbatim.
+Substitute `{{COMMANDS}}` with the cache contents verbatim, `{{ADR_DIR}}` with the detected `adr-dir`, and `{{REGISTRY_DIR}}` with the detected `registry-dir` (from step 1).
 
 ```markdown
 ## Tech debt operations
@@ -49,9 +56,9 @@ Substitute `{{COMMANDS}}` with the cache contents verbatim.
 
 1. If you defer work — decision unmade, stub, loosened type, "future"/"later" comment, or `TODO`/`FIXME`/`HACK`/`XXX` marker — register via `/debt-ops:add` immediately. Test: would a future reader ask "why this way?" If yes, register. No prompt. Use `payoff_trigger: unknown` if unsure. Announce: `+1 entry: <slug> (drop?)`. Over-register freely; the developer drops with "drop it".
 
-2. When making an architecturally significant change — a data model, public interface, security boundary, release pipeline, or a dep-manifest change that is a major-version bump or a *new* top-level dependency — draft an ADR under `doc/adr/` in Nygard format (Context, Decision, Consequences, Alternatives, Payoff trigger). Create the directory if needed. Only draft an ADR when there are two credible alternatives; if you cannot list two, it is a comment, not an ADR. If the ADR introduces deliberate debt, also call `/debt-ops:add` so the registry entry mirrors the ADR.
+2. When making an architecturally significant change — a data model, public interface, security boundary, release pipeline, or a dep-manifest change that is a major-version bump or a *new* top-level dependency — draft an ADR under `{{ADR_DIR}}/` in Nygard format (Context, Decision, Consequences, Alternatives, Payoff trigger). Create the directory if needed. Only draft an ADR when there are two credible alternatives; if you cannot list two, it is a comment, not an ADR. If the ADR introduces deliberate debt, also call `/debt-ops:add` so the registry entry mirrors the ADR.
 
-3. Read entries under `debt/registry/` before changing files they reference.
+3. Read entries under `{{REGISTRY_DIR}}/` before changing files they reference.
 
 ### Quality commands
 
