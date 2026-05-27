@@ -1,38 +1,52 @@
 ---
 name: review
-description: Audit and triage the debt registry — drop missing files as stale, deprioritize files unchanged 90+ days, rank survivors by churn × Fowler quadrant, surface a top-3 paydown list. Use when the user asks to review/triage debt, see what to pay down, or invokes /debt-ops:review. Stale entries get letter codes for `drop A,B,C` (ADR 0007).
-allowed-tools: Bash(python3 *)
+description: Audit the debt registry, rank survivors by churn × Fowler quadrant, surface a top-N list, then walk paydown on user follow-up. Use when the user asks to review debt, see what to pay down, work through entries, or invokes /debt-ops:review. Stale entries drop with `drop A,B,C`.
+allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 ---
 
-# /debt-ops:review — audit + triage the registry
+# /debt-ops:review — audit + (on follow-up) walk paydown
 
-Call `review.py` via Bash. The helper does all the deterministic work: it reads every entry under the cached `registry-dir`, audits each one against Git, ranks the survivors, writes letter codes for stale entries to `current-turn.txt` (so the existing `drop A,B` UX from ADR 0004 keeps working), and prints a three-bucket report.
+Two modes. First turn: print the audit and stop. On a user follow-up ("fix the top one," "walk these," "do A," "pay some down"), apply the rubric below.
 
-**Then re-emit the helper's stdout verbatim as your response text, inside a fenced code block.** Claude Code collapses long bash outputs behind a `+N lines, ctrl+o to expand` placeholder, so if you don't print the report yourself, the user never sees it. Copy the stdout exactly — no preamble, no summary, no follow-up suggestions. The fenced code block preserves the monospace alignment of the columns.
-
-## The call
+## First turn: print the audit
 
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/review.py
 ```
 
-Optional: `--top N` to surface more than the default 3 paydown candidates.
+Optional: `--top N` to surface more than the default 3 candidates.
 
-## What the helper does
+**Re-emit the helper's stdout verbatim in a fenced code block.** Claude Code collapses long bash outputs behind a `+N lines, ctrl+o to expand` placeholder — if you don't print it yourself, the user never sees it. Copy exactly: no preamble, no summary, no "want me to fix the top one?" The fenced block preserves column alignment.
 
-For each registry entry it reads:
+Then stop. The user picks the next move.
 
-- **Audit (deterministic, Git-as-oracle).** Does the `hotspot:` path still exist in the working tree? How many commits have touched it since the entry's `created:` date?
-- **Classify.** File missing → `stale`. File exists but unchanged in 90+ days → `cold`. Otherwise → `active`.
-- **Rank active entries.** Score = churn × quadrant weight (reckless-inadvertent 3, reckless-deliberate / prudent-inadvertent 2, prudent-deliberate 1) + 2 if `ai_authored: true` + 1 if older than 30 days. Top N are surfaced; the rest are summarized as a count.
-- **Wire the drop UX.** Stale entries get letters appended to `current-turn.txt` so the user's next prompt can be `drop A,B,C` and the existing `drop.py` hook handles it without a Claude turn.
+## Paydown mode (only on user follow-up)
 
-## Why this shape
+Work through requested entries one at a time. Confirm before each fix. Never auto-batch. Never auto-commit.
 
-The marker-presence check ("does this file still have TODO/FIXME?") was deliberately cut — most registry entries describe architectural deferrals, not in-code markers, and dogfood on slack-agent showed 100% false-stale flagging with that signal in. The honest staleness signal is hotspot-file-missing; everything else stays active and the user decides.
+For each entry, read the registry file, the hotspot, and adjacent tests. Apply this rubric:
+
+- **Already fixed?** If the marker/symptom the entry describes no longer appears in the hotspot file, say so and add the entry's letter to the drop list. Don't re-fix.
+- **Cold area?** Churn=0 since `created:` and age >90d → propose deferring. ~20% of files generate ~80% of debt-related rework; don't pay down vanity refactors.
+- **Prudent-deliberate with payoff_trigger not met?** Honor the trigger. Skip with a one-line "trigger not met: <quote>."
+- **Fix candidate?** Propose the smallest change that resolves the entry. Improvement, not perfection — don't refactor surrounding code.
+
+### When you fix
+
+- **Read the repo first.** Check the test framework, adjacent tests, the cached feedback commands. Adapt to what exists; don't impose a new style.
+- **TDD where tests exist.** Write a failing test that pins the deferral, then make it pass. Don't weaken or delete existing tests to make a fix pass.
+- **No tests in this area?** Surface that and ask: write one, or fix without?
+- **Explain why this resolves the entry.** Cite the entry's `payoff_trigger` or body — don't commit code you can't explain.
+- **Risky fix?** Auth, payments, migrations, public APIs, or `ai_authored: true` → invoke `/code-review` on the diff before suggesting commit. Fresh-context review catches what the writer's motivated reasoning misses.
+- **Don't commit.** Show the diff. The user runs the gates, drops the entry with `drop A`, and commits.
+
+### Pacing
+
+Aim for 3–10 entries per session — continuous paydown outperforms stop-the-world batches. If the user says "do them all," push back once: unsupervised AI cleanup measurably increases duplicate blocks and short-term churn. If they insist, still one-at-a-time with diffs surfaced.
 
 ## Don't
 
-- Don't ask the user to confirm before running. The helper is read-only on the registry except for the letter mapping; nothing is deleted until the user types `drop`.
-- Don't paraphrase, reformat, or summarize the helper's stdout. Copy it exactly into the fenced code block. The report's column alignment and letter codes only work if reproduced verbatim.
-- Don't suggest follow-ups inline ("want me to fix the top one?"). The user picks the next move; your job ends when the report is on screen.
+- Don't ask the user to confirm before running `review.py`.
+- Don't paraphrase the helper's stdout. Copy it verbatim into the fenced code block.
+- Don't enter paydown mode on the first turn. Stop after the report. Wait for the user's intent.
+- Don't auto-commit. Ever.

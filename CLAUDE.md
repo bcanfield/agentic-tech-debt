@@ -6,6 +6,7 @@
 - **Confront our research.** Try to see if you can ground decisions in our extensive research.
 - **Ask when unsure.** One focused question beats guessing or expanding scope.
 - **Be refreshingly concise.** Nobody likes overly wordy AI slop. Speak and comment like a co-worker.
+- **Guide Claude with markdown, not orchestration.** Claude Code is smart and has the keys to the user's repo — skills should load research-backed principles and trust Claude's judgment, not script its every step. Reach for Python only when determinism demands it (timestamps, audits, atomic file ops, hook contracts) — never to make decisions a smart agent reading the repo can make better.
 - **Python over Bash for plugin scripts.** Stdlib `json`, `re`, and `subprocess.run(..., timeout=...)` beat hand-rolled JSON escaping, a `jq` dependency, and the BSD/GNU `timeout` portability dance — and run on Windows without WSL.
 - **Conventional commits.** Plugin version auto-bumps via release-please (config in `.github/`); use `feat:` / `fix:` / `feat!:` prefixes — anything else is ignored by the bumper. Don't hand-edit `version` in `plugin.json`.
 - **We like humanlike, concise inline comments** For example, a single line above a function or code block very simply and concisely saying what the code is doing so that the code is easy for a human to understand
