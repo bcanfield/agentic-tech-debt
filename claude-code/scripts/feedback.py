@@ -169,7 +169,7 @@ def registry_count(toplevel, registry_dir):
         return 0
 
 
-DEFAULT_REGISTRY_DIR = "debt/registry"
+DEFAULT_REGISTRY_DIR = "docs/debt"
 
 
 # Read session-start.py's cached registry-dir path; default if missing/empty.

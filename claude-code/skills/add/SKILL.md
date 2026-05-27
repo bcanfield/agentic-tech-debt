@@ -6,7 +6,7 @@ allowed-tools: Bash(python3 *), Bash(rm *)
 
 # /debt-ops:add — register a tech-debt entry
 
-Call `register.py` via Bash. The helper writes the entry under `debt/registry/`, assigns a short batch letter (A, B, C…), and prints exactly one line: `+1 entry: <slug> (<letter>)`. That stdout IS the user-facing announcement — add no commentary before or after.
+Call `register.py` via Bash. The helper writes the entry under the repo's detected registry dir (default `docs/debt/`), assigns a short batch letter (A, B, C…), and prints exactly one line: `+1 entry: <slug> (<letter>)`. That stdout IS the user-facing announcement — add no commentary before or after.
 
 ## The call
 
@@ -44,7 +44,7 @@ The helper:
 ## Drops
 
 - `drop A`, `drop A,C`, `drop all` — the user types this; a UserPromptSubmit hook deletes the matching entries and surfaces a one-line confirmation. You don't act on those.
-- `drop it` or `drop <slug>` — you delete it yourself: `rm debt/registry/<id>-<slug>.md`. Treat dropping as cheap — over-registering is the intended posture.
+- `drop it` or `drop <slug>` — you delete it yourself: `rm <registry-dir>/<id>-<slug>.md` (the registry dir named in Discipline 3; default `docs/debt/`). Treat dropping as cheap — over-registering is the intended posture.
 
 ## Don't
 
