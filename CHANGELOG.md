@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.6.1...debt-ops-v0.6.2) (2026-05-27)
+
+
+### Bug Fixes
+
+* Plugin cache ([2969b17](https://github.com/bcanfield/agentic-tech-debt/commit/2969b1717419e7e63dd4f5dee168c163150bbf06))
+
 ## [0.6.1](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.6.0...debt-ops-v0.6.1) (2026-05-27)
 
 
