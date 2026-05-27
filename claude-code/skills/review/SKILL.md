@@ -44,6 +44,10 @@ For each entry, read the registry file, the hotspot, and adjacent tests. Apply t
 
 Aim for 3–10 entries per session — continuous paydown outperforms stop-the-world batches. If the user says "do them all," push back once: unsupervised AI cleanup measurably increases duplicate blocks and short-term churn. If they insist, still one-at-a-time with diffs surfaced.
 
+## Speak plainly
+
+The frontmatter uses a research taxonomy (`quadrant`, `category`) for ranking and grounding — it is not user-facing vocabulary. When you talk about an entry, describe it in plain words; never say "prudent-inadvertent", "reckless-deliberate", "code_rot", etc. to the user. Use the entry's body and a plain phrase (e.g. "a planned tradeoff", "a shortcut you knew about", "came up later") instead. The `review.py` output is already translated — match its tone.
+
 ## Don't
 
 - Don't ask the user to confirm before running `review.py`.
