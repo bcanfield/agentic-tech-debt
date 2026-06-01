@@ -4,6 +4,7 @@
 
 [![MIT License](https://img.shields.io/github/license/bcanfield/agentic-tech-debt?color=blue)](./LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](./claude-code)
+[![Codex plugin](https://img.shields.io/badge/Codex-plugin-000000)](./codex)
 
 <img src="./demo/concept/debt-ops-concept.gif" width="720" alt="A real `# TODO` deferral in the code detaches and files itself as a registry entry `+1 entry: retry-swallows-error (A)`; a second nit is caught the same way; the nit slides off and the kept entry is paid down (strikethrough + green ✓); the registry empties to zero; debt-ops wordmark." />
 
@@ -17,12 +18,25 @@
 
 ## Install
 
+Same disciplines, two coding agents. Pick your agent — each adapter is a self-contained plugin ([ADR 0011](./docs/adr/0011-codex-adapter-self-contained.md)). Both need a git repo and Python 3.10+ (stdlib only).
+
+**Claude Code** ([`claude-code/`](./claude-code)) — needs v2.1.121+:
+
 ```bash
 /plugin marketplace add bcanfield/agentic-tech-debt
 /plugin install debt-ops
 ```
 
-Needs a git repo, Python 3.10+ (stdlib only), and Claude Code v2.1.121+. For local development, point Claude at the plugin dir instead: `claude --plugin-dir /path/to/agentic-tech-debt/claude-code`.
+For local development: `claude --plugin-dir /path/to/agentic-tech-debt/claude-code`.
+
+**Codex** ([`codex/`](./codex)) — add the repo marketplace, then install `debt-ops`:
+
+```bash
+/plugins marketplace add bcanfield/agentic-tech-debt
+/plugins install debt-ops
+```
+
+The Codex adapter reads/writes `AGENTS.md` (not `CLAUDE.md`), runs feedback on `apply_patch` edits, and caches per-repo state under `~/.cache/debt-ops` (override with `DEBT_OPS_CACHE`; see [ADR 0012](./docs/adr/0012-codex-deterministic-cache-base.md)). Skills are invoked with `$add`, `$review`, `$init`, `$metrics`.
 
 Nothing is written on install. Files appear only when there's a reason, and it follows your existing convention (`doc/adr`, `docs/`) if you have one:
 
