@@ -12,9 +12,10 @@
 - **We like humanlike, concise inline comments** For example, a single line above a function or code block very simply and concisely saying what the code is doing so that the code is easy for a human to understand
 - **Record decisions as ADRs.** When we make a choice with two credible alternatives — a new convention, a tradeoff worth remembering — drop a short note in [`docs/adr/`](./docs/adr/) using the format in its [README](./docs/adr/README.md).
 
-## Demo GIF
+## Demo GIFs
 
-The README hero (`demo/debt-ops.gif`) is "terminal GIFs as code" via [VHS](https://github.com/charmbracelet/vhs). The fabricated session lives in [`demo/scene.bash`](./demo/scene.bash); the recording script is [`demo/debt-ops.tape`](./demo/debt-ops.tape). Regenerate from the repo root with `vhs demo/debt-ops.tape` (needs `vhs`, `ttyd`, `ffmpeg`, and the JetBrains Mono font).
+- `demo/concept/debt-ops-concept.gif` — README hero, [Motion Canvas](https://motioncanvas.io/). Source + regen steps in [`demo/concept/`](./demo/concept/).
+- `demo/debt-ops.gif` — CLI flow, [VHS](https://github.com/charmbracelet/vhs). Scene: [`demo/scene.bash`](./demo/scene.bash). Tape: [`demo/debt-ops.tape`](./demo/debt-ops.tape). Regenerate: `vhs demo/debt-ops.tape` (needs `vhs`, `ttyd`, `ffmpeg`, JetBrains Mono).
 
 ## Debugging
 

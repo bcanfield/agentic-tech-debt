@@ -13,9 +13,7 @@
 - **Runs your linter, type-checker, and tests** on each agentic edit, fixing failures before they reach your diff.
 - **Ranks what to clean up first** by how active each file is, so effort goes to the hotspots.
 
-Watch it run — an edit logs the shortcuts it took while your gates fire in the loop, `drop B` prunes the over-capture in one word, and `/debt-ops:review` ranks what's left by churn:
-
-<img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: adding retry logic logs two entries as ruff, mypy and pytest pass — the swallowed error (A) and a logging nit (B); drop B prunes the nit; then /debt-ops:review ranks the churn hotspots" />
+<img src="./demo/concept/debt-ops-concept.gif" width="720" alt="A real `# TODO` deferral in the code detaches and files itself as a registry entry `+1 entry: retry-swallows-error (A)`; a second nit is caught the same way; the nit slides off and the kept entry is paid down (strikethrough + green ✓); the registry empties to zero; debt-ops wordmark." />
 
 ## Install
 
@@ -40,6 +38,10 @@ Nothing is written on install. Files appear only when there's a reason, and it f
 - **`/debt-ops:review`** — audit and triage the registry: flags stale entries, deprioritizes cold files, ranks the rest by change frequency and risk. Run when it feels heavy.
 - **`/debt-ops:init`** *(opt-in)* — write the disciplines and your quality commands into `CLAUDE.md` so the team shares one source of truth.
 - **`/debt-ops:metrics`** — a read-only health summary of the plugin's own log: edits per session, registry growth, ADR rate, hook fail→pass rate.
+
+In Claude Code:
+
+<img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: adding retry logic logs two entries as ruff, mypy and pytest pass — the swallowed error (A) and a logging nit (B); drop B prunes the nit; then /debt-ops:review ranks the churn hotspots" />
 
 ## Why it exists
 

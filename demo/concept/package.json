@@ -1,0 +1,25 @@
+{
+  "name": "debt-ops-concept",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Conceptual hero animation for debt-ops (Motion Canvas). See DESIGN.md.",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "encode": "bash tools/encode.sh"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@motion-canvas/2d": "3.17.2",
+    "@motion-canvas/core": "3.17.2"
+  },
+  "devDependencies": {
+    "@motion-canvas/ui": "3.17.2",
+    "@motion-canvas/vite-plugin": "3.17.2",
+    "typescript": "5.9.3",
+    "vite": "5.4.21"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "shared": {
+    "background": "rgb(24,24,37)",
+    "range": [
+      0,
+      null
+    ],
+    "size": {
+      "x": 1280,
+      "y": 720
+    },
+    "audioOffset": 0
+  },
+  "preview": {
+    "fps": 25,
+    "resolutionScale": 1
+  },
+  "rendering": {
+    "fps": 25,
+    "resolutionScale": 1,
+    "colorSpace": "srgb",
+    "exporter": {
+      "name": "@motion-canvas/core/image-sequence",
+      "options": {
+        "fileType": "image/png",
+        "quality": 100,
+        "groupByScene": false
+      }
+    },
+    "fileType": "image/png",
+    "quality": 1
+  }
+}

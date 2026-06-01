@@ -1,0 +1,5 @@
+# OS junk
+.DS_Store
+
+# Playwright MCP traces left in the cwd during agent-driven authoring
+.playwright-mcp/
