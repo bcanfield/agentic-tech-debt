@@ -1,0 +1,20 @@
+{
+  "name": "agentic-tech-debt",
+  "interface": {
+    "displayName": "Agentic Tech Debt"
+  },
+  "plugins": [
+    {
+      "name": "debt-ops",
+      "source": {
+        "source": "local",
+        "path": "./codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

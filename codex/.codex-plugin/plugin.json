@@ -1,0 +1,15 @@
+{
+  "name": "debt-ops",
+  "version": "0.6.4",
+  "description": "Tech debt management for agentic codebases — surfaces debt, ranks hotspots, and uses AI agents to pay it down. Evidence-based, continuous, non-blocking.",
+  "author": {
+    "name": "Brandin Canfield",
+    "email": "brandincanfield@gmail.com"
+  },
+  "homepage": "https://github.com/bcanfield/agentic-tech-debt",
+  "repository": "https://github.com/bcanfield/agentic-tech-debt",
+  "license": "MIT",
+  "keywords": ["tech-debt", "code-health", "hotspots", "adr", "productivity"],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
+}

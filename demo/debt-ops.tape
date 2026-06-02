@@ -18,33 +18,19 @@ Set BorderRadius 10
 Set TypingSpeed 45ms
 Set Framerate 60
 
-# Load the fabricated scene handlers, hidden from the recording.
+# Load the fabricated scene handler, hidden from the recording.
 Hide
 Type "source demo/scene.bash && clear"
 Enter
 Show
 
-Sleep 800ms
-
-# Scene 1: Claude works, the edit logs the shortcuts it took, gates run in the loop.
-Type "add retry logic to the API client"
-Sleep 500ms
-Enter
-Sleep 4s
-
-# Scene 2: prune the over-capture — keep the real one (A), drop the nit (B).
 Sleep 600ms
-Type "drop B"
-Sleep 400ms
-Enter
-Sleep 1.4s
 
-# Scene 3: review ranks what's left.
-Sleep 700ms
-Type "/debt-ops:review"
-Sleep 400ms
+# One real catch: the agent casts to `as any`, debt-ops registers it at write-time.
+Type "wire session.user into the checkout payload"
+Sleep 300ms
 Enter
 Sleep 2.5s
 
-# Hold the final frame so visitors can actually read the ranking.
-Sleep 6s
+# Hold so the catch is readable.
+Sleep 4s

@@ -1,5 +1,9 @@
 # OS junk
 .DS_Store
 
+# Python bytecode (plugin scripts are stdlib Python)
+__pycache__/
+*.pyc
+
 # Playwright MCP traces left in the cwd during agent-driven authoring
 .playwright-mcp/
