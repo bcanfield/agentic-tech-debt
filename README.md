@@ -20,7 +20,7 @@
 
 ## Install
 
-A self-contained plugin per agent. Both need a git repo and Python 3.10+ (stdlib only).
+A self-contained plugin per agent. Both need a git repo and Python 3.10+.
 
 **Claude Code** (v2.1.121+)
 
@@ -36,36 +36,22 @@ codex plugin marketplace add bcanfield/agentic-tech-debt
 # then, inside Codex: /plugins → install debt-ops
 ```
 
-Codex differences (`AGENTS.md`, `apply_patch` feedback, `$add`/`$review` skills) → [`codex/`](./codex).
+Nothing's written until there's a reason — entries land in `docs/debt/`, decisions in `docs/adr/`.
 
-Nothing is written on install — files appear only when there's a reason, following your existing `docs/` convention:
+## Commands
 
-| Path                                              | When                                       |
-| ------------------------------------------------- | ------------------------------------------ |
-| `docs/debt/<id>-<slug>.md`                        | your agent registers a debt entry          |
-| `docs/adr/<n>-<title>.md`                         | your agent drafts an ADR                   |
-| `## Tech debt operations` in `CLAUDE.md`/`AGENTS.md` | only if you run init (`/debt-ops:init` · `$init`) |
+Claude Code `/debt-ops:<name>` · Codex `$<name>`:
 
-## Commands & skills
-
-Invoke from Claude Code as `/debt-ops:<name>`, or from Codex as `$<name>` (or the `/skills` picker). Same behavior either way.
-
-- **add** (`/debt-ops:add` · `$add`) — register a debt entry. Auto-invoked when your agent defers work; each capture is a one-liner with a batch letter (`+1 entry: <slug> (A)`). Drop with `drop A`, `drop A,C`, or `drop all`.
-- **review** (`/debt-ops:review` · `$review`) — audit and triage the registry: flags stale entries, deprioritizes cold files, ranks the rest by change frequency and risk. Run when it feels heavy.
-- **init** (`/debt-ops:init` · `$init`) *(opt-in)* — write the disciplines and your quality commands into `CLAUDE.md` (Claude Code) or `AGENTS.md` (Codex) so the team shares one source of truth.
-- **metrics** (`/debt-ops:metrics` · `$metrics`) — a read-only health summary of the plugin's own log: edits per session, registry growth, ADR rate, hook fail→pass rate.
+- **add** — register a debt entry (auto-fires when your agent defers work). Drop with `drop A`, `drop A,C`, or `drop all`.
+- **review** — audit and rank the registry, then walk paydown.
+- **init** *(opt-in)* — write the disciplines into `CLAUDE.md`/`AGENTS.md` so the team shares them.
+- **metrics** — read-only health summary of the registry.
 
 <img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: adding retry logic logs two entries as ruff, mypy and pytest pass — the swallowed error (A) and a logging nit (B); drop B prunes the nit; then /debt-ops:review ranks the churn hotspots" />
 
 ## Why it exists
 
-AI writes code fast and accrues debt just as fast. Across 211M lines (GitClear, 2020–2024), refactoring fell from ~25% of changed code to under 10% and code reverted within two weeks nearly doubled. The fix is decades old: make debt visible, pay it down continuously, document the decisions. It just rarely survives an agent moving faster than you can review.
-
-debt-ops distills that research into [nine tool-agnostic pillars](./docs/tech-debt-pillars.md) and wires it into the agent loop. Every claim is cited, the weak ones flagged.
-
-- [`docs/tech-debt-management.md`](./docs/tech-debt-management.md) — the research synthesis
-- [`docs/tech-debt-pillars.md`](./docs/tech-debt-pillars.md) — the nine pillars
-- [`docs/tech-debt-plugin-plan.md`](./docs/tech-debt-plugin-plan.md) — how they map to the plugin (Claude Code v1; the [`codex/`](./codex) adapter mirrors it)
+AI accrues debt faster than you can review it. The fix is decades old — make it visible, pay it down continuously, document the decisions — distilled here into [nine cited pillars](./docs/tech-debt-pillars.md) wired into the agent loop. Full [research synthesis](./docs/tech-debt-management.md).
 
 ## License
 
