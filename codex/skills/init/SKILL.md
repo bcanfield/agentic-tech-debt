@@ -1,6 +1,6 @@
 ---
 name: init
-description: Write or refresh the "## Tech debt operations" section in AGENTS.md so a team shares one source of truth for debt-ops disciplines and cached quality commands. Idempotent — only the managed section changes; other sections are untouched. Invoke explicitly via $init (solo users get the same content from the SessionStart inject).
+description: Write or refresh the "## Tech debt operations" section in AGENTS.md so a team shares one source of truth for debt-ops disciplines and cached quality commands. Idempotent. Only the managed section changes; other sections are untouched. Invoke explicitly via $init (solo users get the same content from the SessionStart inject).
 ---
 
 # init
