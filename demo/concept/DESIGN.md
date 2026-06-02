@@ -93,7 +93,7 @@ Both fonts bundled locally as **woff2** (offline → deterministic render).
 |---|---|---|---|---|
 | Code | **JetBrains Mono** | 26px / lh 1.5 | 400–500 | already a project font |
 | Card system line (`+1 entry: …`) | JetBrains Mono | 24px | 500 | the literal, truthful output |
-| Card plain tag | **Inter** | 16px | 500 | e.g. "accidental · checkout" |
+| Card plain tag | **Inter** | 16px | 500 | e.g. "loosened type · checkout" |
 | Caption (lower third) | Inter | 32px | 600, ls −0.01em | `#cdd6f4`; per-beat hold ≥0.3s/word |
 | Wordmark "debt-ops" | Inter | 72px | 800 | `#cdd6f4`, the "-ops" in `#d97757` |
 | Tagline | Inter | 28px | 500 | `#bac2de` |
