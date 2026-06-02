@@ -1,9 +1,13 @@
 {
   "name": "debt-ops",
   "version": "0.6.4",
-  "description": "Catches tech debt and architectural decisions as your AI codes. Then stays out of your way until you're ready. Any stack. Backed by decades of research.",
+  "description": "Catches AI-introduced tech debt at write-time. Every TODO, as any, and .skip your AI agent writes, turned into a paydown queue ranked by churn.",
   "author": {
     "name": "Brandin Canfield",
     "email": "brandincanfield@gmail.com"
-  }
+  },
+  "homepage": "https://github.com/bcanfield/agentic-tech-debt",
+  "repository": "https://github.com/bcanfield/agentic-tech-debt",
+  "license": "MIT",
+  "keywords": ["tech-debt", "code-health", "hotspots", "adr", "productivity"]
 }
