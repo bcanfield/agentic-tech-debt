@@ -12,6 +12,8 @@ Every ADR has five short sections, written in plain language:
 - **Alternatives we ruled out** — and why each was worse.
 - **When to revisit** — the trigger that should pull this decision back open.
 
+These are this repo's friendlier aliases for classic [Nygard](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) sections. The plugin *ships* the classic names to user repos — Context, Decision, **Consequences** (≈ what this means for you), Alternatives, **Payoff trigger** (≈ when to revisit) — so an ADR generated in any repo is recognizable. Same five sections, same intent; only the two labels differ.
+
 ## House style
 
 Keep it tight. 2–3 sentences per section is plenty. If a section is longer than a paragraph, you're probably writing the implementation, not the decision.

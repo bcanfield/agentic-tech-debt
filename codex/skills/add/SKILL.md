@@ -1,17 +1,16 @@
 ---
 name: add
-description: Register a deferred decision in the debt registry. Trigger by judgment, not a marker scan — whenever a future reader would ask "why this way?": an unmade decision, stub, loosened type, bypassed check, swallowed error, a default picked "for now", or a TODO/FIXME/HACK/XXX marker. Trigger immediately whenever you defer work, or when the user invokes /debt-ops:add. Over-register freely; the developer drops with "drop A", "drop A,C", or "drop all".
-allowed-tools: Bash(python3 *), Bash(rm *)
+description: Register a deferred decision in the debt registry. Trigger by judgment, not a marker scan — whenever a future reader would ask "why this way?": an unmade decision, stub, loosened type, bypassed check, swallowed error, a default picked "for now", or a TODO/FIXME/HACK/XXX marker. Trigger immediately whenever you defer work, or when the user invokes $add. Over-register freely; the developer drops with "drop A", "drop A,C", or "drop all".
 ---
 
-# /debt-ops:add — register a tech-debt entry
+# add — register a tech-debt entry
 
-Call `register.py` via Bash. The helper writes the entry under the repo's detected registry dir (default `docs/debt/`), assigns a short batch letter (A, B, C…), and prints exactly one line: `+1 entry: <slug> (<letter>)`. That stdout IS the user-facing announcement — add no commentary before or after.
+Call the bundled `register.py` via Bash — it lives in this skill's `scripts/` directory, so reference it with the relative path below (Codex resolves it against the skill root). The helper writes the entry under the repo's detected registry dir (default `docs/debt/`), assigns a short batch letter (A, B, C…), and prints exactly one line: `+1 entry: <slug> (<letter>)`. That stdout IS the user-facing announcement — add no commentary before or after.
 
 ## The call
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/register.py \
+python3 scripts/register.py \
   --slug <slug> \
   --principal <effort, e.g. 2d, 1w, unknown> \
   --interest <ongoing cost, e.g. "+30min/incident", unknown> \
@@ -28,7 +27,7 @@ EOF
 The helper:
 - Generates the timestamp `id` itself (no `date` call needed).
 - Resolves filename collisions when two registrations land in the same second.
-- Tracks the letter mapping in `$CLAUDE_PLUGIN_DATA/cache/<repo-hash>/current-turn.txt` so the user can drop by letter.
+- Tracks the letter mapping in `~/.cache/debt-ops/cache/<repo-hash>/current-turn.txt` (override the base with `DEBT_OPS_CACHE`) so the user can drop by letter.
 
 ## Slug
 
@@ -49,6 +48,6 @@ The helper:
 ## Don't
 
 - Don't ask the developer for confirmation before writing. Discipline 1 says "no permission prompt; just do it."
-- Don't use the `Write` tool to create the file directly — letter assignment depends on going through `register.py`.
+- Don't write the file directly with an editor tool — letter assignment depends on going through `register.py`.
 - Don't echo or paraphrase the helper's output. The Bash tool result is already visible to the user.
 - Don't fill `payoff_trigger` with a guess to seem certain.

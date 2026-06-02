@@ -10,7 +10,10 @@
   affects, and the failure mode without it.
 - **[`tech-debt-plugin-plan.md`](./tech-debt-plugin-plan.md)**:
   `debt-ops` v1 spec. Maps the pillars to a concrete Claude Code
-  plugin: two skills, two hooks, two scripts, zero install footprint.
+  plugin with zero install footprint. Shipped as two self-contained
+  adapters — [`claude-code/`](../claude-code) and [`codex/`](../codex)
+  (the Codex adapter mirrors the Claude mapping onto Codex primitives;
+  see ADRs 0011–0012).
 - **[`claude-code-plugins.md`](./claude-code-plugins.md)**: reference
   guide for Claude Code plugin internals: manifest, skills, agents,
   hooks, MCP, LSP, monitors, marketplaces. Used while designing the

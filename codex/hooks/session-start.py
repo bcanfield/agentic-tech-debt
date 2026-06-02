@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """debt-ops SessionStart hook: emit disciplines + (charter | cache | discovery prompt).
 
+Codex adapter. Mirrors the Claude hook but reads/writes AGENTS.md (Codex's
+charter file) and resolves the cache from one deterministic base so the
+skill Bash env agrees with the hook subprocess (ADR 0011).
+
 Path adaptivity: cheap Python probe of common ADR/registry conventions on first
 session, cached at <cache>/adr-dir and <cache>/registry-dir. If the probe finds
-no existing ADR directory, the inject asks Claude to detect it semantically and
+no existing ADR directory, the inject asks Codex to detect it semantically and
 write the path itself — same pattern as the quality-commands detection below.
 """
 
@@ -34,6 +38,13 @@ ADR_FILENAME_RE = re.compile(r"^\d+[-_].*\.md$", re.IGNORECASE)
 # Co-located default home (ADR 0009): both artifacts under one `docs/` parent.
 DEFAULT_ADR_DIR = "docs/adr"
 DEFAULT_REGISTRY_DIR = "docs/debt"
+
+
+# Single deterministic cache base so hook subprocesses and skill Bash (which
+# never sees PLUGIN_DATA) resolve the same path. Override with DEBT_OPS_CACHE.
+def cache_base():
+    override = os.environ.get("DEBT_OPS_CACHE")
+    return Path(override) if override else (Path.home() / ".cache" / "debt-ops")
 
 
 def emit(context):
@@ -111,11 +122,11 @@ def log_metric(cache_dir, payload):
 
 
 def has_charter(toplevel):
-    claude_md = toplevel / "CLAUDE.md"
-    if not claude_md.is_file():
+    agents_md = toplevel / "AGENTS.md"
+    if not agents_md.is_file():
         return False
     try:
-        return CHARTER_MARKER in claude_md.read_text(encoding="utf-8", errors="replace")
+        return CHARTER_MARKER in agents_md.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return False
 
@@ -178,8 +189,8 @@ def probe_registry_dir(toplevel):
 
 
 # When the ADR or registry dir doesn't exist yet, the inject states the
-# co-location convention as fact and lets Claude pick the home — it reads the
-# repo's doc conventions better than a fixed probe (ADR 0009). Claude writes
+# co-location convention as fact and lets Codex pick the home — it reads the
+# repo's doc conventions better than a fixed probe (ADR 0009). Codex writes
 # the resolved repo-relative path(s) to the cache file(s) the other hooks read.
 def placement_instruction(cache_dir, adr_dir, registry_dir):
     lines = ["Directory placement — resolve silently, no announcement:"]
@@ -228,15 +239,15 @@ def placement_instruction(cache_dir, adr_dir, registry_dir):
     return "\n".join(lines)
 
 
-def commands_block(cache_dir, cache_base, manifest, charter, stateless):
+def commands_block(cache_dir, manifest, charter, stateless):
     if charter:
         return (
-            f"Quality commands: read the CLAUDE.md section marked `{CHARTER_MARKER}`. "
-            "CLAUDE.md is the source of truth when present."
+            f"Quality commands: read the AGENTS.md section marked `{CHARTER_MARKER}`. "
+            "AGENTS.md is the source of truth when present."
         )
     if stateless:
         return (
-            f"debt-ops: cache disabled (read-only {cache_base}). "
+            "debt-ops: cache disabled (read-only cache dir). "
             "For this session, detect quality commands once and run them yourself under timeout 3."
         )
     list_file = cache_dir / "feedback.list"
@@ -270,12 +281,12 @@ def commands_block(cache_dir, cache_base, manifest, charter, stateless):
 
 
 # Substitutes the detected paths into the disciplines text. Discipline 2 names
-# the ADR dir Claude should write new ADRs into; Discipline 3 names the
+# the ADR dir Codex should write new ADRs into; Discipline 3 names the
 # registry to read before editing referenced files.
 def disciplines_text(adr_dir, registry_dir):
     return (
-        '1. The test for debt: would a future reader ask "why this way?" If yes, register via '
-        '/debt-ops:add immediately — no prompt. This is judgment, not a marker scan: a '
+        '1. The test for debt: would a future reader ask "why this way?" If yes, register via the '
+        '`$add` skill immediately — no prompt. This is judgment, not a marker scan: a '
         '`TODO`/`FIXME`/`HACK`/`XXX` is the obvious case, but an unmade decision, a stub, a loosened '
         'type, or a default picked "for now" all count even with no marker in the diff. Use '
         '`payoff_trigger: unknown` if unsure. The helper prints one line: `+1 entry: <slug> '
@@ -287,8 +298,8 @@ def disciplines_text(adr_dir, registry_dir):
         '`# NNNN — Title` heading, `**Date:**` and `**Status:**` lines, then Context, Decision, Consequences, '
         'Alternatives, Payoff trigger. Create the directory if needed. Only draft an ADR when there '
         'are two credible alternatives; if you cannot list two, it is a comment, not an ADR. An ADR '
-        'with a payoff trigger *is* deliberate debt — when you write one, also call /debt-ops:add so '
-        'the registry entry mirrors the ADR (don\'t conclude "no markers, no debt").\n\n'
+        'with a payoff trigger *is* deliberate debt — when you write one, also invoke `$add` so the '
+        'registry entry mirrors the ADR (don\'t conclude "no markers, no debt").\n\n'
         f'3. Read entries under {registry_dir}/ before changing files they reference.'
     )
 
@@ -299,8 +310,7 @@ def main():
         emit("debt-ops: not a git repo, plugin idle this session")
         return 0
 
-    cache_base = Path(os.environ.get("CLAUDE_PLUGIN_DATA") or (Path.home() / ".cache" / "debt-ops"))
-    cache_dir = cache_base / "cache" / repo_hash(toplevel)
+    cache_dir = cache_base() / "cache" / repo_hash(toplevel)
     stateless = False
     try:
         cache_dir.mkdir(parents=True, exist_ok=True)
@@ -308,7 +318,7 @@ def main():
         stateless = True
 
     # Resolve ADR and registry paths: cached → existing-content probe. Either
-    # may stay None (greenfield) — the placement inject below then has Claude
+    # may stay None (greenfield) — the placement inject below then has Codex
     # choose a co-located home and write the cache file(s). See ADR 0009.
     adr_cache = cache_dir / "adr-dir"
     registry_cache = cache_dir / "registry-dir"
@@ -344,7 +354,7 @@ def main():
     context = (
         "Tech-debt-operations disciplines (debt-ops plugin):\n\n"
         f"{disciplines_text(effective_adr_dir, effective_registry_dir)}\n\n"
-        f"{commands_block(cache_dir, cache_base, manifest_hash(toplevel), has_charter(toplevel), stateless)}"
+        f"{commands_block(cache_dir, manifest_hash(toplevel), has_charter(toplevel), stateless)}"
     )
     if (adr_dir is None or registry_dir is None) and not stateless:
         context += "\n\n" + placement_instruction(cache_dir, adr_dir, registry_dir)

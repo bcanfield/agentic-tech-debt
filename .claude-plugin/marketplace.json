@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "debt-ops",
-      "description": "Tech debt management for agentic codebases — surfaces debt, ranks hotspots, and uses AI agents to pay it down. Evidence-based, continuous, non-blocking.",
+      "description": "A Claude Code and Codex plugin: turn agent shortcuts into a debt registry your team actually pays down.",
       "author": {
         "name": "Brandin Canfield",
         "email": "brandincanfield@gmail.com"

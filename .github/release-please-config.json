@@ -9,6 +9,11 @@
           "type": "json",
           "path": "claude-code/.claude-plugin/plugin.json",
           "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "codex/.codex-plugin/plugin.json",
+          "jsonpath": "$.version"
         }
       ]
     }
