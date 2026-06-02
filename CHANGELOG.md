@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.6.4...debt-ops-v0.7.0) (2026-06-02)
+
+
+### Features
+
+* add Codex adapter ([#24](https://github.com/bcanfield/agentic-tech-debt/issues/24)) ([a3820f6](https://github.com/bcanfield/agentic-tech-debt/commit/a3820f63fd363e6e0cd08b990c0b109b571df1d9))
+
 ## [0.6.4](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.6.3...debt-ops-v0.6.4) (2026-05-27)
 
 

@@ -17,7 +17,13 @@
       "homepage": "https://github.com/bcanfield/agentic-tech-debt",
       "repository": "https://github.com/bcanfield/agentic-tech-debt",
       "license": "MIT",
-      "keywords": ["tech-debt", "code-health", "hotspots", "adr", "productivity"],
+      "keywords": [
+        "tech-debt",
+        "code-health",
+        "hotspots",
+        "adr",
+        "productivity"
+      ],
       "source": "./claude-code",
       "category": "productivity"
     }
