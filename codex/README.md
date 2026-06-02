@@ -14,13 +14,18 @@ Open `/plugins` inside Codex and install **debt-ops**. Working *inside* this rep
 
 ## What's wired
 
+Layout follows Codex's plugin conventions: hooks bundle their scripts under `hooks/` (referenced via `${PLUGIN_ROOT}/hooks/…`), and each skill bundles its helper under its own `scripts/` (referenced by a relative path, the documented skill convention).
+
 | Codex primitive | File | Role |
 | --- | --- | --- |
-| `SessionStart` hook | `scripts/session-start.py` | Injects the disciplines + detects/caches quality commands and ADR/registry dirs |
-| `PostToolUse` hook (`apply_patch\|Edit\|Write`) | `scripts/feedback.py` | Runs quality commands on edited files under a 3s/command budget |
-| `Stop` hook | `scripts/stop.py` | TODO-sniff safety net — nudges when deferrals went unregistered |
-| `UserPromptSubmit` hook | `scripts/drop.py` | Handles `drop A` / `drop A,C` / `drop all` shorthand |
-| Skills | `skills/{add,review,init,metrics}` | `$add`, `$review`, `$init`, `$metrics` |
+| `SessionStart` hook | `hooks/session-start.py` | Injects the disciplines + detects/caches quality commands and ADR/registry dirs |
+| `PostToolUse` hook (`apply_patch\|Edit\|Write`) | `hooks/feedback.py` | Runs quality commands on edited files under a 3s/command budget |
+| `Stop` hook | `hooks/stop.py` | TODO-sniff safety net — nudges when deferrals went unregistered |
+| `UserPromptSubmit` hook | `hooks/drop.py` | Handles `drop A` / `drop A,C` / `drop all` shorthand |
+| `$add` skill | `skills/add/` (+ `scripts/register.py`) | Registers a debt entry, assigns a batch letter |
+| `$review` skill | `skills/review/` (+ `scripts/review.py`) | Audits + ranks the registry; walks paydown |
+| `$init` skill *(explicit-only)* | `skills/init/` | Writes the `## Tech debt operations` charter into `AGENTS.md` |
+| `$metrics` skill | `skills/metrics/` | Read-only health summary from the metrics log |
 
 ## Codex-specific notes
 

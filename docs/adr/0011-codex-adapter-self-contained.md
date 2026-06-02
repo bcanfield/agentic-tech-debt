@@ -14,7 +14,7 @@ Ship the Codex adapter as a fully self-contained plugin under `codex/`, a siblin
 ## What this means for you
 
 - Install either adapter on its own: `/plugin install` for Claude, the Codex marketplace at `.agents/plugins/marketplace.json` for Codex. Neither depends on files outside its own directory.
-- A change to shared logic (e.g. the registry schema) must be applied to both `claude-code/scripts/` and `codex/scripts/`. That duplication is logged as a debt entry with a payoff trigger (a third adapter).
+- A change to shared logic (e.g. the registry schema) must be applied to both adapters' copies (`claude-code/scripts/` and, on the Codex side, `codex/hooks/` + `codex/skills/<skill>/scripts/`). That duplication is logged as a debt entry with a payoff trigger (a third adapter).
 
 ## Alternatives we ruled out
 

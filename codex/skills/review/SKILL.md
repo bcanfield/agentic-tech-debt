@@ -9,8 +9,10 @@ Two modes. First turn: print the audit and stop. On a user follow-up ("fix the t
 
 ## First turn: print the audit
 
+Run the bundled `review.py` (it lives in this skill's `scripts/` directory — reference it with the relative path; Codex resolves it against the skill root):
+
 ```bash
-python3 ${PLUGIN_ROOT}/scripts/review.py
+python3 scripts/review.py
 ```
 
 Optional: `--top N` to surface more than the default 3 candidates.
