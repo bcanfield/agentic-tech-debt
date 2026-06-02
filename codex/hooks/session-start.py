@@ -295,7 +295,7 @@ def disciplines_text(adr_dir, registry_dir):
         '2. When making an architecturally significant change — a data model, public interface, '
         'security boundary, release pipeline, or a dep-manifest change that is a major-version bump '
         f'or a *new* top-level dependency — draft an ADR under {adr_dir}/ in Nygard format: a '
-        '`# NNNN — Title` heading, a `**Status:**` line, then Context, Decision, Consequences, '
+        '`# NNNN — Title` heading, `**Date:**` and `**Status:**` lines, then Context, Decision, Consequences, '
         'Alternatives, Payoff trigger. Create the directory if needed. Only draft an ADR when there '
         'are two credible alternatives; if you cannot list two, it is a comment, not an ADR. An ADR '
         'with a payoff trigger *is* deliberate debt — when you write one, also invoke `$add` so the '

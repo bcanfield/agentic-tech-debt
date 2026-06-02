@@ -34,23 +34,23 @@ const cardA = {x: regPanel.x, y: -52, w: 400, h: 74};
 const cardB = {x: regPanel.x, y: 38, w: 400, h: 74};
 
 const codeLines: {indent: number; tokens: [string, string][]}[] = [
-  {indent: 0, tokens: [['async ', T.MAUVE], ['def ', T.MAUVE], ['fetch', T.BLUE], ['(url):', T.TEXT]]},
-  {indent: 2, tokens: [['for ', T.MAUVE], ['attempt ', T.TEXT], ['in ', T.MAUVE], ['range', T.BLUE], ['(', T.TEXT], ['3', T.PEACH], ['):', T.TEXT]]},
-  {indent: 4, tokens: [['try', T.MAUVE], [':', T.TEXT]]},
-  {indent: 6, tokens: [['# TODO: tidy log format', T.OVERLAY0]]},
-  {indent: 6, tokens: [['return ', T.MAUVE], ['await ', T.MAUVE], ['client', T.TEXT], ['.get', T.BLUE], ['(url)', T.TEXT]]},
-  {indent: 4, tokens: [['except ', T.MAUVE], ['Exception', T.BLUE], [':', T.TEXT]]},
+  {indent: 0, tokens: [['function ', T.MAUVE], ['checkout', T.BLUE], ['(session) {', T.TEXT]]},
+  {indent: 2, tokens: [['const ', T.MAUVE], ['payload ', T.TEXT], ['= ', T.TEXT], ['buildCart', T.BLUE], ['(session)', T.TEXT]]},
+  {indent: 2, tokens: [['payload.total ', T.TEXT], ['= ', T.TEXT], ['price', T.BLUE], ['(payload.items)', T.TEXT]]},
+  {indent: 2, tokens: [['// TODO: tidy log format', T.OVERLAY0]]},
+  {indent: 2, tokens: [['if ', T.MAUVE], ['(session.user) {', T.TEXT]]},
+  {indent: 4, tokens: [['payload.email ', T.TEXT], ['= ', T.TEXT], ['session.email', T.TEXT]]},
 ];
-const DEF_INDENT = 6;
-const DEF_PASS = 'pass  ';
-const DEF_COMMENT = '# TODO: last retry swallows error';
+const DEF_INDENT = 4;
+const DEF_KEEP = 'payload.userId = session.user ';
+const DEF_CAST = 'as any';
 
 export default makeScene2D(function* (view) {
   const code = createRef<Rect>();
   const reg = createRef<Rect>();
   const lines = createRefArray<Txt>();
   const defLine = createRef<Txt>();
-  const defComment = createRef<Txt>();
+  const defCast = createRef<Txt>();
   const underline = createRef<Rect>();
   const pulse = createRef<Rect>();
   const chip = createRef<Rect>();
@@ -82,7 +82,7 @@ export default makeScene2D(function* (view) {
         shadowOffsetY={12}
         opacity={0}
       >
-        <Txt text={'clients/http.py'} fontFamily={T.SANS} fontSize={16} fontWeight={500} fill={T.SUBTEXT0} offset={[-1, 0]} x={codeLeft} y={codeTop} />
+        <Txt text={'api/checkout.ts'} fontFamily={T.SANS} fontSize={16} fontWeight={500} fill={T.SUBTEXT0} offset={[-1, 0]} x={codeLeft} y={codeTop} />
         {codeLines.map((line, i) => (
           <Txt ref={lines} fontFamily={T.MONO} fontSize={CODE} textWrap={false} offset={[-1, 0]} x={charX(line.indent)} y={lineYL(i)} opacity={0}>
             {line.tokens.map(([t, c]) => (
@@ -91,11 +91,12 @@ export default makeScene2D(function* (view) {
           </Txt>
         ))}
         <Txt ref={defLine} fontFamily={T.MONO} fontSize={CODE} textWrap={false} offset={[-1, 0]} x={charX(DEF_INDENT)} y={lineYL(6)} opacity={0}>
-          <Txt text={nb(DEF_PASS)} fill={T.MAUVE} />
-          <Txt ref={defComment} text={nb(DEF_COMMENT)} fill={T.OVERLAY0} />
+          <Txt text={nb(DEF_KEEP)} fill={T.TEXT} />
+          <Txt ref={defCast} text={nb(DEF_CAST)} fill={T.MAUVE} />
         </Txt>
-        <Rect ref={pulse} x={charX(25.5)} y={lineYL(6)} width={39 * CH} height={26} radius={6} fill={T.PEACH} opacity={0} />
-        <Rect ref={underline} offset={[-1, 0]} x={charX(6)} y={lineYL(6) + 15} width={0} height={3} radius={2} fill={T.PEACH} />
+        {/* highlight just the `as any` cast — col 34 is where it starts (after the 30-char prefix) */}
+        <Rect ref={pulse} x={charX(37)} y={lineYL(6)} width={6 * CH} height={26} radius={6} fill={T.PEACH} opacity={0} />
+        <Rect ref={underline} offset={[-1, 0]} x={charX(34)} y={lineYL(6) + 15} width={0} height={3} radius={2} fill={T.PEACH} />
       </Rect>
 
       {/* debt registry */}
@@ -118,12 +119,12 @@ export default makeScene2D(function* (view) {
         <Txt ref={count} text={'0'} fontFamily={T.SANS} fontSize={22} fontWeight={800} fill={T.ORANGE} offset={[1, 0]} x={regRight} y={codeTop} />
       </Rect>
 
-      {card(cardARef, checkA, strikeA, cardA, 'retry-swallows-error', 'A', 'accidental · checkout')}
+      {card(cardARef, checkA, strikeA, cardA, 'as-any-checkout-payload', 'A', 'loosened type · checkout')}
       {card(cardBRef, createRef<Txt>(), createRef<Rect>(), cardB, 'log-format-nit', 'B', 'code quality')}
 
       {/* flying chip */}
       <Rect ref={chip} radius={8} fill={T.SURFACE0} stroke={T.PEACH} lineWidth={1.5} padding={[6, 12]} layout opacity={0}>
-        <Txt ref={chipTxt} text={DEF_COMMENT} fontFamily={T.MONO} fontSize={16} fill={T.PEACH} />
+        <Txt ref={chipTxt} text={DEF_CAST} fontFamily={T.MONO} fontSize={16} fill={T.PEACH} />
       </Rect>
 
       {/* brand resolve */}
@@ -132,7 +133,7 @@ export default makeScene2D(function* (view) {
           <Txt text={'debt'} fill={T.TEXT} />
           <Txt text={'-ops'} fill={T.ORANGE} />
         </Txt>
-        <Txt text={'Catches tech debt as your agent writes it.'} fontFamily={T.SANS} fontSize={28} fontWeight={500} fill={T.SUBTEXT1} y={40} />
+        <Txt text={'Catches AI-introduced tech debt at write-time.'} fontFamily={T.SANS} fontSize={28} fontWeight={500} fill={T.SUBTEXT1} y={40} />
       </Node>
     </>,
   );
@@ -152,19 +153,19 @@ export default makeScene2D(function* (view) {
   yield* waitFor(0.35);
 
   // ════════ Beat 1 · Shortcut born ════════
-  yield* underline().width(39 * CH, T.D.underline, T.STANDARD);
+  yield* underline().width(6 * CH, T.D.underline, T.STANDARD);
   yield* waitFor(0.45); // brief beat; no caption, no need for long reading time
 
   // ════════ Beat 2 · The catch (hero) ════════
   yield* chain(pulse().opacity(0.18, T.D.pulse / 2, T.STANDARD), pulse().opacity(0, T.D.pulse / 2, T.STANDARD));
   yield* all(defLine().y(lineYL(6) - 4, T.D.anticipate, T.STANDARD), defLine().scale(1.05, T.D.anticipate, T.STANDARD));
-  const chipStart = inCode(charX(28.5), lineYL(6));
+  const chipStart = inCode(charX(37), lineYL(6));
   const slotA = new Vector2(cardA.x, cardA.y);
   const apexA = new Vector2((chipStart.x + slotA.x) / 2, Math.min(chipStart.y, slotA.y) - 120);
   chip().position(chipStart);
   yield* all(
     chip().opacity(1, 0.1, T.ENTER),
-    defComment().opacity(0, 0.1, T.STANDARD),
+    defCast().opacity(0, 0.1, T.STANDARD),
     underline().opacity(0, 0.15, T.STANDARD),
     code().opacity(0.7, 0.2, T.STANDARD),
     defLine().y(lineYL(6), T.D.anticipate, T.STANDARD),
@@ -181,10 +182,10 @@ export default makeScene2D(function* (view) {
   yield* waitFor(1.2); // hero hold — read the filed entry
 
   // ════════ Beat 3 · Continuous ════════
-  // Now we're flying the *actual* `# TODO: tidy log format` comment off line 3.
-  const chipStartB = inCode(charX(17), lineYL(3));
+  // Now we're flying the *actual* `// TODO: tidy log format` comment off line 3.
+  const chipStartB = inCode(charX(14), lineYL(3));
   chip().opacity(0).position(chipStartB);
-  chipTxt().text('# TODO: tidy log format');
+  chipTxt().text('// TODO: tidy log format');
   const slotB = new Vector2(cardB.x, cardB.y);
   const apexB = new Vector2((chipStartB.x + slotB.x) / 2, -180);
   // Fade the line-3 comment as the chip "becomes" it.
@@ -211,7 +212,7 @@ export default makeScene2D(function* (view) {
   );
   yield* waitFor(0.28); // one card remains — the real one
   // Then: card A is paid down. Border + ✓ stamp + strikethrough + recede.
-  const slugWidth = ('+1 entry: ' + 'retry-swallows-error' + ' (A)').length * 9.6;
+  const slugWidth = ('+1 entry: ' + 'as-any-checkout-payload' + ' (A)').length * 9.6;
   yield* all(
     cardARef().stroke(T.GREEN, 0.22, T.ENTER),
     cardARef().lineWidth(2.5, 0.22, T.ENTER),
