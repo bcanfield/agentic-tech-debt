@@ -1,6 +1,6 @@
 {
   "name": "debt-ops",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "Catches tech debt and architectural decisions as your AI codes. Then stays out of your way until you're ready. Any stack. Backed by decades of research.",
   "author": {
     "name": "Brandin Canfield",
