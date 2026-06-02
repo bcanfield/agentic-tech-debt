@@ -1,6 +1,8 @@
 # debt-ops
 
-**Catches tech debt as your AI agent writes it, then stays out of your way until you're ready to tackle it. Backed by decades of research.**
+**Catches tech debt and architectural decisions as your AI codes. Then stays out of your way until you're ready.**
+
+Any stack. Backed by decades of research.
 
 *Works with [Claude Code](./claude-code) and [Codex](./codex).*
 

@@ -1,21 +1,21 @@
 # Project Rules
 
-- **Stay in scope.** Do exactly what was asked. No drive-by refactors or "while I'm here" cleanups — flag them and wait for confirmation.
+- **Stay in scope.** Do exactly what was asked. No drive-by refactors or "while I'm here" cleanups. Flag them and wait for confirmation.
 - **Don't over-engineer.** Simplest thing that works. No speculative abstractions, defensive code for impossible cases, or new dependencies without a concrete reason.
-- **Use current docs.** For any library, framework, or API, fetch docs via the context7 MCP server before answering — even for things you "know." Match the version in this project, not the latest release. Also - try to fetch examples from github frequently (e.g. an Anthropic-published Claude Code plugin, or an OpenAI Codex plugin, to use as an example).
+- **Use current docs.** For any library, framework, or API, fetch docs via the context7 MCP server before answering. Even for things you "know." Match the version in this project, not the latest release. Also - try to fetch examples from github frequently (e.g. an Anthropic-published Claude Code plugin, or an OpenAI Codex plugin, to use as an example).
 - **Confront our research.** Try to see if you can ground decisions in our extensive research.
 - **Ask when unsure.** One focused question beats guessing or expanding scope.
 - **Be refreshingly concise.** Nobody likes overly wordy AI slop. Speak and comment like a co-worker.
-- **Guide the agent with markdown, not orchestration.** Claude Code and Codex are smart and have the keys to the user's repo — skills should load research-backed principles and trust the agent's judgment, not script its every step. Reach for Python only when determinism demands it (timestamps, audits, atomic file ops, hook contracts) — never to make decisions a smart agent reading the repo can make better.
-- **Python over Bash for plugin scripts.** Stdlib `json`, `re`, and `subprocess.run(..., timeout=...)` beat hand-rolled JSON escaping, a `jq` dependency, and the BSD/GNU `timeout` portability dance — and run on Windows without WSL.
-- **Conventional commits.** Both adapters' plugin versions auto-bump in lockstep via release-please (config in `.github/`; mirrors `claude-code/.claude-plugin/plugin.json` and `codex/.codex-plugin/plugin.json`); use `feat:` / `fix:` / `feat!:` prefixes — anything else is ignored by the bumper. Don't hand-edit `version` in either `plugin.json`.
+- **Guide the agent with markdown, not orchestration.** Claude Code and Codex are smart and have the keys to the user's repo. Skills should load research-backed principles and trust the agent's judgment, not script its every step. Reach for Python only when determinism demands it (timestamps, audits, atomic file ops, hook contracts), never to make decisions a smart agent reading the repo can make better.
+- **Python over Bash for plugin scripts.** Stdlib `json`, `re`, and `subprocess.run(..., timeout=...)` beat hand-rolled JSON escaping, a `jq` dependency, and the BSD/GNU `timeout` portability dance. And run on Windows without WSL.
+- **Conventional commits.** Both adapters' plugin versions auto-bump in lockstep via release-please (config in `.github/`; mirrors `claude-code/.claude-plugin/plugin.json` and `codex/.codex-plugin/plugin.json`); use `feat:` / `fix:` / `feat!:` prefixes. Anything else is ignored by the bumper. Don't hand-edit `version` in either `plugin.json`.
 - **We like humanlike, concise inline comments** For example, a single line above a function or code block very simply and concisely saying what the code is doing so that the code is easy for a human to understand
-- **Record decisions as ADRs.** When we make a choice with two credible alternatives — a new convention, a tradeoff worth remembering — drop a short note in [`docs/adr/`](./docs/adr/) using the format in its [README](./docs/adr/README.md).
+- **Record decisions as ADRs.** When we make a choice with two credible alternatives (a new convention, a tradeoff worth remembering), drop a short note in [`docs/adr/`](./docs/adr/) using the format in its [README](./docs/adr/README.md).
 
 ## Demo GIFs
 
-- `demo/concept/debt-ops-concept.gif` — README hero, [Motion Canvas](https://motioncanvas.io/). Source + regen steps in [`demo/concept/`](./demo/concept/).
-- `demo/debt-ops.gif` — CLI flow, [VHS](https://github.com/charmbracelet/vhs). Scene: [`demo/scene.bash`](./demo/scene.bash). Tape: [`demo/debt-ops.tape`](./demo/debt-ops.tape). Regenerate: `vhs demo/debt-ops.tape` (needs `vhs`, `ttyd`, `ffmpeg`, JetBrains Mono).
+- `demo/concept/debt-ops-concept.gif`: README hero, [Motion Canvas](https://motioncanvas.io/). Source + regen steps in [`demo/concept/`](./demo/concept/).
+- `demo/debt-ops.gif`: CLI flow, [VHS](https://github.com/charmbracelet/vhs). Scene: [`demo/scene.bash`](./demo/scene.bash). Tape: [`demo/debt-ops.tape`](./demo/debt-ops.tape). Regenerate: `vhs demo/debt-ops.tape` (needs `vhs`, `ttyd`, `ffmpeg`, JetBrains Mono).
 
 ## Debugging
 
@@ -26,7 +26,7 @@ DEBT_OPS_DEBUG=1 claude   # Claude Code
 DEBT_OPS_DEBUG=1 codex    # Codex
 ```
 
-Each fire appends tab-separated lines to `<cache>/debug.log` — the exact path is printed in the SessionStart context block. Format:
+Each fire appends tab-separated lines to `<cache>/debug.log`. The exact path is printed in the SessionStart context block. Format:
 
 ```
 2026-05-06T16:00:34Z	FIRE	changed=src/foo.ts	cmds=3
