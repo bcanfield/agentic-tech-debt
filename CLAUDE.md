@@ -12,6 +12,58 @@
 - **We like humanlike, concise inline comments** For example, a single line above a function or code block very simply and concisely saying what the code is doing so that the code is easy for a human to understand
 - **Record decisions as ADRs.** When we make a choice with two credible alternatives (a new convention, a tradeoff worth remembering), drop a short note in [`docs/adr/`](./docs/adr/) using the format in its [README](./docs/adr/README.md).
 
+## Adapter parity — duplicated on purpose
+
+debt-ops is one product shipped as several **self-contained** implementations
+(`claude-code/`, `codex/`, `copilot/`, and the portable `skills/`). The helper
+scripts and skills are **deliberately duplicated** across them — there is no shared
+or vendored module, and we are not extracting one ([ADR 0014](./docs/adr/0014-keep-adapters-duplicated.md),
+reversing the `_common.py` plan). Installed plugins are isolated dirs and the hooks
+are stdlib-only, so self-containment beats DRY here. **We keep the copies in sync by
+hand/AI, in the same change — not by abstraction.**
+
+**The rule.** A shared-logic change isn't done until it lands in *every* copy in the
+same PR. Treat the copies of a given script as one unit: diff against `claude-code/`
+(the reference — it has all six scripts) and propagate, **preserving each adapter's
+deltas below** (don't flatten them).
+
+### What's duplicated (keep in sync)
+
+- **Helper scripts** — reference is `claude-code/scripts/`:
+  - `register.py` → also `codex/skills/add/scripts/`, `skills/debt-ops-add/scripts/`
+  - `review.py` → also `codex/skills/review/scripts/`, `skills/debt-ops-review/scripts/`
+  - `feedback.py` → also `codex/hooks/`, `copilot/hooks/`
+  - `session-start.py` → also `codex/hooks/`, `copilot/hooks/`
+  - `drop.py`, `stop.py` → also `codex/hooks/`
+- **Within-script helpers** repeated across most of the above — change one, change
+  all: `git_toplevel`, `repo_hash`, `cache_base`, `read_registry_dir`, `log_metric`,
+  `letter_for`, `parse_frontmatter`, `days_since`.
+- **Skills (`SKILL.md`)** — `add`, `review`, `metrics`, `init` each live in
+  `claude-code/skills/`, `codex/skills/`, and `skills/debt-ops-*/`.
+- **Cross-cutting contracts** (must match everywhere they appear):
+  - Registry schema (frontmatter fields + quadrant/category enums) — every
+    `register.py`, `review.py`, and `add` skill. Canonical: `docs/tech-debt-plugin-plan.md`.
+  - Disciplines wording — `session-start.py` (claude, codex) + every `init` skill.
+  - Feedback marker `<!-- debt-ops:feedback v1 -->` — every `feedback.py`,
+    `session-start.py`, and the `init` skills that write it.
+  - Cache layout + `metrics.jsonl` event shapes — the scripts + the `metrics` skill.
+
+### Per-adapter deltas (do NOT sync away)
+
+These differ on purpose; preserve them when propagating a shared change:
+
+- **Cache base.** `claude-code` uses `CLAUDE_PLUGIN_DATA`; `codex`/`copilot`/portable
+  use `DEBT_OPS_CACHE` → `~/.cache/debt-ops`.
+- **Script paths in skills.** `claude-code` uses `${CLAUDE_PLUGIN_ROOT}/scripts/…`;
+  `codex` + portable bundle `scripts/` and call them by relative path.
+- **Hook I/O envelope.** `claude-code`/`codex` emit
+  `hookSpecificOutput.additionalContext`; `copilot` emits bare `{additionalContext}`
+  and self-filters edit tools (its `postToolUse` has no matcher).
+- **Charter file + invocation.** `CLAUDE.md` + `/debt-ops:add` (claude) vs
+  `AGENTS.md`/copilot-instructions + `$add` / bare skill name (codex, copilot, portable).
+- **Frontmatter.** `claude-code` skills use `allowed-tools` /
+  `disable-model-invocation`; portable skills are `name` + `description` only.
+
 ## Demo GIFs
 
 - `demo/debt-ops.gif`: README hero, [VHS](https://github.com/charmbracelet/vhs). One `as any` catch in under 8s. Scene: [`demo/scene.bash`](./demo/scene.bash). Tape: [`demo/debt-ops.tape`](./demo/debt-ops.tape). Regenerate: `vhs demo/debt-ops.tape` (needs `vhs`, `ttyd`, `ffmpeg`, JetBrains Mono).

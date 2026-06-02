@@ -91,14 +91,14 @@ Key adapter deltas vs Claude Code:
 Same shape against Gemini's hook contract; Gemini ships skills + hooks natively,
 so it's the second full-experience target.
 
-### Phase E — kill the duplication (the registered debt payoff)
+### Phase E — ~~extract `_common.py`~~ dropped: keep duplication, sync by AI
 
-By Phase C we have 3+ copies of the helper scripts (claude-code, codex, portable
-skills, +copilot). That trips the `adapter-script-duplication` entry's payoff
-trigger ("a third agent adapter is added"). Extract a vendored `_common.py`
-copied into each plugin/skill at **release time** (keeps install-time
-self-containment, kills the hand-sync). Per ADR 0011 this is the agreed payoff;
-do it here, not before.
+**Reversed.** The original plan was to extract a vendored `_common.py` once a
+third adapter landed. We're not doing that ([ADR 0014](./adr/0014-keep-adapters-duplicated.md)):
+the helper scripts and skills stay duplicated across all four implementations, and
+parity is maintained by hand/AI per-change. The policy, the full duplicate map, and
+the per-adapter deltas live in CLAUDE.md under "Adapter parity — duplicated on
+purpose." Revisit the extraction only if AI-sync drift actually ships a bug.
 
 ## Sequencing rationale
 
@@ -107,14 +107,14 @@ do it here, not before.
   plugins.
 - C before D: Copilot is the larger audience and its hook contract is the closest
   to ours — best return on the first hook port, and it de-risks D.
-- E last: don't pay down the duplication until the third+ copy actually exists and
-  the shape of all adapters is known. Extracting `_common.py` against a moving
-  target is the premature-abstraction trap.
+- E dropped: rather than extract a shared module, we keep the duplication and
+  sync by AI (ADR 0014). Self-containment was the point of the adapter design;
+  hand/AI sync is the lighter mitigation we're trying before any extraction tooling.
 
 ## Out of scope (named, not forgotten)
 
-- Refactoring the released `claude-code/` adapter to consume the shared set —
-  separate decision, gated behind Phase E.
+- Refactoring the released `claude-code/` adapter to consume a shared module —
+  ruled out (ADR 0014); adapters stay self-contained and duplicated.
 - A marketplace/registry listing for the portable skills (submitting to
   agentskills.io or per-tool catalogs) — distribution, not engineering; revisit
   after B validates.
