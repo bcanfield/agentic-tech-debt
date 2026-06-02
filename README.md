@@ -2,7 +2,7 @@
 
 **Catches tech debt as your AI agent writes it, then stays out of your way until you're ready to tackle it. Backed by decades of research.**
 
-*Works with [Claude Code](./claude-code) and [Codex](./codex) — same disciplines, same research, one registry.*
+*Works with [Claude Code](./claude-code) and [Codex](./codex).*
 
 [![MIT License](https://img.shields.io/github/license/bcanfield/agentic-tech-debt?color=blue)](./LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](./claude-code)
@@ -20,28 +20,25 @@
 
 ## Install
 
-Same disciplines, two coding agents. Pick your agent — each adapter is a self-contained plugin ([ADR 0011](./docs/adr/0011-codex-adapter-self-contained.md)). Both need a git repo and Python 3.10+ (stdlib only).
+A self-contained plugin per agent. Both need a git repo and Python 3.10+ (stdlib only).
 
-**Claude Code** ([`claude-code/`](./claude-code)) — needs v2.1.121+:
+**Claude Code** (v2.1.121+)
 
 ```bash
 /plugin marketplace add bcanfield/agentic-tech-debt
 /plugin install debt-ops
 ```
 
-For local development: `claude --plugin-dir /path/to/agentic-tech-debt/claude-code`.
-
-**Codex** ([`codex/`](./codex)) — register the marketplace from your shell, then install from the plugin browser:
+**Codex**
 
 ```bash
 codex plugin marketplace add bcanfield/agentic-tech-debt
+# then, inside Codex: /plugins → install debt-ops
 ```
 
-Then open the browser with `/plugins` inside Codex and install **debt-ops**. (Working *inside* this repo, Codex auto-discovers the bundled marketplace at `.agents/plugins/marketplace.json` once the project is trusted.)
+Codex differences (`AGENTS.md`, `apply_patch` feedback, `$add`/`$review` skills) → [`codex/`](./codex).
 
-The Codex adapter reads/writes `AGENTS.md` (not `CLAUDE.md`), runs feedback on `apply_patch` edits, and caches per-repo state under `~/.cache/debt-ops` (override with `DEBT_OPS_CACHE`; see [ADR 0012](./docs/adr/0012-codex-deterministic-cache-base.md)). Skills are invoked with `$add`, `$review`, `$init`, `$metrics`.
-
-Nothing is written on install. Files appear only when there's a reason, and it follows your existing convention (`doc/adr`, `docs/`) if you have one:
+Nothing is written on install — files appear only when there's a reason, following your existing `docs/` convention:
 
 | Path                                              | When                                       |
 | ------------------------------------------------- | ------------------------------------------ |
