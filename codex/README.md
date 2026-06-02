@@ -4,12 +4,13 @@ The [debt-ops](../README.md) disciplines, packaged as a [Codex](https://develope
 
 ## Install
 
+Register the marketplace from your shell, then install from the plugin browser:
+
 ```bash
-/plugins marketplace add bcanfield/agentic-tech-debt
-/plugins install debt-ops
+codex plugin marketplace add bcanfield/agentic-tech-debt
 ```
 
-For local development, point Codex at this repo's marketplace (`.agents/plugins/marketplace.json`) and install `debt-ops` from it. Needs a git repo and Python 3.10+ (stdlib only).
+Open `/plugins` inside Codex and install **debt-ops**. Working *inside* this repo, Codex auto-discovers the bundled marketplace at `.agents/plugins/marketplace.json` once the project is trusted — no add step needed. Requires a git repo and Python 3.10+ (stdlib only).
 
 ## What's wired
 
