@@ -3,6 +3,11 @@
 **Date:** 2026-06-02
 **Status:** Accepted
 
+> **Note (superseded in part):** this ADR's references to paying down the
+> duplication via a vendored `_common.py` are reversed by
+> [ADR 0014](./0014-keep-adapters-duplicated.md) — we keep the duplication and sync
+> by AI instead. The cross-tool packaging decision below still stands.
+
 ## Context
 
 We ship two self-contained plugin adapters: `claude-code/` and `codex/`. That
