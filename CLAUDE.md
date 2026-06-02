@@ -14,8 +14,8 @@
 
 ## Demo GIFs
 
-- `demo/concept/debt-ops-concept.gif`: README hero, [Motion Canvas](https://motioncanvas.io/). Source + regen steps in [`demo/concept/`](./demo/concept/).
-- `demo/debt-ops.gif`: CLI flow, [VHS](https://github.com/charmbracelet/vhs). Scene: [`demo/scene.bash`](./demo/scene.bash). Tape: [`demo/debt-ops.tape`](./demo/debt-ops.tape). Regenerate: `vhs demo/debt-ops.tape` (needs `vhs`, `ttyd`, `ffmpeg`, JetBrains Mono).
+- `demo/debt-ops.gif`: README hero, [VHS](https://github.com/charmbracelet/vhs). One `as any` catch in under 8s. Scene: [`demo/scene.bash`](./demo/scene.bash). Tape: [`demo/debt-ops.tape`](./demo/debt-ops.tape). Regenerate: `vhs demo/debt-ops.tape` (needs `vhs`, `ttyd`, `ffmpeg`, JetBrains Mono).
+- `demo/concept/debt-ops-concept.gif`: README "Why it exists" lifecycle animation (catch → manage → pay down), [Motion Canvas](https://motioncanvas.io/). Source + regen steps in [`demo/concept/`](./demo/concept/).
 
 ## Debugging
 

@@ -111,10 +111,10 @@ Dual-coding (Mayer): each card pairs the *literal* mono output with a one-line
 ┌──────────────────────────────────────────────────────────────┐
 │  64px margin                                                   │
 │   ┌─ code surface ───────────────┐      ┌─ debt registry ──┐  │
-│   │ fetch(url):                  │      │ registry · ⬤1    │  │   ⬤ = orange mark + count
-│   │   for attempt in range(3):   │      │ ┌──────────────┐ │  │
-│   │     try: ...                 │ ⟿arc⟿ │ │ + entry (A)  │ │  │
-│   │     except: pass  # TODO …   │      │ │ retry-…  ✓   │ │  │
+│   │ function checkout(session) { │      │ registry · ⬤1    │  │   ⬤ = orange mark + count
+│   │   const payload = …          │      │ ┌──────────────┐ │  │
+│   │   if (session.user) {        │ ⟿arc⟿ │ │ + entry (A)  │ │  │
+│   │     …session.user as any     │      │ │ as-any-… ✓   │ │  │
 │   │                              │      │ └──────────────┘ │  │
 │   └──────────────────────────────┘      └──────────────────┘  │
 │                                                                │
@@ -124,7 +124,7 @@ Dual-coding (Mayer): each card pairs the *literal* mono output with a one-line
 
 - **Code surface** (left, ~52% width): rounded card `#1e1e2e`, 1px `#45475a`,
   radius 16px, soft shadow. No terminal chrome; just a small filename chip
-  (`clients/http.py`) above 6 lines of real Python.
+  (`api/checkout.ts`) above 6 lines of real TypeScript.
 - **Debt registry** (right, ~40%): header `registry · ⬤N` (orange mark + live
   count), then cards stack downward. A faint radial glow sits behind it so the
   eye lands here on the catch (signaling).
@@ -172,11 +172,11 @@ Total ≈12.6s. One focal action per beat (staging + coherence).
 | # | Beat | Window | Action | Caption |
 |---|---|---|---|---|
 | 0 | Setup | 0.0–1.8s | Fade in. Code lines reveal into the left panel, top-down (LINEAR marquee feel). Registry empty, count `0`. | "Your AI agent writes fast." |
-| 1 | Shortcut born | 1.8–3.8s | Last line completes: `except Exception:` / `    pass  # TODO: last retry swallows the error`. A peach underline draws under the `pass`+comment (signaling). | "A shortcut slips in." |
+| 1 | Shortcut born | 1.8–3.8s | Last line completes: `    payload.userId = session.user as any`. A peach underline draws under the `as any` cast (signaling). | "A shortcut slips in." |
 | **2** | **The catch** ⭐ | **3.8–7.0s** | The hero. See frame-level breakdown below. Card **A** files itself; count ticks `0→1`; ✓ confirms. Left panel dims to 70% (staging). | "debt-ops logs it. Automatically." |
-| 3 | Continuous | 7.0–8.8s | A second deferral appears (`# TODO: tidy this log format`) and is caught *faster* (450ms arc, minimal anticipation) → card **B** `log-format-nit` drops below A; count `1→2`. Shows it's automatic & ongoing. | "Every shortcut. As it happens." |
+| 3 | Continuous | 7.0–8.8s | A second deferral appears (`// TODO: tidy log format`) and is caught *faster* (450ms arc, minimal anticipation) → card **B** `log-format-nit` drops below A; count `1→2`. Shows it's automatic & ongoing. | "Every shortcut. As it happens." |
 | 4 | Out of your way | 8.8–10.6s | The word `drop B` types in (mauve), card **B** accelerates out and dissolves; count `2→1`; card A settles. Low-friction prune. | "Prune the noise in a word." |
-| 5 | Resolve / brand | 10.6–12.6s | Panels recede & dim; registry holds the one real entry. Wordmark **debt-ops** + tagline reveal centered. Fade toward the start frame for a clean loop. | **debt-ops** · "Catches tech debt as your agent writes it." |
+| 5 | Resolve / brand | 10.6–12.6s | Panels recede & dim; registry holds the one real entry. Wordmark **debt-ops** + tagline reveal centered. Fade toward the start frame for a clean loop. | **debt-ops** · "Catches AI-introduced tech debt at write-time." |
 
 ### The hero catch: frame-level (beat 2, @25fps)
 
@@ -188,7 +188,7 @@ Total ≈12.6s. One focal action per beat (staging + coherence).
 | d. Detach + arc | 640–1340ms | fragment becomes a peach pill ("chip"), travels an **arc** (up-and-over, EMPHASIZED) to the empty ledger slot; a short peach trail follows and fades; left panel dims to 70%. (Arc not straight line = Material emphasized "expressive" path.) |
 | e. Morph + snap | 1340–1640ms | chip expands into the full card at the slot (EMPHASIZED-DECELERATE → slight overshoot then settle, Disney follow-through); peach border → card style; slug text settles to blue. |
 | f. Confirm (secondary) | 1640–1840ms | green ✓ fades in at card's right; registry count flips `0→1` (Disney secondary action). |
-| g. Hold | 1840–3200ms | rest. Card legible: `+1 entry: retry-swallows-error (A)` + tag "accidental · checkout". Caption holds. |
+| g. Hold | 1840–3200ms | rest. Card legible: `+1 entry: as-any-checkout-payload (A)` + tag "loosened type · checkout". Caption holds. |
 
 ---
 
@@ -203,22 +203,23 @@ Captions ≤6 words; hold ≥ 0.3s/word (BBC), padded for competing motion.
 | 2 | "debt-ops logs it. Automatically." | 4 | 1.2s | 2.5s ✓ |
 | 3 | "Every shortcut. As it happens." | 5 | 1.5s | 1.8s ✓ |
 | 4 | "Prune the noise in a word." | 6 | 1.8s | 2.0s ✓ |
-| 5 | "Catches tech debt as your agent writes it." | 8 | 2.4s | 2.5s ✓ |
+| 5 | "Catches AI-introduced tech debt at write-time." | 7 | 2.1s | 2.5s ✓ |
 
 **Code sample** (left panel. A real, recognizable debt smell, kept consistent
-with the existing demo's `retry-swallows-error` narrative):
+with the VHS demo's `as any` catch):
 
-```python
-async def fetch(url):
-    for attempt in range(3):
-        try:
-            return await client.get(url)
-        except Exception:
-            pass  # TODO: last retry swallows the error
+```typescript
+function checkout(session) {
+  const payload = buildCart(session)
+  payload.total = price(payload.items)
+  // TODO: tidy log format
+  if (session.user) {
+    payload.email = session.email
+    payload.userId = session.user as any
 ```
 
 Cards:
-- **A** (kept): `+1 entry: retry-swallows-error (A)` · tag "accidental · checkout"
+- **A** (kept): `+1 entry: as-any-checkout-payload (A)` · tag "loosened type · checkout"
 - **B** (the nit, dropped): `+1 entry: log-format-nit (B)` · tag "code quality"
 
 ---
@@ -339,9 +340,9 @@ asset, different audience.
    slides off as noise; card A gets paid down (green border + ✓ stamp pulse
    + strikethrough on the slug + recede) and the registry count returns to
    zero. Same "stays out of your way" message, told entirely by motion.
-3. **Code panel is honest.** The `# TODO: tidy log format` nit is now an
-   actual line in the rendered snippet (between `try:` and `return`), so the
-   second chip really originates from code the viewer can see. Not a chip
+3. **Code panel is honest.** The `// TODO: tidy log format` nit is now an
+   actual line in the rendered snippet (between `payload.total` and the `if`), so
+   the second chip really originates from code the viewer can see. Not a chip
    conjured from offscreen.
 4. **Runtime ~12.8 s** (down from the spec's 12.6 s target after pacing
    tuning; not a meaningful drift).
@@ -350,9 +351,10 @@ asset, different audience.
 
 ## 13. Open knobs (decide in review, everything else is locked)
 
-1. **Placement**: README hero replacement, a second visual below it, or docs-only.
-2. **Second deferral**: keep `log-format-nit` (matches existing demo) or a
-   loosened-type nit (`x: Any  # TODO`) for variety.
+1. **Placement** *(decided)*: README "Why it exists" section, below the VHS
+   hero GIF. Not the hero slot.
+2. **Second deferral** *(decided)*: the hero catch is the `as any` loosened type
+   (matches the VHS demo); `log-format-nit` stays as the pruned nit (card B).
 3. **Wordmark lockup**: two-tone "debt-**ops**" vs. an orange dot mark.
 4. **Twin format**: ship the WebP twin now or later.
 </content>
