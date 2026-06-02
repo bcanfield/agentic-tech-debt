@@ -274,19 +274,21 @@ def commands_block(cache_dir, cache_base, manifest, charter, stateless):
 # registry to read before editing referenced files.
 def disciplines_text(adr_dir, registry_dir):
     return (
-        '1. If you defer work — decision unmade, stub, loosened type, "future"/"later" comment, or '
-        '`TODO`/`FIXME`/`HACK`/`XXX` marker — register via /debt-ops:add immediately. Test: would a '
-        'future reader ask "why this way?" If yes, register. No prompt. Use `payoff_trigger: unknown` '
-        'if unsure. The helper prints one line: `+1 entry: <slug> (<letter>)` — don\'t paraphrase or '
-        'add commentary. Over-register freely; the developer drops with `drop A`, `drop A,C`, '
-        '`drop all`, or `drop <slug>`.\n\n'
+        '1. The test for debt: would a future reader ask "why this way?" If yes, register via '
+        '/debt-ops:add immediately — no prompt. This is judgment, not a marker scan: a '
+        '`TODO`/`FIXME`/`HACK`/`XXX` is the obvious case, but an unmade decision, a stub, a loosened '
+        'type, or a default picked "for now" all count even with no marker in the diff. Use '
+        '`payoff_trigger: unknown` if unsure. The helper prints one line: `+1 entry: <slug> '
+        '(<letter>)` — don\'t paraphrase or add commentary. Over-register freely; the developer drops '
+        'with `drop A`, `drop A,C`, `drop all`, or `drop <slug>`.\n\n'
         '2. When making an architecturally significant change — a data model, public interface, '
         'security boundary, release pipeline, or a dep-manifest change that is a major-version bump '
-        f'or a *new* top-level dependency — draft an ADR under {adr_dir}/ in Nygard format (Context, '
-        'Decision, Consequences, Alternatives, Payoff trigger). Create the directory if needed. Only '
-        'draft an ADR when there are two credible alternatives; if you cannot list two, it is a '
-        'comment, not an ADR. If the ADR introduces deliberate debt, also call /debt-ops:add so the '
-        'registry entry mirrors the ADR.\n\n'
+        f'or a *new* top-level dependency — draft an ADR under {adr_dir}/ in Nygard format: a '
+        '`# NNNN — Title` heading, a `**Status:**` line, then Context, Decision, Consequences, '
+        'Alternatives, Payoff trigger. Create the directory if needed. Only draft an ADR when there '
+        'are two credible alternatives; if you cannot list two, it is a comment, not an ADR. An ADR '
+        'with a payoff trigger *is* deliberate debt — when you write one, also call /debt-ops:add so '
+        'the registry entry mirrors the ADR (don\'t conclude "no markers, no debt").\n\n'
         f'3. Read entries under {registry_dir}/ before changing files they reference.'
     )
 
