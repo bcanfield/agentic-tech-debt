@@ -36,23 +36,23 @@ codex plugin marketplace add bcanfield/agentic-tech-debt
 # then, inside Codex: /plugins → install debt-ops
 ```
 
-Nothing's written until there's a reason — entries land in `docs/debt/`, decisions in `docs/adr/`.
+Nothing's written until there's a reason. Entries land in `docs/debt/`, decisions in `docs/adr/`.
 
 ## Commands
 
 Claude Code `/debt-ops:<name>` · Codex `$<name>`:
 
-- **add** — register a debt entry (auto-fires when your agent defers work). Drop with `drop A`, `drop A,C`, or `drop all`.
-- **review** — audit and rank the registry, then walk paydown.
-- **init** *(opt-in)* — write the disciplines into `CLAUDE.md`/`AGENTS.md` so the team shares them.
-- **metrics** — read-only health summary of the registry.
+- **add**: register a debt entry (auto-fires when your agent defers work). Drop with `drop A`, `drop A,C`, or `drop all`.
+- **review**: audit and rank the registry, then walk paydown.
+- **init** *(opt-in)*: write the disciplines into `CLAUDE.md`/`AGENTS.md` so the team shares them.
+- **metrics**: read-only health summary of the registry.
 
-<img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: adding retry logic logs two entries as ruff, mypy and pytest pass — the swallowed error (A) and a logging nit (B); drop B prunes the nit; then /debt-ops:review ranks the churn hotspots" />
+<img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: adding retry logic logs two entries as ruff, mypy and pytest pass, logging two entries: the swallowed error (A) and a logging nit (B); drop B prunes the nit; then /debt-ops:review ranks the churn hotspots" />
 
 ## Why it exists
 
-AI accrues debt faster than you can review it. The fix is decades old — make it visible, pay it down continuously, document the decisions — distilled here into [nine cited pillars](./docs/tech-debt-pillars.md) wired into the agent loop. Full [research synthesis](./docs/tech-debt-management.md).
+AI accrues debt faster than you can review it. The fix is decades old: make it visible, pay it down continuously, document the decisions. Distilled here into [nine cited pillars](./docs/tech-debt-pillars.md) wired into the agent loop. Full [research synthesis](./docs/tech-debt-management.md).
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT. See [LICENSE](./LICENSE).
