@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.7.1...debt-ops-v0.7.2) (2026-06-02)
+
+
+### Bug Fixes
+
+* Make description consistent ([#28](https://github.com/bcanfield/agentic-tech-debt/issues/28)) ([60bbe64](https://github.com/bcanfield/agentic-tech-debt/commit/60bbe645731a205bd372eb55bbbe0a3750d2d276))
+
 ## [0.7.1](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.7.0...debt-ops-v0.7.1) (2026-06-02)
 
 
