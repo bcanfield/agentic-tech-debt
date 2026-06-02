@@ -6,7 +6,7 @@
 
 <img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: the agent edits api/checkout.ts and casts a value to `as any` to clear a type error; debt-ops catches the loosened type at write-time and logs +1 entry: as-any-checkout-payload (A)" />
 
-*Every `TODO`, `as any`, and `.skip` your AI agent writes, turned into a paydown queue ranked by churn.*
+*Every `TODO`, `as any`, and `.skip` your AI agent writes gets logged and prioritized for paydown.*
 
 [![MIT License](https://img.shields.io/github/license/bcanfield/agentic-tech-debt?color=blue)](./LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](#install)
