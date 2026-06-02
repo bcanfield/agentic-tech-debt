@@ -5,12 +5,12 @@ description: Register a deferred decision in the debt registry — TODO/FIXME/HA
 
 # add — register a tech-debt entry
 
-Call `register.py` via Bash. The helper writes the entry under the repo's detected registry dir (default `docs/debt/`), assigns a short batch letter (A, B, C…), and prints exactly one line: `+1 entry: <slug> (<letter>)`. That stdout IS the user-facing announcement — add no commentary before or after.
+Call the bundled `register.py` via Bash — it lives in this skill's `scripts/` directory, so reference it with the relative path below (Codex resolves it against the skill root). The helper writes the entry under the repo's detected registry dir (default `docs/debt/`), assigns a short batch letter (A, B, C…), and prints exactly one line: `+1 entry: <slug> (<letter>)`. That stdout IS the user-facing announcement — add no commentary before or after.
 
 ## The call
 
 ```bash
-python3 ${PLUGIN_ROOT}/scripts/register.py \
+python3 scripts/register.py \
   --slug <slug> \
   --principal <effort, e.g. 2d, 1w, unknown> \
   --interest <ongoing cost, e.g. "+30min/incident", unknown> \
