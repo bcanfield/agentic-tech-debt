@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "debt-ops",
-      "description": "Tech debt management for agentic codebases — surfaces debt, ranks hotspots, and uses AI agents to pay it down. Evidence-based, continuous, non-blocking.",
+      "description": "Catches tech debt and architectural decisions as your AI codes. Then stays out of your way until you're ready. Any stack. Backed by decades of research.",
       "author": {
         "name": "Brandin Canfield",
         "email": "brandincanfield@gmail.com"
