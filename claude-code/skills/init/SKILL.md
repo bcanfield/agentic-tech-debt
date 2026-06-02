@@ -54,9 +54,9 @@ Substitute `{{COMMANDS}}` with the cache contents verbatim, `{{ADR_DIR}}` with t
 
 ### Disciplines
 
-1. If you defer work — decision unmade, stub, loosened type, "future"/"later" comment, or `TODO`/`FIXME`/`HACK`/`XXX` marker — register via `/debt-ops:add` immediately. Test: would a future reader ask "why this way?" If yes, register. No prompt. Use `payoff_trigger: unknown` if unsure. Announce: `+1 entry: <slug> (drop?)`. Over-register freely; the developer drops with "drop it".
+1. The test for debt: would a future reader ask "why this way?" If yes, register via `/debt-ops:add` immediately — no prompt. This is judgment, not a marker scan: a `TODO`/`FIXME`/`HACK`/`XXX` is the obvious case, but an unmade decision, a stub, a loosened type, or a default picked "for now" all count even with no marker in the diff. Use `payoff_trigger: unknown` if unsure. Announce: `+1 entry: <slug> (drop?)`. Over-register freely; the developer drops with "drop it".
 
-2. When making an architecturally significant change — a data model, public interface, security boundary, release pipeline, or a dep-manifest change that is a major-version bump or a *new* top-level dependency — draft an ADR under `{{ADR_DIR}}/` in Nygard format (Context, Decision, Consequences, Alternatives, Payoff trigger). Create the directory if needed. Only draft an ADR when there are two credible alternatives; if you cannot list two, it is a comment, not an ADR. If the ADR introduces deliberate debt, also call `/debt-ops:add` so the registry entry mirrors the ADR.
+2. When making an architecturally significant change — a data model, public interface, security boundary, release pipeline, or a dep-manifest change that is a major-version bump or a *new* top-level dependency — draft an ADR under `{{ADR_DIR}}/` in Nygard format: a `# NNNN — Title` heading, `**Date:**` and `**Status:**` lines, then Context, Decision, Consequences, Alternatives, Payoff trigger. Create the directory if needed. Only draft an ADR when there are two credible alternatives; if you cannot list two, it is a comment, not an ADR. An ADR with a payoff trigger *is* deliberate debt — when you write one, also call `/debt-ops:add` so the registry entry mirrors the ADR (don't conclude "no markers, no debt").
 
 3. Read entries under `{{REGISTRY_DIR}}/` before changing files they reference.
 
