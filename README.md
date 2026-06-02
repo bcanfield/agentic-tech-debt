@@ -2,14 +2,14 @@
 
 **Catches AI-introduced tech debt at write-time**
 
-*Works with [Claude Code](./claude-code) and [Codex](./codex). Any stack. Backed by decades of research.*
+*Works with [Claude Code](https://code.claude.com/docs) and [Codex](https://developers.openai.com/codex). Any stack. Backed by decades of research.*
 
 <img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: the agent edits api/checkout.ts and casts a value to `as any` to clear a type error; debt-ops catches the loosened type at write-time and logs +1 entry: as-any-checkout-payload (A)" />
 
 *Every `TODO`, `as any`, and `.skip` your AI agent writes, turned into a paydown queue ranked by churn.*
 
 [![MIT License](https://img.shields.io/github/license/bcanfield/agentic-tech-debt?color=blue)](./LICENSE)
-[![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](./claude-code)
+[![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](#install)
 
 > AI ships code fast and accrues debt faster. GitClear's 2024 analysis found refactored code fell from ~25% of changes to under 10%, while copy-pasted code rose 48%. The shortcuts pile up between PRs, where nobody's looking.
 
@@ -21,7 +21,7 @@ Just needs a git repo and Python 3.10+.
 
 ```bash
 /plugin marketplace add bcanfield/agentic-tech-debt
-/plugin install debt-ops
+/plugin install debt-ops@agentic-tech-debt
 ```
 
 **Codex**
