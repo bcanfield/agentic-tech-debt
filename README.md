@@ -2,6 +2,8 @@
 
 **Catches tech debt as your AI agent writes it, then stays out of your way until you're ready to tackle it. Backed by decades of research.**
 
+*Works with [Claude Code](./claude-code) and [Codex](./codex) — same disciplines, same research, one registry.*
+
 [![MIT License](https://img.shields.io/github/license/bcanfield/agentic-tech-debt?color=blue)](./LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](./claude-code)
 [![Codex plugin](https://img.shields.io/badge/Codex-plugin-000000)](./codex)
@@ -29,29 +31,32 @@ Same disciplines, two coding agents. Pick your agent — each adapter is a self-
 
 For local development: `claude --plugin-dir /path/to/agentic-tech-debt/claude-code`.
 
-**Codex** ([`codex/`](./codex)) — add the repo marketplace, then install `debt-ops`:
+**Codex** ([`codex/`](./codex)) — register the marketplace from your shell, then install from the plugin browser:
 
 ```bash
-/plugins marketplace add bcanfield/agentic-tech-debt
-/plugins install debt-ops
+codex plugin marketplace add bcanfield/agentic-tech-debt
 ```
+
+Then open the browser with `/plugins` inside Codex and install **debt-ops**. (Working *inside* this repo, Codex auto-discovers the bundled marketplace at `.agents/plugins/marketplace.json` once the project is trusted.)
 
 The Codex adapter reads/writes `AGENTS.md` (not `CLAUDE.md`), runs feedback on `apply_patch` edits, and caches per-repo state under `~/.cache/debt-ops` (override with `DEBT_OPS_CACHE`; see [ADR 0012](./docs/adr/0012-codex-deterministic-cache-base.md)). Skills are invoked with `$add`, `$review`, `$init`, `$metrics`.
 
 Nothing is written on install. Files appear only when there's a reason, and it follows your existing convention (`doc/adr`, `docs/`) if you have one:
 
-| Path                                     | When                             |
-| ---------------------------------------- | -------------------------------- |
-| `docs/debt/<id>-<slug>.md`               | Claude registers a debt entry    |
-| `docs/adr/<n>-<title>.md`                | Claude drafts an ADR             |
-| `## Tech debt operations` in `CLAUDE.md` | Only if you run `/debt-ops:init` |
+| Path                                              | When                                       |
+| ------------------------------------------------- | ------------------------------------------ |
+| `docs/debt/<id>-<slug>.md`                        | your agent registers a debt entry          |
+| `docs/adr/<n>-<title>.md`                         | your agent drafts an ADR                   |
+| `## Tech debt operations` in `CLAUDE.md`/`AGENTS.md` | only if you run init (`/debt-ops:init` · `$init`) |
 
-## Commands
+## Commands & skills
 
-- **`/debt-ops:add`** — register a debt entry. Auto-invoked when your agent defers work; each capture is a one-liner with a batch letter (`+1 entry: <slug> (A)`). Drop with `drop A`, `drop A,C`, or `drop all`.
-- **`/debt-ops:review`** — audit and triage the registry: flags stale entries, deprioritizes cold files, ranks the rest by change frequency and risk. Run when it feels heavy.
-- **`/debt-ops:init`** *(opt-in)* — write the disciplines and your quality commands into `CLAUDE.md` so the team shares one source of truth.
-- **`/debt-ops:metrics`** — a read-only health summary of the plugin's own log: edits per session, registry growth, ADR rate, hook fail→pass rate.
+Invoke from Claude Code as `/debt-ops:<name>`, or from Codex as `$<name>` (or the `/skills` picker). Same behavior either way.
+
+- **add** (`/debt-ops:add` · `$add`) — register a debt entry. Auto-invoked when your agent defers work; each capture is a one-liner with a batch letter (`+1 entry: <slug> (A)`). Drop with `drop A`, `drop A,C`, or `drop all`.
+- **review** (`/debt-ops:review` · `$review`) — audit and triage the registry: flags stale entries, deprioritizes cold files, ranks the rest by change frequency and risk. Run when it feels heavy.
+- **init** (`/debt-ops:init` · `$init`) *(opt-in)* — write the disciplines and your quality commands into `CLAUDE.md` (Claude Code) or `AGENTS.md` (Codex) so the team shares one source of truth.
+- **metrics** (`/debt-ops:metrics` · `$metrics`) — a read-only health summary of the plugin's own log: edits per session, registry growth, ADR rate, hook fail→pass rate.
 
 <img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: adding retry logic logs two entries as ruff, mypy and pytest pass — the swallowed error (A) and a logging nit (B); drop B prunes the nit; then /debt-ops:review ranks the churn hotspots" />
 
@@ -63,7 +68,7 @@ debt-ops distills that research into [nine tool-agnostic pillars](./docs/tech-de
 
 - [`docs/tech-debt-management.md`](./docs/tech-debt-management.md) — the research synthesis
 - [`docs/tech-debt-pillars.md`](./docs/tech-debt-pillars.md) — the nine pillars
-- [`docs/tech-debt-plugin-plan.md`](./docs/tech-debt-plugin-plan.md) — how they map to the plugin
+- [`docs/tech-debt-plugin-plan.md`](./docs/tech-debt-plugin-plan.md) — how they map to the plugin (Claude Code v1; the [`codex/`](./codex) adapter mirrors it)
 
 ## License
 
