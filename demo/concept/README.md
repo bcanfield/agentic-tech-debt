@@ -1,6 +1,7 @@
-# debt-ops concept hero
+# debt-ops concept animation
 
-README hero animation. Built with [Motion Canvas](https://motioncanvas.io/) (MIT, TypeScript).
+README "Why it exists" lifecycle animation (the VHS GIF is the hero). Built with
+[Motion Canvas](https://motioncanvas.io/) (MIT, TypeScript).
 Design and rationale: [`DESIGN.md`](./DESIGN.md).
 
 Shipped:
