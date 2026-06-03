@@ -14,6 +14,11 @@
           "type": "json",
           "path": "codex/.codex-plugin/plugin.json",
           "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "copilot/plugin.json",
+          "jsonpath": "$.version"
         }
       ]
     }

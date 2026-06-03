@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "python3 ${PLUGIN_ROOT}/hooks/session-start.py",
+        "timeoutSec": 10
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": "python3 ${PLUGIN_ROOT}/hooks/feedback.py",
+        "timeoutSec": 5
+      }
+    ]
+  }
+}

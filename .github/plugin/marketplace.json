@@ -1,0 +1,18 @@
+{
+  "name": "agentic-tech-debt",
+  "owner": {
+    "name": "Brandin Canfield",
+    "email": "brandincanfield@gmail.com"
+  },
+  "metadata": {
+    "description": "debt-ops for GitHub Copilot CLI — write-time tech-debt capture, review, and metrics."
+  },
+  "plugins": [
+    {
+      "name": "debt-ops",
+      "description": "Catches AI-introduced tech debt at write-time. Every TODO, as any, and .skip your AI agent writes gets logged and prioritized for paydown.",
+      "source": "./copilot",
+      "category": "productivity"
+    }
+  ]
+}
