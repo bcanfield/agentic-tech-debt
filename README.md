@@ -31,6 +31,17 @@ codex plugin marketplace add bcanfield/agentic-tech-debt
 # then, inside Codex: /plugins → install debt-ops
 ```
 
+**GitHub Copilot CLI**
+
+```bash
+copilot plugin marketplace add bcanfield/agentic-tech-debt
+copilot plugin install debt-ops@agentic-tech-debt
+```
+
+Then run `debt-ops-init` once — on Copilot the disciplines live in your charter
+(`.github/copilot-instructions.md` or `AGENTS.md`), not a per-session inject. See the
+[Copilot adapter README](./copilot/README.md) for the manual-install alternative and details.
+
 Nothing's written until there's a reason. Entries land in `docs/debt/`, decisions in `docs/adr/`.
 
 ## Contents
