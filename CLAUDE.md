@@ -70,6 +70,11 @@ These differ on purpose; preserve them when propagating a shared change:
   [copilot-cli#2980](https://github.com/github/copilot-cli/issues/2980); its
   `stop.py` runs on `agentStop` (camelCase `sessionId`) and skips the batch
   rotation (no `drop` hook to consume it).
+- **Hook cwd.** Copilot runs plugin hooks with cwd = the *plugin install dir*, not
+  the project, so `copilot`'s three hooks read the payload's `cwd` and `os.chdir`
+  into it (via `chdir_to_payload_cwd`) before any git call. Claude/Codex run hooks
+  in the project dir, so their copies do **not** have this helper — do not propagate
+  it ([ADR 0019](./docs/adr/0019-copilot-hooks-chdir-to-payload-cwd.md)).
 - **Charter file + invocation.** `CLAUDE.md` + `/debt-ops:add` (claude) vs
   `AGENTS.md`/copilot-instructions + `$add` / bare skill name (codex, copilot, portable).
 - **Frontmatter.** `claude-code` skills use `allowed-tools` /

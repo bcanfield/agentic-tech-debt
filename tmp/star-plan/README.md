@@ -6,11 +6,13 @@ as possible over the next 90 days.
 ## How to use this folder
 
 - **`README.md`** (this file) — the map. Start here.
-- **`00-decisions-first.md`** — 3 calls you must make before anything else.
-- **`01-foundation.md`** — Days 0–14. Fix the repo before any outreach.
-- **`02-launch.md`** — Days 14–21. The one big launch moment.
-- **`03-amplify.md`** — Days 21–60. Spread it everywhere.
-- **`04-compound.md`** — Days 60–90. Make it keep paying off.
+- **`angles.md`** — how we propose debt-ops to devs. The source of truth every
+  post pulls from. Get this right first.
+- **`00-decisions-first.md`** — calls to make before anything else.
+- **`01-foundation.md`** — fix the repo before any outreach (Steps 1–5).
+- **`02-launch.md`** — the one big launch moment (Step 6).
+- **`03-amplify.md`** — spread it everywhere (Steps 7–12).
+- **`04-compound.md`** — make it keep paying off (Steps 13–18).
 - **`research-notes.md`** — the raw research behind every step, with sources.
 
 Each step is written so you can either **do it yourself** or hand it to an
