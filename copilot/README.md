@@ -7,8 +7,10 @@ quality checks run deterministically — same posture as the Claude Code and Cod
 adapters.
 
 > **Status: prototype** (packaging plan Phase C). The hook scripts are validated
-> standalone against Copilot's documented JSON contract; end-to-end run inside
-> Copilot CLI is the remaining validation step.
+> standalone against Copilot's documented JSON contract, and the adapter is now
+> packaged as an installable Copilot plugin (`plugin.json` + marketplace). The
+> remaining validation step is confirming `${PLUGIN_ROOT}` expansion and marketplace
+> discovery on a real `copilot plugin install`.
 
 ## What ports, and what doesn't
 
@@ -28,7 +30,28 @@ a per-session inject.
 
 ## Install
 
-Needs a git repo and Python 3.10+. Two steps:
+Needs a git repo and Python 3.10+.
+
+### Option A — plugin install (recommended)
+
+This adapter is a packaged Copilot CLI plugin (`plugin.json` bundling the hooks and
+the four `debt-ops-*` skills). Install it from the repo's marketplace:
+
+```bash
+copilot plugin marketplace add bcanfield/agentic-tech-debt
+copilot plugin install debt-ops@agentic-tech-debt
+```
+
+The marketplace lives at `.github/plugin/marketplace.json` and points at `./copilot`.
+We go through a marketplace rather than a bare `copilot plugin install owner/repo`
+because the bare form can't discover a plugin in a subdirectory yet
+([copilot-cli#2390](https://github.com/github/copilot-cli/issues/2390)); marketplace
+installs flatten the source dir so `plugin.json` is found. The plugin's hooks resolve
+their scripts via `${PLUGIN_ROOT}` ([ADR 0015](../docs/adr/0015-copilot-plugin-and-marketplace.md)).
+
+Then run the charter step below (still required — it's what gives the loop commands).
+
+### Option B — manual copy (no plugin)
 
 1. **Hooks** — copy this adapter's hook files into your repo's `.github/hooks/`:
 
@@ -40,14 +63,19 @@ Needs a git repo and Python 3.10+. Two steps:
    Copilot discovers `.github/hooks/*.json`; the `.py` files sit alongside and are
    referenced by the config (run with the repo root as cwd). User-level install
    works too — drop the same files under `~/.copilot/hooks/` and adjust the paths
-   in `debt-ops.json`.
+   in `debt-ops.json`. (`hooks/debt-ops.json` is the manual-copy config;
+   `hooks/hooks.json` is the `${PLUGIN_ROOT}` variant Option A uses.)
 
-2. **Skills + charter** — install the [portable skills](../skills/) into Copilot,
-   then run `debt-ops-init` once. It writes the disciplines and a
-   `<!-- debt-ops:feedback v1 -->` quality-commands block into
-   `.github/copilot-instructions.md` (or `AGENTS.md`). `feedback.py` reads that
-   block to know what to run on each edit — **without it, the write-time loop has
-   no commands to run.**
+2. **Skills** — install the [portable skills](../skills/) into Copilot
+   (`.github/skills/` in the repo, or `~/.copilot/skills/` personal).
+
+### Charter (both options)
+
+Run `debt-ops-init` once. It writes the disciplines and a
+`<!-- debt-ops:feedback v1 -->` quality-commands block into
+`.github/copilot-instructions.md` (or `AGENTS.md`). `feedback.py` reads that block to
+know what to run on each edit — **without it, the write-time loop has no commands to
+run.**
 
 ## How it works
 
