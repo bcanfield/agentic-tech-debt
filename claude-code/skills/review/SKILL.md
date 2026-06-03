@@ -2,6 +2,9 @@
 name: review
 description: Audit the debt registry, rank survivors by churn × Fowler quadrant, surface a top-N list, then walk paydown on user follow-up. Use when the user asks to review debt, see what to pay down, work through entries, or invokes /debt-ops:review. Stale entries drop with `drop A,B,C`.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+# Hidden from `npx skills` discovery — this copy ships in the Claude Code plugin (uses ${CLAUDE_PLUGIN_ROOT}); the portable skills/ copy is the one for the skills CLI.
+metadata:
+  internal: true
 ---
 
 # /debt-ops:review — audit + (on follow-up) walk paydown
