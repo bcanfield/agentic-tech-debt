@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # Deterministic hook-contract + static-structure tests. No network/host CLIs;
+  # spawns the real hook scripts with host-shaped payloads (stdlib + git only).
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]  # the hooks target 3.9+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: hook + static tests
+        env:
+          SKIP_SKILLS_CLI: "1"  # the npx test runs in its own job below
+        run: python -m unittest discover -s tests -v
+
+  # Live `npx skills` dedup check (ADR 0018) — needs node + network, so it's
+  # isolated from the deterministic suite.
+  skills-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: skills CLI offers exactly the four portable skills
+        run: python -m unittest discover -s tests -p "test_skills_cli.py" -v
