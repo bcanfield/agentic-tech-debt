@@ -74,6 +74,10 @@ These differ on purpose; preserve them when propagating a shared change:
   `AGENTS.md`/copilot-instructions + `$add` / bare skill name (codex, copilot, portable).
 - **Frontmatter.** `claude-code` skills use `allowed-tools` /
   `disable-model-invocation`; portable skills are `name` + `description` only.
+  `claude-code` skills also carry `metadata.internal: true` to hide them from the
+  `npx skills` CLI (it reads the root `marketplace.json` → `./claude-code` and would
+  otherwise offer broken `${CLAUDE_PLUGIN_ROOT}` copies alongside the portable set).
+  Do **not** propagate that flag to codex/copilot/portable ([ADR 0018](./docs/adr/0018-hide-claude-code-skills-from-skills-cli.md)).
 
 ## Demo GIFs
 

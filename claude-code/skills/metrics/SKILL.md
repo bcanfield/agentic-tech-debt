@@ -2,6 +2,9 @@
 name: metrics
 description: Print a debt-ops health summary from the metrics log, covering registration rate, hook feedback action rate, ADR creation, and AI-authored share. Use when the user asks for "debt-ops metrics", "debt health", "registry stats", or invokes /debt-ops:metrics. Read-only, never writes the log.
 allowed-tools: Bash, Read
+# Hidden from `npx skills` discovery — this copy ships in the Claude Code plugin (uses ${CLAUDE_PLUGIN_ROOT}); the portable skills/ copy is the one for the skills CLI.
+metadata:
+  internal: true
 ---
 
 # /debt-ops:metrics

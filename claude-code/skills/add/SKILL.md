@@ -2,6 +2,9 @@
 name: add
 description: 'Register a deferred decision in the debt registry. Trigger by judgment, not a marker scan, whenever a future reader would ask "why this way?": an unmade decision, stub, loosened type, bypassed check, swallowed error, a default picked "for now", or a TODO/FIXME/HACK/XXX marker. Trigger immediately whenever you defer work, or when the user invokes /debt-ops:add. Over-register freely; the developer drops with "drop A", "drop A,C", or "drop all".'
 allowed-tools: Bash(python3 *), Bash(rm *)
+# Hidden from `npx skills` discovery — this copy ships in the Claude Code plugin (uses ${CLAUDE_PLUGIN_ROOT}); the portable skills/ copy is the one for the skills CLI.
+metadata:
+  internal: true
 ---
 
 # /debt-ops:add — register a tech-debt entry
