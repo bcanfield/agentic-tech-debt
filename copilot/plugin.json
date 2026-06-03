@@ -1,6 +1,6 @@
 {
   "name": "debt-ops",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "Catches AI-introduced tech debt at write-time. Every \"I'll fix this later,\" every shortcut, every punt your AI agent writes gets caught.",
   "author": {
     "name": "Brandin Canfield",
