@@ -14,6 +14,13 @@
         "bash": "python3 .github/hooks/feedback.py",
         "timeoutSec": 5
       }
+    ],
+    "agentStop": [
+      {
+        "type": "command",
+        "bash": "python3 .github/hooks/stop.py",
+        "timeoutSec": 5
+      }
     ]
   }
 }
