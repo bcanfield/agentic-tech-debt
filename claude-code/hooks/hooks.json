@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/session-start.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py"
           }
         ]
       }
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/drop.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/drop.py",
             "timeout": 3
           }
         ]
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/feedback.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/feedback.py",
             "timeout": 5
           }
         ]
@@ -38,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/stop.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/stop.py",
             "timeout": 5
           }
         ]

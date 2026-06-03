@@ -11,7 +11,7 @@ Two modes. First turn: print the audit and stop. On a user follow-up ("fix the t
 ## First turn: print the audit
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/review.py
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/review/scripts/review.py
 ```
 
 Optional: `--top N` to surface more than the default 3 candidates.

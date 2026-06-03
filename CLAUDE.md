@@ -8,7 +8,7 @@
 - **Be refreshingly concise.** Nobody likes overly wordy AI slop. Speak and comment like a co-worker.
 - **Guide the agent with markdown, not orchestration.** Claude Code and Codex are smart and have the keys to the user's repo. Skills should load research-backed principles and trust the agent's judgment, not script its every step. Reach for Python only when determinism demands it (timestamps, audits, atomic file ops, hook contracts), never to make decisions a smart agent reading the repo can make better.
 - **Python over Bash for plugin scripts.** Stdlib `json`, `re`, and `subprocess.run(..., timeout=...)` beat hand-rolled JSON escaping, a `jq` dependency, and the BSD/GNU `timeout` portability dance. And run on Windows without WSL.
-- **Conventional commits.** Both adapters' plugin versions auto-bump in lockstep via release-please (config in `.github/`; mirrors `claude-code/.claude-plugin/plugin.json` and `codex/.codex-plugin/plugin.json`); use `feat:` / `fix:` / `feat!:` prefixes. Anything else is ignored by the bumper. Don't hand-edit `version` in either `plugin.json`.
+- **Conventional commits.** All three adapters' plugin versions auto-bump in lockstep via release-please (config in `.github/`; mirrors `claude-code/.claude-plugin/plugin.json`, `codex/.codex-plugin/plugin.json`, and `copilot/plugin.json`); use `feat:` / `fix:` / `feat!:` prefixes. Anything else is ignored by the bumper. Don't hand-edit `version` in any `plugin.json`.
 - **We like humanlike, concise inline comments** For example, a single line above a function or code block very simply and concisely saying what the code is doing so that the code is easy for a human to understand
 - **Record decisions as ADRs.** When we make a choice with two credible alternatives (a new convention, a tradeoff worth remembering), drop a short note in [`docs/adr/`](./docs/adr/) using the format in its [README](./docs/adr/README.md).
 
@@ -29,17 +29,20 @@ deltas below** (don't flatten them).
 
 ### What's duplicated (keep in sync)
 
-- **Helper scripts** — reference is `claude-code/scripts/`:
-  - `register.py` → also `codex/skills/add/scripts/`, `skills/debt-ops-add/scripts/`
-  - `review.py` → also `codex/skills/review/scripts/`, `skills/debt-ops-review/scripts/`
-  - `feedback.py` → also `codex/hooks/`, `copilot/hooks/`
-  - `session-start.py` → also `codex/hooks/`, `copilot/hooks/`
-  - `drop.py`, `stop.py` → also `codex/hooks/`
+- **Helper scripts** — every adapter co-locates each script with its invoker: hook
+  scripts in `hooks/` (next to `hooks.json`), skill scripts in the skill's own
+  `scripts/`. `claude-code` is the reference (it has all six). Copies:
+  - `register.py` (add skill) → `claude-code/skills/add/scripts/`, `codex/skills/add/scripts/`, `copilot/skills/debt-ops-add/scripts/`, `skills/debt-ops-add/scripts/`
+  - `review.py` (review skill) → `claude-code/skills/review/scripts/`, `codex/skills/review/scripts/`, `copilot/skills/debt-ops-review/scripts/`, `skills/debt-ops-review/scripts/`
+  - `feedback.py`, `session-start.py` (hooks) → `claude-code/hooks/`, `codex/hooks/`, `copilot/hooks/`
+  - `drop.py`, `stop.py` (hooks) → `claude-code/hooks/`, `codex/hooks/`
 - **Within-script helpers** repeated across most of the above — change one, change
   all: `git_toplevel`, `repo_hash`, `cache_base`, `read_registry_dir`, `log_metric`,
   `letter_for`, `parse_frontmatter`, `days_since`.
 - **Skills (`SKILL.md`)** — `add`, `review`, `metrics`, `init` each live in
-  `claude-code/skills/`, `codex/skills/`, and `skills/debt-ops-*/`.
+  `claude-code/skills/`, `codex/skills/`, `copilot/skills/`, and top-level `skills/`.
+  Dir names differ by namespace (see deltas): bare (`add`) under the namespaced
+  plugins, `debt-ops-`-prefixed under copilot + portable.
 - **Cross-cutting contracts** (must match everywhere they appear):
   - Registry schema (frontmatter fields + quadrant/category enums) — every
     `register.py`, `review.py`, and `add` skill. Canonical: `docs/tech-debt-plugin-plan.md`.
@@ -54,8 +57,11 @@ These differ on purpose; preserve them when propagating a shared change:
 
 - **Cache base.** `claude-code` uses `CLAUDE_PLUGIN_DATA`; `codex`/`copilot`/portable
   use `DEBT_OPS_CACHE` → `~/.cache/debt-ops`.
-- **Script paths in skills.** `claude-code` uses `${CLAUDE_PLUGIN_ROOT}/scripts/…`;
-  `codex` + portable bundle `scripts/` and call them by relative path.
+- **Script-reference style.** Layout is now uniform (hook scripts in `hooks/`, skill
+  scripts in the skill's `scripts/`); only the *reference* differs. `claude-code`
+  addresses scripts via the `${CLAUDE_PLUGIN_ROOT}/…` token (Claude provides it);
+  `codex`/`copilot`/portable call the bundled script by relative path (`scripts/…`),
+  since the open SKILL.md standard has no plugin-root token.
 - **Hook I/O envelope.** `claude-code`/`codex` emit
   `hookSpecificOutput.additionalContext`; `copilot` emits bare `{additionalContext}`
   and self-filters edit tools (its `postToolUse` has no matcher).
