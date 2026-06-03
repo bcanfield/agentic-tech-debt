@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.7.2...debt-ops-v0.8.0) (2026-06-03)
+
+
+### Features
+
+* add portable Agent Skills layer and github copilot layer ([#30](https://github.com/bcanfield/agentic-tech-debt/issues/30)) ([55c27fa](https://github.com/bcanfield/agentic-tech-debt/commit/55c27fa8dc3d534621b33626e134f38378da131f))
+
+
+### Bug Fixes
+
+* Copilot ([ff26912](https://github.com/bcanfield/agentic-tech-debt/commit/ff26912b314a32edb4d0f2d275e22a0e8c04aeb1))
+
 ## [0.7.2](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.7.1...debt-ops-v0.7.2) (2026-06-02)
 
 
