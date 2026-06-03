@@ -176,12 +176,13 @@ def run_one(line, changed_files, env):
     if not args:
         return line, "SKIP_NO_FILE", ""
 
+    # Only $CHANGED_FILES is expanded; other shell features (pipes, &&, globs)
+    # are not, so we don't need bash on PATH. Wrap in `bash -c '...'` to opt in.
     if changed_files:
         args = [
             tok.replace("${CHANGED_FILES}", changed_files).replace("$CHANGED_FILES", changed_files)
             for tok in args
         ]
-
     try:
         result = subprocess.run(
             args,

@@ -21,10 +21,11 @@ from pathlib import Path
 
 DEBUG_ENV = "DEBT_OPS_DEBUG"
 MARKER_RE = re.compile(r"\b(TODO|FIXME|HACK|XXX)\b")
-# Plugin-source prefix is always excluded; debt-registry and ADR prefixes
-# are looked up per-repo from the cache files written by session-start.py
-# (adr-dir / registry-dir). See build_excluded_prefixes below.
-STATIC_EXCLUDED_PREFIXES = ("claude-code/",)
+# Plugin-source prefixes are always excluded (this monorepo hosts all four
+# adapters); debt-registry and ADR prefixes are looked up per-repo from the
+# cache files written by session-start.py (adr-dir / registry-dir). See
+# build_excluded_prefixes below.
+STATIC_EXCLUDED_PREFIXES = ("claude-code/", "codex/", "copilot/", "skills/")
 DEFAULT_REGISTRY_DIR = "docs/debt"
 DEFAULT_ADR_DIR = "docs/adr"
 MAX_UNTRACKED_BYTES = 1_000_000

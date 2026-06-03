@@ -100,7 +100,9 @@ def read_cached_dir(cache_file, toplevel):
         rel = cache_file.read_text(encoding="utf-8").strip()
     except OSError:
         return None
-    if not rel or not (toplevel / rel).is_dir():
+    if not rel:
+        return None
+    if not (toplevel / rel).is_dir():
         return None
     return rel
 
