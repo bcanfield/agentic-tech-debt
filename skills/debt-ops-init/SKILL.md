@@ -65,11 +65,13 @@ placeholder if none found).
 
 3. Read entries under `{{REGISTRY_DIR}}/` before changing files they reference.
 
-### Quality checks (self-applied)
+### Quality checks
 
-After editing code, run these and fix failures before moving on. Without a debt-ops hook adapter these are not enforced automatically — you, the agent, run them.
+If a debt-ops hook adapter is installed (e.g. the Copilot adapter), it reads the marker block below and runs these after every edit under a 3 s budget. Without an adapter (skills-only tool), they are *not* enforced automatically — you, the agent, run them after editing and fix failures before moving on. Lines starting with `#` are estimates/comments and are skipped at run time.
 
+<!-- debt-ops:feedback v1 -->
 {{COMMANDS}}
+<!-- /debt-ops:feedback -->
 ```
 
 ## 4. Apply
@@ -85,7 +87,16 @@ After editing code, run these and fix failures before moving on. Without a debt-
 ## 5. Announce
 
 `charter updated: <file> — disciplines + N quality commands` (N = non-comment,
-non-blank lines in the quality-checks block; 0 if placeholder).
+non-blank lines inside the marker block; 0 if placeholder).
+
+## Marker contract — do not deviate
+
+- `<!-- debt-ops:feedback v1 -->` is the open marker the hook adapters key on.
+  Exact string; the `v1` is part of the marker.
+- `<!-- /debt-ops:feedback -->` is the close marker.
+- This must stay identical across every adapter's `feedback.py` and `init` skill —
+  see CLAUDE.md "Adapter parity." A drift here silently breaks the Copilot
+  write-time loop (it reads the block by this exact marker).
 
 ## Don't
 
