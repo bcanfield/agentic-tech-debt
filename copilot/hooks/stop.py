@@ -328,8 +328,25 @@ def record_session_block(path, session_id, count):
         pass
 
 
+# Copilot runs plugin hooks with cwd = the plugin install dir, not the user's
+# project, so process cwd can't locate the repo. Every Copilot hook payload
+# carries the real project path as `cwd`; chdir into it before any git call.
+# Claude/Codex invoke hooks in the project dir, so only this adapter needs it
+# (ADR 0019).
+def chdir_to_payload_cwd(data):
+    cwd = data.get("cwd") if isinstance(data, dict) else None
+    if cwd:
+        try:
+            os.chdir(cwd)
+        except OSError:
+            pass
+
+
 def main():
     data = parse_stdin()
+    # Payload carries the project cwd; chdir before any git call (Copilot runs
+    # us in the plugin dir).
+    chdir_to_payload_cwd(data)
     # Copilot's agentStop payload is camelCase (sessionId), unlike Claude/Codex.
     session_id = str(data.get("sessionId") or "")
 

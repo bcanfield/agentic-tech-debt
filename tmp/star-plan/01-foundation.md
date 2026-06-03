@@ -1,12 +1,17 @@
-# Days 0–14 — Foundation
+# Foundation — fix the repo first
 
 Fix the repo before anyone looks at it. No external posting yet. When a launch
 sends 1,000 people to your README, it needs to convert them in 10 seconds.
 
-> Your Decision-0 answers (fill in):
-> - Multi-tool: ___
-> - Org move: ___
-> - Hackathon: ___
+> **Before you write a word of copy, read `angles.md`.** It's the source of
+> truth for how we propose debt-ops to devs — the README and every step below
+> pull their framing from it.
+
+> Decision-0 answers (locked):
+> - Multi-tool: **YES** — Claude Code, Codex, Copilot CLIs + a portable Agent
+>   Skill (claude.ai / Claude API). Not Cursor.
+> - Org move: **NO** — staying on `bcanfield/agentic-tech-debt`; all links use it.
+> - Hackathon: **NO**.
 
 ---
 

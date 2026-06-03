@@ -142,7 +142,31 @@ def probe_registry_dir(toplevel):
     return None
 
 
+# Copilot runs plugin hooks with cwd = the plugin install dir, not the user's
+# project, so process cwd can't locate the repo. The sessionStart payload
+# carries the real project path as `cwd`; read it and chdir before any git
+# call. Claude/Codex invoke hooks in the project dir, so only this adapter
+# needs it (ADR 0019).
+def chdir_to_payload_cwd():
+    try:
+        raw = sys.stdin.read()
+    except OSError:
+        return
+    if not raw:
+        return
+    try:
+        cwd = (json.loads(raw) or {}).get("cwd")
+    except (json.JSONDecodeError, ValueError):
+        return
+    if cwd:
+        try:
+            os.chdir(cwd)
+        except OSError:
+            pass
+
+
 def main():
+    chdir_to_payload_cwd()
     toplevel = git_toplevel()
     if toplevel is None:
         return 0

@@ -90,7 +90,7 @@ panel; QCon AI Boston (June); GitHub Universe (Oct).
 
 **Content angles that fit the discourse:**
 1. "The Fowler quadrants, re-drawn for agents."
-2. "What we found auditing N AI-generated PRs" (data essay — Step 12).
+2. "What we found auditing N AI-generated PRs" (data essay — Step 13).
 3. "Comprehension debt has an inverse: an externalized debt registry."
 
 ---

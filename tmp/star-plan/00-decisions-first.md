@@ -5,38 +5,34 @@ README. Each is yours alone — no agent can decide them for you.
 
 ---
 
-## Decision 1: Will you claim multi-tool support?
+## Decision 1: Will you claim multi-tool support? → RESOLVED: YES
 
-Every top plugin says "works with Claude Code, Cursor, Codex, Gemini CLI…"
-even when it mostly runs on one. It multiplies your audience 3–5x.
+Every top plugin says "works with Claude Code, Codex, Cursor…" even when it
+mostly runs on one. It multiplies your audience 3–5x.
 
-- **Yes** → you must roadmap Cursor/Codex support for real. Claiming it and
-  having it break for Cursor users costs more trust than it earns.
-- **No** → stay "Claude Code plugin." Honest, smaller pond.
-
-**Note:** the repo already has a `codex/` adapter path in the plan, so "yes" may
-be closer than it looks. Check what actually works before claiming it.
+**Decided:** claim **Claude Code, Codex, and Copilot** (all three adapters
+already ship in the repo) plus a **portable Agent Skill** for claude.ai and the
+Claude API. **Not Cursor** — we don't ship it; claiming it would cost more trust
+than it earns. This claim is honest because every surface actually exists.
 
 ---
 
-## Decision 2: Move the repo to a GitHub org?
+## Decision 2: Move the repo to a GitHub org? → RESOLVED: NO
 
-Research is clear: org-owned repos (`debt-ops/debt-ops`) get more stars than
-personal ones (`bcanfield/agentic-tech-debt`) — a real, free effect.
+Research is clear: org-owned repos get more stars than personal ones — a real,
+free effect we're choosing to forgo.
 
-- **Yes** → create a `debt-ops` org, transfer the repo, keep the old URL as a
-  redirect. One afternoon of work.
-- **No** → stay put. You lose a free boost but skip the migration.
+**Decided:** stay on `bcanfield/agentic-tech-debt`. Skip the migration; every
+link in the README, HN post, and awesome-list PRs uses the current URL.
 
 ---
 
-## Decision 3: Spend money on a hackathon prize?
+## Decision 3: Spend money on a hackathon prize? → RESOLVED: NO
 
-There's an Anthropic hackathon (~3,000 people) around June 12. You could
-sponsor a "least debt accrued" prize so debt-ops becomes a recommended tool.
+There was an Anthropic hackathon (~3,000 people) you could have sponsored a
+"least debt accrued" prize at.
 
-- **Yes** → budget needed, big visibility with the exact right crowd.
-- **No** → skip; everything else still works.
+**Decided:** no hackathon spend. Everything else in the plan still works.
 
 ---
 
