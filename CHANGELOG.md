@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.8.0...debt-ops-v0.8.1) (2026-06-03)
+
+
+### Bug Fixes
+
+* Fix cwd in copilot harnass ([1e13e93](https://github.com/bcanfield/agentic-tech-debt/commit/1e13e935334027fe0208f13aa7730cec5967f04d))
+
 ## [0.8.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.7.2...debt-ops-v0.8.0) (2026-06-03)
 
 
