@@ -35,7 +35,8 @@ deltas below** (don't flatten them).
   - `register.py` (add skill) → `claude-code/skills/add/scripts/`, `codex/skills/add/scripts/`, `copilot/skills/debt-ops-add/scripts/`, `skills/debt-ops-add/scripts/`
   - `review.py` (review skill) → `claude-code/skills/review/scripts/`, `codex/skills/review/scripts/`, `copilot/skills/debt-ops-review/scripts/`, `skills/debt-ops-review/scripts/`
   - `feedback.py`, `session-start.py` (hooks) → `claude-code/hooks/`, `codex/hooks/`, `copilot/hooks/`
-  - `drop.py`, `stop.py` (hooks) → `claude-code/hooks/`, `codex/hooks/`
+  - `stop.py` (hook) → `claude-code/hooks/`, `codex/hooks/`, `copilot/hooks/` (copilot on `agentStop`)
+  - `drop.py` (hook) → `claude-code/hooks/`, `codex/hooks/` (no copilot — `userPromptSubmitted` output isn't processed)
 - **Within-script helpers** repeated across most of the above — change one, change
   all: `git_toplevel`, `repo_hash`, `cache_base`, `read_registry_dir`, `log_metric`,
   `letter_for`, `parse_frontmatter`, `days_since`.
@@ -63,8 +64,12 @@ These differ on purpose; preserve them when propagating a shared change:
   `codex`/`copilot`/portable call the bundled script by relative path (`scripts/…`),
   since the open SKILL.md standard has no plugin-root token.
 - **Hook I/O envelope.** `claude-code`/`codex` emit
-  `hookSpecificOutput.additionalContext`; `copilot` emits bare `{additionalContext}`
-  and self-filters edit tools (its `postToolUse` has no matcher).
+  `hookSpecificOutput.additionalContext`; `copilot` emits a bare object and
+  self-filters edit tools (its `postToolUse` has no matcher). `copilot`'s
+  `feedback.py` prefers `modifiedResult` over `additionalContext` to work around
+  [copilot-cli#2980](https://github.com/github/copilot-cli/issues/2980); its
+  `stop.py` runs on `agentStop` (camelCase `sessionId`) and skips the batch
+  rotation (no `drop` hook to consume it).
 - **Charter file + invocation.** `CLAUDE.md` + `/debt-ops:add` (claude) vs
   `AGENTS.md`/copilot-instructions + `$add` / bare skill name (codex, copilot, portable).
 - **Frontmatter.** `claude-code` skills use `allowed-tools` /

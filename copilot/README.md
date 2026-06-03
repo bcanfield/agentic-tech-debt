@@ -19,14 +19,24 @@ adapter:
 
 | Capability | Claude Code | Copilot | Here |
 |---|---|---|---|
-| Write-time quality checks | `PostToolUse` (matched) | `postToolUse` (no matcher) | ✅ ported — `feedback.py` self-filters to edit tools by `toolName`/`toolArgs` |
+| Write-time quality checks | `PostToolUse` (matched) | `postToolUse` (no matcher) | ✅ ported — `feedback.py` self-filters to edit tools by `toolName`/`toolArgs`. ⚠️ delivery caveat below |
 | Disciplines at session start | `SessionStart` inject | command hooks **can't inject** | ➡️ moved to the **charter** (`debt-ops-init`); the `sessionStart` command hook only warms path caches + logs a metric |
+| Stop-time safety net | `Stop` `decision:block` | `agentStop` `decision:block` + `reason` | ✅ ported — `stop.py` on `agentStop`; same two-stage marker-vs-registry block + per-session cap as Claude/Codex |
 | `drop A` intercept + confirm | `UserPromptSubmit` block | `userPromptSubmitted` output **not processed** | ⚠️ degraded — use the `debt-ops-add` skill's manual drop (read `current-turn.txt`, `rm` the entry) |
-| Stop-time safety net | `Stop` `decision:block` | `agentStop` (different contract) | ⏭️ deferred (follow-up) |
 
-So on Copilot you get the **full write-time loop** plus capture/review/metrics via
-the [portable skills](../skills/); the disciplines come from the charter instead of
-a per-session inject.
+So on Copilot you get the **full write-time loop**, the **Stop-time safety net**, and
+capture/review/metrics via the [portable skills](../skills/); the disciplines come
+from the charter instead of a per-session inject. Drops are manual.
+
+> **⚠️ Write-time feedback delivery — upstream bug.**
+> [copilot-cli#2980](https://github.com/github/copilot-cli/issues/2980) (open): a
+> `postToolUse` hook's `additionalContext` is captured but **not injected** into the
+> agent. So `feedback.py` prefers `modifiedResult` (which *is* forwarded) — it appends
+> the pass/fail summary to the tool's own result, falling back to `additionalContext`
+> when it can't do so safely. Until that fix lands, on edits where the fallback is
+> taken the agent may not *see* the feedback, even though the hook ran (the debug log
+> + metrics still record it). The `agentStop` safety net is unaffected — `decision`/`reason`
+> is a separate, working channel.
 
 ## Install
 
@@ -57,7 +67,7 @@ Then run the charter step below (still required — it's what gives the loop com
 
    ```bash
    mkdir -p .github/hooks
-   cp copilot/hooks/debt-ops.json copilot/hooks/feedback.py copilot/hooks/session-start.py .github/hooks/
+   cp copilot/hooks/debt-ops.json copilot/hooks/feedback.py copilot/hooks/session-start.py copilot/hooks/stop.py .github/hooks/
    ```
 
    Copilot discovers `.github/hooks/*.json`; the `.py` files sit alongside and are
@@ -86,7 +96,10 @@ run.**
   was a file edit (matched via `toolName`/`toolArgs`). On an edit: reads the
   charter's quality-commands block, runs each command in parallel under a 3 s
   budget, warns if the edit dropped the repo's test-file count, and returns the
-  pass/fail summary to Copilot as `additionalContext`.
+  pass/fail summary (via `modifiedResult`; see the delivery caveat above).
+- **`agentStop` → `stop.py`** — fires at end of turn. Counts new TODO/FIXME/HACK/XXX
+  markers vs new registry entries; if markers outpace registrations it returns
+  `decision: "block"` with a one-line nudge, capped once per session so it can't loop.
 
 Cache and metrics live under `~/.cache/debt-ops/` (override with `DEBT_OPS_CACHE`) —
 the same base the skills and other adapters use, so `debt-ops-review` and

@@ -9,8 +9,10 @@ lift; only the I/O shim differs:
 
 - stdin: Copilot delivers {toolName, toolArgs, toolResult} (camelCase), not
   Claude's {tool_name, tool_input.file_path}.
-- stdout: Copilot expects a bare {"additionalContext": "..."} object; Claude
-  wraps it in {"hookSpecificOutput": {...}}.
+- stdout: a bare object (Claude wraps in {"hookSpecificOutput": {...}}). We prefer
+  {"modifiedResult": {...}} over {"additionalContext": "..."} because of
+  copilot-cli#2980 — postToolUse additionalContext is currently captured but never
+  injected into the agent, whereas modifiedResult IS forwarded. See emit() below.
 - commands source: the Copilot charter files (.github/copilot-instructions.md /
   AGENTS.md) carry the `<!-- debt-ops:feedback v1 -->` marker block; there is no
   SessionStart model-detection step on Copilot (command hooks can't inject), so
@@ -51,9 +53,26 @@ PATH_KEYS = ("path", "file_path", "filePath", "file", "target_file", "filename")
 CHARTER_FILES = (".github/copilot-instructions.md", "AGENTS.md", "CLAUDE.md")
 
 
-# Copilot postToolUse output envelope: a bare object with additionalContext.
-def emit(context):
-    sys.stdout.write(json.dumps({"additionalContext": context}) + "\n")
+# Copilot postToolUse output. additionalContext is the clean way to feed the model,
+# but copilot-cli#2980 currently drops it (captured, never injected). modifiedResult
+# IS forwarded, so we prefer it: when the tool succeeded and exposes the documented
+# {resultType, textResultForLlm} shape, re-emit that result with our feedback
+# APPENDED (never replacing the original text). If we can't do that safely — tool
+# errored, or result shape is unrecognized — fall back to additionalContext so we
+# never clobber the tool's output. The fallback also goes live once #2980 is fixed.
+def emit(context, tool_result=None):
+    sys.stdout.write(json.dumps(build_payload(context, tool_result)) + "\n")
+
+
+def build_payload(context, tool_result):
+    if isinstance(tool_result, dict) and tool_result.get("resultType") == "success":
+        orig = tool_result.get("textResultForLlm")
+        if isinstance(orig, str):
+            return {"modifiedResult": {
+                "resultType": "success",
+                "textResultForLlm": f"{orig}\n\n{context}" if orig else context,
+            }}
+    return {"additionalContext": context}
 
 
 # Repo root, or None if we're not in a git repo.
@@ -80,20 +99,25 @@ def cache_base():
     return Path(override) if override else (Path.home() / ".cache" / "debt-ops")
 
 
-# Pull (tool_name, file_path) out of Copilot's postToolUse stdin payload.
-# Returns ("", "") on anything that isn't a file edit so the caller can idle.
-def changed_file_from_stdin():
+# Read + parse the postToolUse payload once (stdin is only readable once);
+# main() reuses it for both the changed file and toolResult.
+def read_stdin():
     try:
         raw = sys.stdin.read()
     except OSError:
-        return "", ""
+        return {}
     if not raw:
-        return "", ""
+        return {}
     try:
         data = json.loads(raw)
+        return data if isinstance(data, dict) else {}
     except (json.JSONDecodeError, ValueError):
-        return "", ""
+        return {}
 
+
+# Pull (tool_name, file_path) out of Copilot's postToolUse stdin payload.
+# Returns ("", "") on anything that isn't a file edit so the caller can idle.
+def changed_file(data):
     tool_name = data.get("toolName") or ""
     if not EDIT_TOOL_RE.search(tool_name):
         return tool_name, ""
@@ -262,7 +286,8 @@ def main():
 
     cache_dir = cache_base() / "cache" / repo_hash(toplevel)
 
-    tool_name, changed = changed_file_from_stdin()
+    data = read_stdin()
+    tool_name, changed = changed_file(data)
     # Copilot fires postToolUse on every tool; only edits concern us.
     if not changed:
         return 0
@@ -341,7 +366,7 @@ def main():
         parts.append(f"debt-ops feedback (3s budget per command):\n{summary}")
     if warn:
         parts.append(warn)
-    emit("\n\n".join(parts))
+    emit("\n\n".join(parts), data.get("toolResult"))
     return 0
 
 
