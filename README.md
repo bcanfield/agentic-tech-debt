@@ -2,7 +2,7 @@
 
 **Catches AI-introduced tech debt at write-time**
 
-*Works with [Claude Code](https://code.claude.com/docs) and [Codex](https://developers.openai.com/codex). Any stack. Backed by decades of research.*
+*Works with [any coding agent](#install). Any stack. Backed by decades of research.*
 
 <img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: the agent edits api/checkout.ts and casts a value to `as any` to clear a type error; debt-ops catches the loosened type at write-time and logs +1 entry: as-any-checkout-payload (A)" />
 

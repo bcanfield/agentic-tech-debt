@@ -11,7 +11,7 @@ Call `register.py` via Bash. The helper writes the entry under the repo's detect
 ## The call
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/register.py \
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/add/scripts/register.py \
   --slug <slug> \
   --principal <effort, e.g. 2d, 1w, unknown> \
   --interest <ongoing cost, e.g. "+30min/incident", unknown> \
