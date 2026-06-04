@@ -9,7 +9,8 @@
 <img src="./demo/debt-ops.gif" width="720" alt="debt-ops in Claude Code: the agent edits api/checkout.ts and casts a value to `as any` to clear a type error; debt-ops catches the loosened type at write-time and logs +1 entry: as-any-checkout-payload (A)" />
 
 [![MIT License](https://img.shields.io/github/license/bcanfield/agentic-tech-debt?color=blue)](./LICENSE)
-[![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](#install)
+[![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757?logo=claude&logoColor=white)](#install)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
 ## What it does
 
@@ -23,7 +24,7 @@
 
 Just needs a git repo and Python 3.10+.
 
-**Claude Code** (v2.1.121+)
+<img src="https://cdn.simpleicons.org/claude/d97757" height="16" alt="" align="absmiddle" /> **Claude Code** (v2.1.121+)
 
 ```bash
 /plugin marketplace add bcanfield/agentic-tech-debt
@@ -40,7 +41,7 @@ codex plugin marketplace add bcanfield/agentic-tech-debt
 # then, inside Codex: /plugins → install debt-ops
 ```
 
-**GitHub Copilot CLI**
+<img src="https://cdn.simpleicons.org/githubcopilot" height="16" alt="" align="absmiddle" /> **GitHub Copilot CLI**
 
 ```bash
 copilot plugin marketplace add bcanfield/agentic-tech-debt
