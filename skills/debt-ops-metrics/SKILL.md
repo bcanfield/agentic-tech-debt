@@ -40,7 +40,7 @@ One JSON object per line. Event shapes:
 - `{"event":"register","slug":"...","ai_authored":bool,"letter":"...","ts":"..."}` — each capture
 - `{"event":"review","total":N,"stale":N,"cold":N,"active":N,"ts":"..."}` — each review
 - `{"event":"edit","file":"...","registry_count":N,"ts":"..."}` — every agent edit *(hook adapter only)*
-- `{"event":"feedback","file":"...","result":"pass|fail","ts":"..."}` — every quality-check fire *(hook adapter only)*
+- `{"event":"feedback","file":"...","result":"pass|fail","latency_ms":N,"timeout":N,"ts":"..."}` — every quality-check fire *(hook adapter only; `latency_ms` = parallel-batch wall-clock, `timeout` = commands that hit the 3s ceiling, both absent on older events)*
 - `{"event":"session","registry_count":N,"adr_count":M,"ai_authored_count":K,"ts":"..."}` — start of each session *(hook adapter only)*
 
 Timestamps are ISO-8601 UTC.
@@ -58,6 +58,11 @@ Filter to the last 7 days. Then compute what the available events support:
   look at the *next* feedback for the *same* file; count those that flipped to
   `pass`; divide by total fails. Below 50% means the agent isn't reliably acting on
   hook output — the architectural alarm bell.
+
+- **Feedback latency** *(hook adapter only)* — median `latency_ms` across feedback
+  events, plus the share with `timeout > 0`. A median near 3000ms or a rising timeout
+  share means quality commands are too slow for the 3s budget and the agent is being
+  trained to ignore feedback (the hook-latency anti-pattern). Skip events missing the fields.
 
 If there are fewer than 5 data points in the window, say "need more data" and skip
 the verdict.

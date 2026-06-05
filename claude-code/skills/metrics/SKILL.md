@@ -43,7 +43,7 @@ If the file is missing or empty, tell the user the hooks haven't fired yet in th
 One JSON object per line, three event shapes:
 
 - `{"event":"edit","file":"...","registry_count":N,"ts":"..."}` — every agent edit
-- `{"event":"feedback","file":"...","result":"pass|fail","ts":"..."}` — every quality-check fire
+- `{"event":"feedback","file":"...","result":"pass|fail","latency_ms":N,"timeout":N,"ts":"..."}` — every quality-check fire (`latency_ms` = parallel-batch wall-clock, `timeout` = commands that hit the 3s ceiling; both absent on older events)
 - `{"event":"session","registry_count":N,"adr_count":M,"ai_authored_count":K,"ts":"..."}` — start of each session
 
 Timestamps are ISO-8601 UTC.
@@ -58,6 +58,8 @@ Filter to the last 7 days. Then compute:
 - **AI-authored share trend** — first vs. last session percentage (`ai_authored_count / registry_count`, when registry_count>0).
 - **Feedback pass rate** — `count(result:pass) / count(event:feedback)`.
 - **FAIL → PASS rate** — for each feedback event with `result:fail`, look at the *next* feedback event for the *same* file. Count those that flipped to `pass`. Divide by total fails. Below 50% means Claude isn't reliably acting on hook output — the architectural alarm bell.
+
+- **Feedback latency** — median `latency_ms` across feedback events, plus the share with `timeout > 0`. A median near 3000ms or a rising timeout share means quality commands are too slow for the 3s budget and the agent is being trained to ignore feedback (the hook-latency anti-pattern). Skip events that predate these fields.
 
 If there are fewer than 5 sessions in the window, say "need more data" and skip the verdict.
 
@@ -76,6 +78,7 @@ ai-authored     : 50% → 60% ↑
 feedback ran    : 89 times
 pass rate       : 88%
 fail → pass rate: 80% (8/10)
+median latency  : 0.4s  (3% of fires hit the 3s budget)
 
 verdict: ok
 ```

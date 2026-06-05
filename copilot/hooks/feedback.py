@@ -342,12 +342,19 @@ def main():
         return cmd, status, snippet
 
     # Run all commands in parallel; per-command 3s timeout enforces the budget.
+    batch_start = time.monotonic()
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(commands)) as pool:
         results = list(pool.map(run_and_log, commands))
+    latency_ms = round((time.monotonic() - batch_start) * 1000)
 
-    # Log overall result so metrics can detect FAIL → PASS self-corrections.
+    # Log overall result + wall-clock + timeout count so metrics can detect
+    # FAIL → PASS self-corrections and watch the 3s-budget anti-pattern.
+    timeouts = sum(1 for _, s, _ in results if s == "TIMEOUT")
     agg = "fail" if any(s in ("FAIL", "TIMEOUT") for _, s, _ in results) else "pass"
-    log_metric(cache_dir, {"event": "feedback", "file": changed, "result": agg})
+    log_metric(cache_dir, {
+        "event": "feedback", "file": changed, "result": agg,
+        "latency_ms": latency_ms, "timeout": timeouts,
+    })
 
     # Format pass/fail/snippet per command for the agent-facing summary.
     summary_lines = []
