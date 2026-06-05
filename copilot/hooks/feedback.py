@@ -322,6 +322,15 @@ def main():
         "registry_count": registry_count(toplevel, registry_dir),
     })
 
+    # Activation funnel: stamp the first-ever edit for this repo (once). An
+    # all-time fact, so it's a marker file, not a windowed metric event.
+    first_edit = cache_dir / "first-edit"
+    if not first_edit.exists():
+        try:
+            first_edit.write_text(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), encoding="utf-8")
+        except OSError:
+            pass
+
     # Nothing to run? Done.
     raw = read_commands(toplevel, cache_dir)
     commands = [

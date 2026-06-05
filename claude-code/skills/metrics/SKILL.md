@@ -34,6 +34,11 @@ if [ -n "$CACHE_DIR" ] && [ -f "$LOG" ]; then
 else
   echo "MISSING: no metrics.jsonl found for repo hash $REPO_HASH"
 fi
+
+# Activation markers (all-time facts, repo-permanent — outside the 7-day window).
+for M in first-session first-edit first-register; do
+  [ -n "$CACHE_DIR" ] && [ -f "$CACHE_DIR/$M" ] && echo "ACTIVATION $M $(cat "$CACHE_DIR/$M")"
+done
 ```
 
 If the file is missing or empty, tell the user the hooks haven't fired yet in this repo and stop.
@@ -61,6 +66,8 @@ Filter to the last 7 days. Then compute:
 
 - **Feedback latency** — median `latency_ms` across feedback events, plus the share with `timeout > 0`. A median near 3000ms or a rising timeout share means quality commands are too slow for the 3s budget and the agent is being trained to ignore feedback (the hook-latency anti-pattern). Skip events that predate these fields.
 
+- **Activation funnel** — from the `ACTIVATION` lines (not the JSON log): time from `first-session` → `first-edit` → `first-register`. Shows how fast the repo reached first value (first fed-back edit) and first captured debt. All-time facts, independent of the window; a missing marker means that milestone hasn't happened yet.
+
 If there are fewer than 5 sessions in the window, say "need more data" and skip the verdict.
 
 ## 4. Report
@@ -79,6 +86,8 @@ feedback ran    : 89 times
 pass rate       : 88%
 fail → pass rate: 80% (8/10)
 median latency  : 0.4s  (3% of fires hit the 3s budget)
+
+activation      : 1st edit +2m, 1st debt +4h (from 1st session)
 
 verdict: ok
 ```

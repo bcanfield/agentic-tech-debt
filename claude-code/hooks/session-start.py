@@ -362,6 +362,15 @@ def main():
         "registry_dir": effective_registry_dir,
     })
 
+    # Activation funnel: stamp the first-ever session for this repo (once). An
+    # all-time fact, so it's a marker file, not a windowed metric event.
+    first_session = cache_dir / "first-session"
+    if not first_session.exists():
+        try:
+            first_session.write_text(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), encoding="utf-8")
+        except OSError:
+            pass
+
     context = (
         "Tech-debt-operations disciplines (debt-ops plugin):\n\n"
         f"{disciplines_text(effective_adr_dir, effective_registry_dir)}\n\n"

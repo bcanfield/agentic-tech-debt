@@ -25,6 +25,11 @@ if [ -n "$REPO_HASH" ] && [ -f "$LOG" ]; then
 else
   echo "MISSING: no metrics.jsonl found for repo hash ${REPO_HASH:-<not-a-git-repo>}"
 fi
+
+# Activation markers (all-time facts, repo-permanent — outside the 7-day window).
+for M in first-session first-edit first-register; do
+  [ -n "$CACHE_DIR" ] && [ -f "$CACHE_DIR/$M" ] && echo "ACTIVATION $M $(cat "$CACHE_DIR/$M")"
+done
 ```
 
 If the file is missing or empty, tell the user no debt-ops activity has been logged
@@ -63,6 +68,11 @@ Filter to the last 7 days. Then compute what the available events support:
   events, plus the share with `timeout > 0`. A median near 3000ms or a rising timeout
   share means quality commands are too slow for the 3s budget and the agent is being
   trained to ignore feedback (the hook-latency anti-pattern). Skip events missing the fields.
+
+- **Activation funnel** *(markers)* — from the `ACTIVATION` lines (not the JSON log):
+  time to `first-register` (and, with a hook adapter, `first-session` → `first-edit`
+  too). Shows how fast the repo reached its first captured debt. All-time facts,
+  independent of the window; a missing marker means that milestone hasn't happened yet.
 
 If there are fewer than 5 data points in the window, say "need more data" and skip
 the verdict.
