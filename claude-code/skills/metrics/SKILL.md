@@ -44,7 +44,7 @@ One JSON object per line, three event shapes:
 
 - `{"event":"edit","file":"...","registry_count":N,"ts":"..."}` — every agent edit
 - `{"event":"feedback","file":"...","result":"pass|fail","latency_ms":N,"timeout":N,"ts":"..."}` — every quality-check fire (`latency_ms` = parallel-batch wall-clock, `timeout` = commands that hit the 3s ceiling; both absent on older events)
-- `{"event":"session","registry_count":N,"adr_count":M,"ai_authored_count":K,"ts":"..."}` — start of each session
+- `{"event":"session","adapter":"...","languages":[...],"registry_count":N,"adr_count":M,"ai_authored_count":K,"ts":"..."}` — start of each session (`adapter`/`languages` are cross-repo dimensions, not local tripwires; absent on older events)
 
 Timestamps are ISO-8601 UTC.
 

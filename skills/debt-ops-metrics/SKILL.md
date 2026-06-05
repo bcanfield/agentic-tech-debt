@@ -41,7 +41,7 @@ One JSON object per line. Event shapes:
 - `{"event":"review","total":N,"stale":N,"cold":N,"active":N,"ts":"..."}` — each review
 - `{"event":"edit","file":"...","registry_count":N,"ts":"..."}` — every agent edit *(hook adapter only)*
 - `{"event":"feedback","file":"...","result":"pass|fail","latency_ms":N,"timeout":N,"ts":"..."}` — every quality-check fire *(hook adapter only; `latency_ms` = parallel-batch wall-clock, `timeout` = commands that hit the 3s ceiling, both absent on older events)*
-- `{"event":"session","registry_count":N,"adr_count":M,"ai_authored_count":K,"ts":"..."}` — start of each session *(hook adapter only)*
+- `{"event":"session","adapter":"...","languages":[...],"registry_count":N,"adr_count":M,"ai_authored_count":K,"ts":"..."}` — start of each session *(hook adapter only; `adapter`/`languages` are cross-repo dimensions, not local tripwires, absent on older events)*
 
 Timestamps are ISO-8601 UTC.
 
