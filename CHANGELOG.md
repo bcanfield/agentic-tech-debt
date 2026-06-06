@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.8.1...debt-ops-v0.9.0) (2026-06-06)
+
+
+### Features
+
+* **codex:** add marketplace interface metadata and icon ([#35](https://github.com/bcanfield/agentic-tech-debt/issues/35)) ([18fa2d2](https://github.com/bcanfield/agentic-tech-debt/commit/18fa2d28aedbeed304536162d4e3613a4daea0ee))
+
 ## [0.8.1](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.8.0...debt-ops-v0.8.1) (2026-06-03)
 
 
