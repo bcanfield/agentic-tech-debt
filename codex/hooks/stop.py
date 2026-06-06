@@ -25,6 +25,9 @@ MARKER_RE = re.compile(r"\b(TODO|FIXME|HACK|XXX)\b")
 # adapters); debt-registry and ADR prefixes are looked up per-repo from the
 # cache files written by session-start.py. See build_excluded_prefixes below.
 STATIC_EXCLUDED_PREFIXES = ("claude-code/", "codex/", "copilot/", "skills/")
+# Prose/doc formats are skipped entirely: marker words in articles or notes
+# are overwhelmingly mentions, not debt (ADR 0020).
+PROSE_SUFFIXES = (".md", ".markdown", ".rst", ".txt", ".adoc")
 DEFAULT_REGISTRY_DIR = "docs/debt"
 DEFAULT_ADR_DIR = "docs/adr"
 MAX_UNTRACKED_BYTES = 1_000_000
@@ -112,6 +115,8 @@ def build_excluded_prefixes(registry_dir, adr_dir):
 
 # True if the file path is excluded from marker counting.
 def is_excluded(path, excluded_prefixes):
+    if path.lower().endswith(PROSE_SUFFIXES):
+        return True
     return any(path.startswith(p) for p in excluded_prefixes)
 
 

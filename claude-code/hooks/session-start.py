@@ -115,9 +115,11 @@ def has_charter(toplevel):
     if not claude_md.is_file():
         return False
     try:
-        return CHARTER_MARKER in claude_md.read_text(encoding="utf-8", errors="replace")
+        text = claude_md.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return False
+    # Exact-line match: a prose mention of the marker string is not a charter.
+    return any(line.strip() == CHARTER_MARKER for line in text.splitlines())
 
 
 # Read a cached relative path. Returns the string if the cache file exists,
