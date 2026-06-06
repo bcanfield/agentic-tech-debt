@@ -134,11 +134,19 @@ def run_one(line, changed_files, env):
 
     # Only $CHANGED_FILES is expanded; other shell features (pipes, &&, globs)
     # are not, so we don't need bash on PATH. Wrap in `bash -c '...'` to opt in.
+    # A bare $CHANGED_FILES token becomes one argument per file (tools like
+    # pytest/eslint need separate argv entries); embedded uses get the joined string.
     if changed_files:
-        args = [
-            tok.replace("${CHANGED_FILES}", changed_files).replace("$CHANGED_FILES", changed_files)
-            for tok in args
-        ]
+        joined = " ".join(changed_files)
+        expanded = []
+        for tok in args:
+            if tok in ("$CHANGED_FILES", "${CHANGED_FILES}"):
+                expanded.extend(changed_files)
+            else:
+                expanded.append(
+                    tok.replace("${CHANGED_FILES}", joined).replace("$CHANGED_FILES", joined)
+                )
+        args = expanded
 
     try:
         result = subprocess.run(
@@ -221,6 +229,7 @@ def main():
     cache_dir = cache_base / "cache" / repo_hash(toplevel)
 
     changed = changed_file_from_stdin()
+    changed_files = [changed] if changed else []
     env = os.environ.copy()
     env["CHANGED_FILES"] = changed
 
@@ -248,7 +257,7 @@ def main():
 
     def run_and_log(c):
         start = time.monotonic()
-        cmd, status, snippet = run_one(c, changed, env)
+        cmd, status, snippet = run_one(c, changed_files, env)
         dlog(dpath, status, f"{time.monotonic() - start:.2f}s", cmd)
         return cmd, status, snippet
 
@@ -273,6 +282,13 @@ def main():
     warn = ""
     test_count_file = cache_dir / "test-count"
     now = test_count(toplevel)
+    if now is not None and not test_count_file.is_file():
+        # Seed the baseline on first run instead of relying on the agent to do it.
+        try:
+            test_count_file.parent.mkdir(parents=True, exist_ok=True)
+            test_count_file.write_text(str(now), encoding="utf-8")
+        except OSError:
+            pass
     if now is not None and test_count_file.is_file():
         prev = None
         try:
