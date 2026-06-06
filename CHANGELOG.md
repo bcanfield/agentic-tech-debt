@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.9.0...debt-ops-v0.9.1) (2026-06-06)
+
+
+### Bug Fixes
+
+* **hooks:** expand bare $CHANGED_FILES to one argv entry per file and seed test-count baseline ([#37](https://github.com/bcanfield/agentic-tech-debt/issues/37)) ([bf2db48](https://github.com/bcanfield/agentic-tech-debt/commit/bf2db485f3185a1cfc9cf2cd116052a41d524bd3))
+
 ## [0.9.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.8.1...debt-ops-v0.9.0) (2026-06-06)
 
 
