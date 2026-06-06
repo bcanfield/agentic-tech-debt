@@ -17,5 +17,14 @@
     "productivity"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "debt-ops",
+    "shortDescription": "Catches AI-introduced tech debt at write-time",
+    "longDescription": "Every \"I'll fix this later,\" shortcut, and punt your AI agent writes lands in a folder in your repo. Architectural calls get a short ADR. When you're ready to clean up, a review skill ranks the backlog by how often each file changes, so you pay down the debt that actually hurts first. Plain Python, fully local, no network calls.",
+    "developerName": "Brandin Canfield",
+    "category": "Coding",
+    "composerIcon": "./assets/icon.svg",
+    "brandColor": "#d97757"
+  }
 }
