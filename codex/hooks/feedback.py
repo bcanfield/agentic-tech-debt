@@ -139,18 +139,22 @@ def read_commands(toplevel, cache_dir):
             text = agents_md.read_text(encoding="utf-8", errors="replace")
         except OSError:
             text = ""
+        # Only a line that IS the marker opens the block — prose that merely
+        # mentions the marker string must not trigger command parsing.
         if MARKER_OPEN in text:
             block = []
-            collecting = False
+            collecting = found = False
             for line in text.splitlines():
+                stripped = line.strip()
                 if not collecting:
-                    if MARKER_OPEN in line:
-                        collecting = True
+                    if stripped == MARKER_OPEN:
+                        collecting = found = True
                     continue
-                if MARKER_CLOSE in line or HEADING_RE.match(line):
+                if stripped == MARKER_CLOSE or HEADING_RE.match(line):
                     break
                 block.append(line)
-            return "\n".join(block)
+            if found:
+                return "\n".join(block)
     list_file = cache_dir / "feedback.list"
     if list_file.is_file():
         try:

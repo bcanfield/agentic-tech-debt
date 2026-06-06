@@ -66,6 +66,42 @@ class TestFeedback(HookTestBase):
                 self.assertEqual(p.returncode, 0, p.stderr)
                 self.assertIn("FAIL", feedback_context(adapter, p.stdout))
 
+    def test_prose_marker_mention_not_executed(self):
+        # Regression: a charter that only MENTIONS the marker inline in prose
+        # must not have the surrounding prose executed as shell commands.
+        for adapter in h.HOOK_ADAPTERS:
+            with self.subTest(adapter=adapter):
+                repo, cache = self.fresh()
+                h.write_prose_charter(repo)
+                (repo / "note.txt").write_text("x", encoding="utf-8")
+                p = h.run_hook(adapter, "feedback",
+                               h.feedback_payload(adapter, repo),
+                               repo=repo, cache=cache)
+                self.assertEqual(p.returncode, 0, p.stderr)
+                if p.stdout.strip():
+                    ctx = feedback_context(adapter, p.stdout)
+                    self.assertNotIn("FAIL", ctx)
+                    self.assertNotIn("command not found", ctx)
+
+    def test_prose_mention_falls_back_to_cached_list(self):
+        # The prose mention must not short-circuit the cached-command fallback.
+        for adapter in h.HOOK_ADAPTERS:
+            with self.subTest(adapter=adapter):
+                repo, cache = self.fresh()
+                h.write_prose_charter(repo)
+                (repo / "note.txt").write_text("x", encoding="utf-8")
+                h.run_hook(adapter, "session-start",
+                           h.session_start_payload(adapter, repo),
+                           repo=repo, cache=cache)
+                for d in (cache / "cache").iterdir():
+                    (d / "feedback.list").write_text("echo CANARY_OK\n",
+                                                     encoding="utf-8")
+                p = h.run_hook(adapter, "feedback",
+                               h.feedback_payload(adapter, repo),
+                               repo=repo, cache=cache)
+                self.assertEqual(p.returncode, 0, p.stderr)
+                self.assertIn("PASS", feedback_context(adapter, p.stdout))
+
     def test_non_edit_tool_is_ignored(self):
         # Only copilot fires postToolUse on every tool, so it must self-filter.
         repo, cache = self.fresh()
@@ -95,6 +131,19 @@ class TestSessionStart(HookTestBase):
                     f"{adapter}: no session metric written (cache={list((cache/'cache').glob('*')) if (cache/'cache').is_dir() else 'absent'})",
                 )
 
+    def test_prose_marker_mention_is_not_a_charter(self):
+        # claude-code + codex check the charter file for the marker; an inline
+        # prose mention must read as "no charter" (copilot has no charter check).
+        for adapter in ("claude-code", "codex"):
+            with self.subTest(adapter=adapter):
+                repo, cache = self.fresh()
+                h.write_prose_charter(repo)
+                p = h.run_hook(adapter, "session-start",
+                               h.session_start_payload(adapter, repo),
+                               repo=repo, cache=cache)
+                self.assertEqual(p.returncode, 0, p.stderr)
+                self.assertNotIn("Quality commands: read the", p.stdout)
+
 
 class TestStop(HookTestBase):
     def test_blocks_on_unregistered_change(self):
@@ -111,6 +160,25 @@ class TestStop(HookTestBase):
                 obj = json.loads(p.stdout)
                 self.assertEqual(obj.get("decision"), "block")
                 self.assertTrue(obj.get("reason"))
+
+
+    def test_markdown_todo_prose_does_not_block(self):
+        # Regression: marker words in prose docs are mentions, not debt (ADR 0020).
+        for adapter in h.HOOK_ADAPTERS:
+            with self.subTest(adapter=adapter):
+                repo, cache = self.fresh()
+                docs = repo / "docs"
+                docs.mkdir()
+                (docs / "notes.md").write_text(
+                    "# Article ideas\n\n- Registry vs TODO comments vs Jira\n",
+                    encoding="utf-8")
+                p = h.run_hook(adapter, "stop",
+                               h.stop_payload(adapter, repo),
+                               repo=repo, cache=cache)
+                self.assertEqual(p.returncode, 0, p.stderr)
+                if p.stdout.strip():
+                    obj = json.loads(p.stdout)
+                    self.assertNotEqual(obj.get("decision"), "block")
 
 
 class TestEndToEnd(HookTestBase):

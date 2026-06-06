@@ -61,6 +61,20 @@ def write_charter(repo, commands="echo CANARY_OK"):
         p.write_text(block, encoding="utf-8")
 
 
+def write_prose_charter(repo):
+    """Charter files that only MENTION the feedback marker inline in prose —
+    no real block. Regression fixture for the prose-as-commands bug."""
+    block = (
+        "# Test project\n\n## Conventions\n\n"
+        "- Feedback marker `<!-- debt-ops:feedback v1 -->` — appears in every adapter\n"
+        "- prose lines that must never run as shell commands\n"
+    )
+    for rel in ("CLAUDE.md", "AGENTS.md", ".github/copilot-instructions.md"):
+        p = repo / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(block, encoding="utf-8")
+
+
 def run_hook(adapter, name, payload, *, repo, cache, run_cwd=None, env=None):
     """Spawn a hook script with `payload` on stdin. Returns CompletedProcess.
 
