@@ -7,3 +7,6 @@ __pycache__/
 
 # Playwright MCP traces left in the cwd during agent-driven authoring
 .playwright-mcp/
+
+# skill-eval scratch (iterations, benchmarks, snapshots) — the skills themselves are tracked
+.claude/skills/write-article-workspace/

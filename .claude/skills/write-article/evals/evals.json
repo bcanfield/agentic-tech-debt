@@ -1,0 +1,50 @@
+{
+  "skill_name": "write-article",
+  "evals": [
+    {
+      "id": 0,
+      "name": "replit-incident",
+      "prompt": "Write day 1 of our article calendar — #19 in docs/ai-tech-debt-headlines.md, the Replit database-deletion anatomy piece (\"I Destroyed Months of Work in Seconds\"). Publish date is June 8, 2026.",
+      "expected_output": "An 800-1200 word first-person incident article: cold open inside the event, chronology with exact quotes/figures from docs/ai-tech-debt-stories.md, a 'deferred decision' turn, single earned CTA near the end with one repo link. No AI tells.",
+      "files": [],
+      "assertions": [
+        "Word count is between 700 and 1350 (target range 800-1200 with slack)",
+        "Facts match docs/ai-tech-debt-stories.md: mentions the 1,206 executives (or '1,200+') figure and the ~4,000 fabricated users, with no invented statistics",
+        "At most one link/reference to the GitHub repo, and it appears in the final third of the piece",
+        "The product (debt-ops) is not named in the first half of the article",
+        "humanize check_tells.py reports zero FAIL lines (no banned AI-tell vocabulary/structures)",
+        "No question-format headings, no heading named Introduction/Conclusion, and the piece does not end with a summary recap of itself"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "playbook-bofu",
+      "prompt": "Draft article #56 from the headlines doc — the debt-ops playbook piece, day 3 of the release calendar (publish June 10, 2026).",
+      "expected_output": "A 1200-2000 word first-person playbook: problem in <=2 paragraphs, manual workflow with real commands first, then the plugin as automation with trust block (local-only, stdlib, no telemetry, MIT) and verbatim install commands.",
+      "files": [],
+      "assertions": [
+        "Word count is between 1000 and 2300 (target range 1200-2000 with slack)",
+        "Contains the verbatim install commands: '/plugin marketplace add bcanfield/agentic-tech-debt' and '/plugin install debt-ops@agentic-tech-debt'",
+        "Teaches a manual, tool-free workflow (real runnable commands, e.g. grep/git) BEFORE the plugin is introduced",
+        "Trust disclosure appears alongside the tool: mentions at least three of {local-only/fully local, stdlib Python, no network calls, no telemetry, MIT}",
+        "humanize check_tells.py reports zero FAIL lines",
+        "Mentions the OX Security 'review cannot scale' anchor (or quotes Eyal Paz) per the headline's anchor source"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "thesis-cornerstone",
+      "prompt": "Write the cheap-to-write/expensive-to-own cornerstone essay — #1 in docs/ai-tech-debt-headlines.md, slotted for June 12, 2026.",
+      "expected_output": "A 900-1400 word editorial essay: claim in the first sentence, argued with specifics from the stories doc, a real concession, one problem-framed CTA sentence, ends without a recap.",
+      "files": [],
+      "assertions": [
+        "Word count is between 800 and 1550 (target range 900-1400 with slack)",
+        "The first sentence after the title is a declarative claim (not a question, not scene-setting like 'In today's...' or 'In recent years...')",
+        "At most one link/reference to the GitHub repo",
+        "Cites at least two specific studies/figures that exist in docs/ai-tech-debt-stories.md, with vendor studies attributed as vendor research where applicable",
+        "humanize check_tells.py reports zero FAIL lines",
+        "Does not end with a recap/summary; vendor-contested or estimated figures (if used) carry inline attribution"
+      ]
+    }
+  ]
+}
