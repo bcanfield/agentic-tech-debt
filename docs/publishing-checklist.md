@@ -18,22 +18,32 @@ track from the research doc is intentionally skipped.
       "paydown"), and the wording doubles as agent-trigger logic + the disciplines
       contract, so keyword tweaks would risk trigger precision for marginal search gain.
       *(done 2026-06-06)*
-- [ ] **Anthropic community marketplace**: submit at <https://claude.ai/settings/plugins/submit>.
-      Lands in `@claude-community` (default-registered in every Claude Code install,
-      browsable at <https://claude.com/plugins>). SHA-pinned; pin auto-bumps on push.
-      Note: the *official* directory has no application path — don't chase it.
-- [ ] **github/awesome-copilot external plugin**: open an issue with the external-plugin
+- [x] **Anthropic community marketplace**: submitted at <https://claude.ai/settings/plugins/submit>;
+      awaiting review + sync into `@claude-community` (default-registered in every Claude
+      Code install, browsable at <https://claude.com/plugins>). SHA-pinned; pin auto-bumps
+      on push. Confirm by checking for `debt-ops` in
+      <https://github.com/anthropics/claude-plugins-community>'s `.claude-plugin/marketplace.json`
+      (mirror syncs nightly from their review pipeline). Note: the *official* directory has
+      no application path — don't chase it. *(submitted 2026-06-06)*
+- [x] **github/awesome-copilot external plugin**: open an issue with the external-plugin
       form at <https://github.com/github/awesome-copilot>. 34.5k★ and a **default-registered
       Copilot CLI marketplace** (`copilot plugin install debt-ops@awesome-copilot`).
       Needs an immutable source locator — use the latest release-please tag (e.g. `debt-ops-v0.8.1`).
-- [ ] **ClaudePluginHub**: submit the repo URL at <https://www.claudepluginhub.com/tools/submit-plugin>,
-      then claim the listing (verified badge + install-count README badge).
-- [ ] **Codex community lists** (only Codex discovery surfaces that exist; OpenAI's
+- [x] **ClaudePluginHub**: submitted and claimed; listing badge added to the README
+      badge row (<https://www.claudepluginhub.com/plugins/bcanfield-debt-ops-claude-code>).
+      *(done 2026-06-06)*
+- [x] **Codex community lists** (only Codex discovery surfaces that exist; OpenAI's
       directory is "coming soon" with no open submission):
-  - [ ] PR to <https://github.com/hashgraph-online/awesome-codex-plugins>
-  - [ ] PR to <https://github.com/RoggeOhta/awesome-codex-cli>
-- [ ] **jqueryscript/awesome-claude-code**: PR to its "Claude Plugins" section
-      (<https://github.com/jqueryscript/awesome-claude-code>, active, no gates).
+  - [x] PR to <https://github.com/hashgraph-online/awesome-codex-plugins> —
+        [#194](https://github.com/hashgraph-online/awesome-codex-plugins/pull/194)
+        (incl. mirrored bundle + `EXTRA_MIRROR_PATHS` for hooks; needed the
+        `feat(codex)` interface-metadata/icon change on our main first). Review
+        feedback there surfaced two real `feedback.py` bugs — fixed upstream in
+        `fix(hooks)` (v0.9.1), mirror refreshed, reviewer answered. *(opened 2026-06-06)*
+  - [x] PR to <https://github.com/RoggeOhta/awesome-codex-cli> —
+        [#74](https://github.com/RoggeOhta/awesome-codex-cli/pull/74). *(opened 2026-06-06)*
+- [x] **jqueryscript/awesome-claude-code**: PR to its "Claude Plugins" section —
+      [#364](https://github.com/jqueryscript/awesome-claude-code/pull/364). *(opened 2026-06-06)*
 
 Skipped on purpose: `github/copilot-plugins` (staff-gated, no community merges ever) and
 the ComposioHQ awesome lists (they require *vendoring a copy* of the skills into their
