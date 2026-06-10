@@ -93,6 +93,11 @@ def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
 
+# True if this repo has a debt-ops disable sentinel in its cache dir (ADR 0020).
+def repo_disabled(cache_dir):
+    return (cache_dir / "disabled").is_file()
+
+
 # Single deterministic cache base, shared with the skills (override DEBT_OPS_CACHE).
 def cache_base():
     override = os.environ.get("DEBT_OPS_CACHE")
@@ -312,6 +317,10 @@ def main():
         return 0
 
     cache_dir = cache_base() / "cache" / repo_hash(toplevel)
+
+    # Idle out if debt-ops is disabled for this repo (ADR 0020).
+    if repo_disabled(cache_dir):
+        return 0
 
     tool_name, changed = changed_file(data)
     # Copilot fires postToolUse on every tool; only edits concern us.

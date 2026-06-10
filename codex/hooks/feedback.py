@@ -72,6 +72,11 @@ def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
 
+# True if this repo has a debt-ops disable sentinel in its cache dir (ADR 0020).
+def repo_disabled(cache_dir):
+    return (cache_dir / "disabled").is_file()
+
+
 # Pull the V4A patch text out of an apply_patch tool_input. Codex may place it
 # in any string field (or hand tool_input as a raw string), so we sniff for the
 # envelope markers rather than guessing the field name.
@@ -286,6 +291,10 @@ def main():
         return 0
 
     cache_dir = cache_base() / "cache" / repo_hash(toplevel)
+
+    # Idle out if debt-ops is disabled for this repo (ADR 0020).
+    if repo_disabled(cache_dir):
+        return 0
 
     changed_files = changed_files_from_stdin()
     changed = " ".join(changed_files)

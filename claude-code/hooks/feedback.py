@@ -56,6 +56,11 @@ def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
 
+# True if this repo has a debt-ops disable sentinel in its cache dir (ADR 0020).
+def repo_disabled(cache_dir):
+    return (cache_dir / "disabled").is_file()
+
+
 # Pulls the just-edited file path out of the hook's stdin JSON payload.
 def changed_file_from_stdin():
     try:
@@ -227,6 +232,10 @@ def main():
 
     cache_base = Path(os.environ.get("CLAUDE_PLUGIN_DATA") or (Path.home() / ".cache" / "debt-ops"))
     cache_dir = cache_base / "cache" / repo_hash(toplevel)
+
+    # Idle out if debt-ops is disabled for this repo (ADR 0020).
+    if repo_disabled(cache_dir):
+        return 0
 
     changed = changed_file_from_stdin()
     changed_files = [changed] if changed else []
