@@ -67,6 +67,11 @@ def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
 
+# True if this repo has a debt-ops disable sentinel in its cache dir (ADR 0020).
+def repo_disabled(cache_dir):
+    return (cache_dir / "disabled").is_file()
+
+
 def emit_block(reason):
     payload = {
         "decision": "block",
@@ -146,6 +151,10 @@ def main():
         return 0
 
     cache_dir = cache_base() / "cache" / repo_hash(toplevel)
+
+    # Idle out if debt-ops is disabled for this repo (ADR 0020).
+    if repo_disabled(cache_dir):
+        return 0
 
     # Look in both files: current-turn.txt (just-finished turn, not yet rotated)
     # and last-batch.txt (turn before that). Merge with current-turn winning.

@@ -51,6 +51,11 @@ def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
 
+# True if this repo has a debt-ops disable sentinel in its cache dir (ADR 0020).
+def repo_disabled(cache_dir):
+    return (cache_dir / "disabled").is_file()
+
+
 def cache_base():
     override = os.environ.get("DEBT_OPS_CACHE")
     return Path(override) if override else (Path.home() / ".cache" / "debt-ops")
@@ -172,6 +177,11 @@ def main():
         return 0
 
     cache_dir = cache_base() / "cache" / repo_hash(toplevel)
+
+    # Idle out silently if debt-ops is disabled for this repo (ADR 0020).
+    if repo_disabled(cache_dir):
+        return 0
+
     try:
         cache_dir.mkdir(parents=True, exist_ok=True)
     except OSError:

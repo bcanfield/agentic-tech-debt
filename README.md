@@ -72,6 +72,7 @@ Claude Code `/debt-ops:<name>` · Codex `$<name>`:
 - **review**: audit and rank the registry, then walk paydown.
 - **init** *(opt-in)*: write the disciplines into `CLAUDE.md`/`AGENTS.md` so the team shares them.
 - **metrics**: read-only health summary of the registry.
+- **disable**: turn debt-ops off for the current repo (run again to re-enable). Flips a per-repo marker in the plugin cache — nothing is written to your working tree. Per-machine, not committed.
 
 </details>
 

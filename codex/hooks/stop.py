@@ -70,6 +70,11 @@ def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
 
+# True if this repo has a debt-ops disable sentinel in its cache dir (ADR 0020).
+def repo_disabled(cache_dir):
+    return (cache_dir / "disabled").is_file()
+
+
 # Debug log path — only when DEBT_OPS_DEBUG=1 is set in the environment.
 def debug_path(cache_dir):
     if not os.environ.get(DEBUG_ENV):
@@ -335,6 +340,11 @@ def main():
         return 0
 
     cache_dir = cache_base() / "cache" / repo_hash(toplevel)
+
+    # Idle out if debt-ops is disabled for this repo (ADR 0020).
+    if repo_disabled(cache_dir):
+        return 0
+
     dpath = debug_path(cache_dir)
     state_path = cache_dir / "stop-state"
     session_blocks_path = cache_dir / "session-blocks"

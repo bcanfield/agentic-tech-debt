@@ -31,16 +31,17 @@ deltas below** (don't flatten them).
 
 - **Helper scripts** — every adapter co-locates each script with its invoker: hook
   scripts in `hooks/` (next to `hooks.json`), skill scripts in the skill's own
-  `scripts/`. `claude-code` is the reference (it has all six). Copies:
+  `scripts/`. `claude-code` is the reference (it has all seven). Copies:
   - `register.py` (add skill) → `claude-code/skills/add/scripts/`, `codex/skills/add/scripts/`, `copilot/skills/debt-ops-add/scripts/`, `skills/debt-ops-add/scripts/`
   - `review.py` (review skill) → `claude-code/skills/review/scripts/`, `codex/skills/review/scripts/`, `copilot/skills/debt-ops-review/scripts/`, `skills/debt-ops-review/scripts/`
+  - `toggle.py` (disable skill) → `claude-code/skills/disable/scripts/`, `codex/skills/disable/scripts/`, `copilot/skills/debt-ops-disable/scripts/`, `skills/debt-ops-disable/scripts/` (claude resolves the cache like `register.py`; the rest use `cache_base`)
   - `feedback.py`, `session-start.py` (hooks) → `claude-code/hooks/`, `codex/hooks/`, `copilot/hooks/`
   - `stop.py` (hook) → `claude-code/hooks/`, `codex/hooks/`, `copilot/hooks/` (copilot on `agentStop`)
   - `drop.py` (hook) → `claude-code/hooks/`, `codex/hooks/` (no copilot — `userPromptSubmitted` output isn't processed)
 - **Within-script helpers** repeated across most of the above — change one, change
-  all: `git_toplevel`, `repo_hash`, `cache_base`, `read_registry_dir`, `log_metric`,
-  `letter_for`, `parse_frontmatter`, `days_since`.
-- **Skills (`SKILL.md`)** — `add`, `review`, `metrics`, `init` each live in
+  all: `git_toplevel`, `repo_hash`, `repo_disabled`, `cache_base`, `read_registry_dir`,
+  `log_metric`, `letter_for`, `parse_frontmatter`, `days_since`.
+- **Skills (`SKILL.md`)** — `add`, `review`, `metrics`, `init`, `disable` each live in
   `claude-code/skills/`, `codex/skills/`, `copilot/skills/`, and top-level `skills/`.
   Dir names differ by namespace (see deltas): bare (`add`) under the namespaced
   plugins, `debt-ops-`-prefixed under copilot + portable.
