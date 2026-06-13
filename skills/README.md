@@ -14,7 +14,8 @@ or Codex plugins.
 | Skill | What it does | Backed by |
 |---|---|---|
 | `debt-ops-add` | register a tech-debt entry | bundled `scripts/register.py` |
-| `debt-ops-review` | audit + rank the registry, walk paydown | bundled `scripts/review.py` |
+| `debt-ops-review` | audit + rank the registry, walk paydown on follow-up | bundled `scripts/review.py` |
+| `debt-ops-paydown` | gated autonomous paydown of the safe class; escalates judgment calls | inline (drives `debt-ops-review`) |
 | `debt-ops-metrics` | read-only health summary | inline (portable `python3 -c` cache lookup) |
 | `debt-ops-init` | write the disciplines to `AGENTS.md` | inline |
 
