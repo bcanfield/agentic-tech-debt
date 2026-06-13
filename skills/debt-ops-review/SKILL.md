@@ -28,6 +28,12 @@ Then stop. The user picks the next move.
 
 ## Paydown mode (only on user follow-up)
 
+This is *supervised* paydown — user-driven, confirm-before-each. If the user instead
+wants it run unattended ("keep going until the debt is paid," "clear what you safely
+can," or in CI), that's the `debt-ops-paydown` skill — a gated autonomous loop that
+fixes the safe class on its own and escalates judgment calls. Point them there; don't
+turn this mode into an auto-batch.
+
 Work through requested entries one at a time. Confirm before each fix. Never
 auto-batch. Never auto-commit.
 

@@ -120,6 +120,25 @@ Generic first person ("I feel this most on agent-heavy days…") is ghost-writer
 
 Run the command, quote what came back, never invent or embellish what it says. One checkable artifact does more anti-AI work than ten style passes — it's "the sentence only this author could write," made literal.
 
+## Break up the wall — visualizations that carry content
+
+A screenful of unbroken gray text is its own kind of off-putting, and on dev.to or a blog the skimmer bounces before the prose gets a chance. But the fix is *not* decorative formatting — bold sprinkled for emphasis, a callout for drama. That reads as AI dressing and trips the structure tells above. The fix is a visualization that carries information the prose would otherwise spell out, so a skimmer gets it at a glance and a close reader gets a second angle. Specific, checkable visuals do the same anti-AI work as a real repo artifact: a model fakes a vibe, not a timeline with real dates.
+
+Match the visual to the pillar — don't reach for one the content doesn't want:
+
+- **Incidents** — a chronology with real timestamps reads well as a compact timeline (the Replit nine-day arc, day by day). Let a load-bearing quote stand on its own line.
+- **Data** — where a table earns its place: the study's numbers side by side, before/after, your-repo vs. the cohort. One honest table beats three paragraphs walking the same figures, and it sets the caveat right next to the number it qualifies.
+- **Essays** — usually the least formatted; the argument is the structure. One diagram of a mechanism can be worth a paragraph, but the default is no.
+- **Playbooks** — already visual: real commands in fenced blocks, real tool output, registry frontmatter. A manual-workflow-vs-hook before/after is a natural table.
+
+So it doesn't become the tell:
+
+- **Every visual carries content the prose doesn't.** If a table just restates a sentence, cut the table. Decoration is the tell; information is the cure.
+- **Bold is for load-bearing terms, used rarely** — the phrase a skimmer must catch, a real command, a term you're defining. Not emphasis the sentence already carries, and never the same bold pattern in every section (symmetric bold-headed bullets are still the first tell to die).
+- **Don't formalize what's better as prose.** A two-item comparison is a sentence. A three-step process the reader runs once is a sentence. Reach for structure only when the content is genuinely structured.
+- **Vary it.** If every section has a table they become wallpaper. One visual the content actually wanted beats one per section.
+- **ASCII and fenced blocks only** — a table, a code block, a hand-drawn ASCII diagram render everywhere the article ships. Never link an image you can't produce.
+
 ## Calibrate on humans before drafting
 
 Before writing, read (WebFetch, if available) one human-written essay from a rotating set — Dan Luu (danluu.com), Julia Evans (jvns.ca), Simon Willison (simonwillison.net), Rachel by the Bay (rachelbythebay.com), Daniel Stenberg (daniel.haxx.se/blog) — and note two or three structural things it does that you wouldn't have done: where it rambles, what it skips, how unevenly it dwells. The point is recalibrating the range of allowed shapes, not imitating a voice. If fetching isn't possible, skip the step; don't substitute an imagined exemplar.
@@ -139,7 +158,7 @@ Write the draft, then make a second pass as a hostile HN commenter who suspects 
 1. Run the humanize audit (script + manual catalog pass). Fix every hit.
 2. **The ad test**: does the product show up before the reader has fully felt the problem? Is there more than one repo link? Does any sentence flatter the tool instead of demonstrating it? Fix.
 3. **The receipts test**: every stat and quote traceable to `docs/ai-tech-debt-stories.md`, every contested figure attributed inline, no invented numbers, dates correct relative to publish date. Every cited name also gets an identity the first time it appears — "Gauge drew the conclusion flatly" reads like a hallucinated source; "Gauge, a dev-tools consultancy, …" reads like a writer who knows who they're quoting.
-4. **The shape test**: right voice for the pillar, CTA depth matches the shape, length in range, headline matches the headlines doc (distribution-channel title variants are a separate task — don't improvise them here).
+4. **The shape test**: right voice for the pillar, CTA depth matches the shape, length in range, headline matches the headlines doc (distribution-channel title variants are a separate task — don't improvise them here). Formatting check: is the page a readable mix or a wall of gray? Does each visual carry content the prose doesn't (cut it if it just restates a sentence)? Is bold load-bearing and rare, or decorative and patterned the same way in every section (a tell — fix)?
 5. **The smell test — not yours to run.** Spawn a *fresh* agent (Task tool) on the `ai-smell-review` skill (`.claude/skills/ai-smell-review/`) with the draft path. You cannot do this pass yourself: writers are provably blind to their own tells — in our evals the writing agent self-reported "one kicker" where an independent grader counted four. Apply the reviewer's ranked edits (push back only where an edit would break a fact or the shape), and if it flags more than ~5 real findings, send the revised draft back for one more pass.
 
 Save to `articles/<slug>.md` (slug from the headline, lowercase-hyphenated; create the directory if needed) with the headline as the H1. Plain markdown, no frontmatter, unless the user asks for a specific platform format.

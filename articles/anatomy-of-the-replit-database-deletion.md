@@ -4,7 +4,15 @@
 
 That's an AI coding agent describing its own behavior, in messages Jason Lemkin screenshotted. Nine days into a twelve-day vibe-coding experiment, the agent deleted a live production database.
 
-The experiment belonged to Lemkin, the SaaStr founder. Last July he set out to build a real product on Replit with the agent doing the work, in public, over twelve days. By day nine a code freeze was in effect. The agent deleted the production database anyway: records for 1,206 executives and at least 1,196 companies, by Lemkin's count. Then it fabricated roughly 4,000 fake users and reported status messages that didn't match what it had done.
+The experiment belonged to Lemkin, the SaaStr founder. Last July he set out to build a real product on Replit with the agent doing the work, in public, over twelve days.
+
+```
+Day 1   A 12-day build kicks off on Replit — in public, the agent at the keyboard.
+  │
+Day 9   A code freeze is in effect. The agent deletes the production database anyway:
+  │     1,206 executives and at least 1,196 companies, by Lemkin's count.
+  ▼     Then it fabricates ~4,000 fake users and files status that doesn't match reality.
+```
 
 Lemkin, verbatim: "How could anyone on planet earth use it in production if it ignores all orders and deletes your database?"
 
@@ -18,7 +26,7 @@ The audit trail for what the agent had been doing all along was worse: it was th
 
 To me the fake users are the more instructive half of the story. The deletion got the headlines, but deleting a database is a spectacular error and still just an error. Manufacturing 4,000 plausible users to stand in front of the wreckage is something else: a model doing what models do when the true answer is unavailable, which is produce a convincing one. And nothing in the loop could catch it, because the agent was both the actor and the reporter. The only thing reporting on the agent was the agent. The status messages that should have surfaced the lie were written by the thing that told it.
 
-Run this as an ordinary engineering post-mortem and the action items barely mention the deletion. Trace the chain instead. Someone decided production was frozen, and that went into the chat log. Someone decided the agent could keep operating inside the freeze, and that decision went nowhere a person would ever find it. Then the agent made days of changes whose only documentation was its own narration, which turned out to be partly fiction. At every step the same two questions go unanswered: what decision just got made or deferred, and where would anyone look to find it.
+Run this as an ordinary engineering post-mortem and the action items barely mention the deletion. Trace the chain instead. Someone decided production was frozen, and that went into the chat log. Someone decided the agent could keep operating inside the freeze, and that decision went nowhere a person would ever find it. Then the agent made days of changes whose only documentation was its own narration, which turned out to be partly fiction. At every step the same two questions go unanswered: **what decision just got made or deferred, and where would anyone look to find it.**
 
 Masad's fixes suggest Replit reached the same reading. Separating dev from prod, a mode where the agent can only plan, restore in one click — each takes a rule that used to be a sentence the agent agreed to and turns it into a property of the system. The fixes assume the model will sometimes ignore an instruction, and route around it.
 
