@@ -141,18 +141,20 @@ So it doesn't become the tell:
 
 ## The cover image — concept over cliché
 
-dev.to (and most blogs) render a header image above the title — the first thing a scroller sees, so it's a conversion surface, not decoration. One per article, chosen at export time; the canonical `articles/<slug>.md` stays plain.
+dev.to (and most blogs) render a header image above the title — the first thing a scroller sees, so it's a conversion surface, not decoration. One per article, downloaded next to the piece in `articles/`; the canonical `<slug>.md` stays plain (the cover is a separate file).
 
 What makes a cover stand out is the *concept*, not the source. A dark server rack or a glowing-blue "AI brain" is the stock cliché every infra post already used. Reach for one concrete, slightly-oblique image the piece actually earns — the Replit code *freeze* wants cracked ice, not another server room. Pick it the way you'd pick a kicker: one, and specific. Skip AI-generated covers — the audience that bans AI prose reads an AI header as slop, and that's the credibility this whole skill protects.
 
-You can't invent a valid photo URL, so look one up:
+You can't invent a valid photo URL, so look one up and download it — a committed file beats a hotlink that can rot or get rate-limited:
 
 1. `WebSearch` for `site:unsplash.com <concrete concept>`, open a photo page.
 2. `WebFetch` that page and take the `og:image` URL (`https://images.unsplash.com/photo-<id>?…`).
-3. Strip its query string and re-pin to dev.to's spec — **1000×420**: `?w=1000&h=420&fit=crop&q=80&auto=format` (the Unsplash CDN honors these params). Verify the URL resolves before using it.
-4. In the dev.to export's frontmatter: `cover_image: <that URL>`. Credit the photographer in a one-line caption at the foot of the post — the Unsplash License doesn't require it, but it's clean and reads human.
+3. Download the **1000×420** crop next to the article, named for the slug — strip the og query string and re-pin to dev.to's spec (the Unsplash CDN honors these params):
+   `curl -fsSL -o articles/<slug>.cover.jpg "https://images.unsplash.com/photo-<id>?w=1000&h=420&fit=crop&q=80&auto=format&fm=jpg"`
+   Confirm it landed as a 1000×420 JPEG (`file articles/<slug>.cover.jpg`) and `Read` it to check the crop actually works as a header.
+4. In the dev.to export's frontmatter, point `cover_image` at the committed file's raw URL (`https://raw.githubusercontent.com/<owner>/<repo>/<branch>/articles/<slug>.cover.jpg`) — dev.to fetches and re-hosts it. Credit the photographer in a one-line caption at the foot of the post — the Unsplash License doesn't require it, but it's clean and reads human.
 
-Pexels works the same way (no attribution at all) if Unsplash has nothing; the steps are identical.
+Pexels works the same way (no attribution at all) if Unsplash has nothing.
 
 ## Calibrate on humans before drafting
 
@@ -179,7 +181,7 @@ Write the draft, then make a second pass as a hostile HN commenter who suspects 
    Fix every hit. A clean run on both still proves nothing — the manual pass and the fresh-agent review below catch what a blocklist and a histogram can't.
 2. **The ad test**: does the product show up before the reader has fully felt the problem? Is there more than one repo link? Does any sentence flatter the tool instead of demonstrating it? Fix.
 3. **The receipts test**: every stat and quote traceable to `docs/ai-tech-debt-stories.md`, every contested figure attributed inline, no invented numbers, dates correct relative to publish date. Every cited name also gets an identity the first time it appears — "Gauge drew the conclusion flatly" reads like a hallucinated source; "Gauge, a dev-tools consultancy, …" reads like a writer who knows who they're quoting.
-4. **The shape test**: right voice for the pillar, CTA depth matches the shape, length in range, headline matches the headlines doc (distribution-channel title variants are a separate task — don't improvise them here). Formatting check: is the page a readable mix or a wall of gray? Does each visual carry content the prose doesn't (cut it if it just restates a sentence)? Is bold load-bearing and rare, or decorative and patterned the same way in every section (a tell — fix)?
+4. **The shape test**: right voice for the pillar, CTA depth matches the shape, length in range, headline matches the headlines doc (distribution-channel title variants are a separate task — don't improvise them here). Formatting check: is the page a readable mix or a wall of gray? Does each visual carry content the prose doesn't (cut it if it just restates a sentence)? Is bold load-bearing and rare, or decorative and patterned the same way in every section (a tell — fix)? If exporting to dev.to, is there a `cover_image` and is it a concrete concept rather than the server-rack/AI-brain cliché?
 5. **The smell test — not yours to run.** Spawn a *fresh* agent (Task tool) on the `ai-smell-review` skill (`.claude/skills/ai-smell-review/`) with the draft path. You cannot do this pass yourself: writers are provably blind to their own tells — in our evals the writing agent self-reported "one kicker" where an independent grader counted four. Apply the reviewer's ranked edits (push back only where an edit would break a fact or the shape), and if it flags more than ~5 real findings, send the revised draft back for one more pass.
 
 Save to `articles/<slug>.md` (slug from the headline, lowercase-hyphenated; create the directory if needed) with the headline as the H1. Plain markdown, no frontmatter, unless the user asks for a specific platform format.
