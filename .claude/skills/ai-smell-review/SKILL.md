@@ -12,8 +12,9 @@ You are reviewing a draft someone else wrote, hunting the residue that makes scr
 
 ## Setup
 
-1. Run the counter: `python3 <this skill's base dir>/scripts/fingerprint.py <draft.md>`. It prints instruction-tuning fingerprint rates with the direction AI text skews. Counts, not verdicts — you interpret.
-2. Get 2–3 **human-written exemplars**, venue-matched (the audience is HN/dev.to): WebFetch a recent post from danluu.com, jvns.ca, simonwillison.net, rachelbythebay.com, or daniel.haxx.se/blog — topic-adjacent if possible. If fetching fails, use any human-written long-form prose you can find locally; never proceed anchor-free on vibes alone.
+1. Run the surface scan: `python3 <this skill's base dir>/scripts/phrase_lint.py <draft.md>`. Deterministic blocklist — em-dash density, AI typography (curly quotes, en-dashes, ellipsis char), the documented LLM vocabulary, and a few regex-able structure tells. A HIT (exit 1) is worth fixing; a clean run proves nothing on its own (same asymmetry as the detectors — fail blocks, pass is no signal). Extend the lists at the top of the script when a new tell slips through.
+2. Compare to the human corpus: `python3 <this skill's base dir>/scripts/fingerprint.py --vs-corpus <draft.md>`. Flags every metric where the draft falls outside the p10–p90 band of real essays by the exemplar writers (Dan Luu, Julia Evans, Simon Willison, Daniel Stenberg, Joel Spolsky — see `human_baseline.json`). Out-of-band in the AI direction (noun-heavy, participial-heavy, flat sentence rhythm, no self-mention) is a reliable fail; in-band proves nothing. Interpret topical nouns charitably — a piece about a "production deletion" runs nominalizations high for honest reasons. Drop `--vs-corpus` for the raw rates. Rebuild the bands with `build_baseline.py` (needs network; sandbox off) when the rotation changes.
+2. Get 2–3 **human-written exemplars**, venue-matched (the audience is HN/dev.to): WebFetch a recent post from danluu.com, jvns.ca, simonwillison.net, rachelbythebay.com, daniel.haxx.se/blog, joelonsoftware.com, or kalzumeus.com (patio11) — topic-adjacent if possible, and rotate which one so reviews don't all anchor on the same shape. If fetching fails, use any human-written long-form prose you can find locally; never proceed anchor-free on vibes alone.
 3. Read the exemplars *first*, then the draft. The contrast is the instrument.
 
 ## Pass 1 — blind pairwise
@@ -44,6 +45,6 @@ Rank by how loudly the span smells, not by document order. Then one closing para
 
 Rules:
 - Every finding needs a quoted span. No span, no finding.
-- Don't relitigate the surface catalog (banned words, em dashes, rule-of-three) — that audit already ran. If something egregious slipped through, note it in one line and move on.
+- Don't relitigate the surface catalog (banned words, em dashes, rule-of-three) — `phrase_lint.py` ran in Setup. If it flagged anything, assume it's already being fixed; if something egregious slipped past it, note it in one line (and consider adding it to the script's lists) and move on.
 - A passing statistical-detector score is **not** a pass signal and must not appear as evidence. (A Pangram-class *fail* is worth reporting; a pass means nothing.)
 - Don't pad. Three sharp findings beat ten reaches. If the draft is genuinely clean, say so in two sentences and stop.

@@ -139,9 +139,26 @@ So it doesn't become the tell:
 - **Vary it.** If every section has a table they become wallpaper. One visual the content actually wanted beats one per section.
 - **ASCII and fenced blocks only** — a table, a code block, a hand-drawn ASCII diagram render everywhere the article ships. Never link an image you can't produce.
 
+## The cover image — concept over cliché
+
+dev.to (and most blogs) render a header image above the title — the first thing a scroller sees, so it's a conversion surface, not decoration. One per article, chosen at export time; the canonical `articles/<slug>.md` stays plain.
+
+What makes a cover stand out is the *concept*, not the source. A dark server rack or a glowing-blue "AI brain" is the stock cliché every infra post already used. Reach for one concrete, slightly-oblique image the piece actually earns — the Replit code *freeze* wants cracked ice, not another server room. Pick it the way you'd pick a kicker: one, and specific. Skip AI-generated covers — the audience that bans AI prose reads an AI header as slop, and that's the credibility this whole skill protects.
+
+You can't invent a valid photo URL, so look one up:
+
+1. `WebSearch` for `site:unsplash.com <concrete concept>`, open a photo page.
+2. `WebFetch` that page and take the `og:image` URL (`https://images.unsplash.com/photo-<id>?…`).
+3. Strip its query string and re-pin to dev.to's spec — **1000×420**: `?w=1000&h=420&fit=crop&q=80&auto=format` (the Unsplash CDN honors these params). Verify the URL resolves before using it.
+4. In the dev.to export's frontmatter: `cover_image: <that URL>`. Credit the photographer in a one-line caption at the foot of the post — the Unsplash License doesn't require it, but it's clean and reads human.
+
+Pexels works the same way (no attribution at all) if Unsplash has nothing; the steps are identical.
+
 ## Calibrate on humans before drafting
 
-Before writing, read (WebFetch, if available) one human-written essay from a rotating set — Dan Luu (danluu.com), Julia Evans (jvns.ca), Simon Willison (simonwillison.net), Rachel by the Bay (rachelbythebay.com), Daniel Stenberg (daniel.haxx.se/blog) — and note two or three structural things it does that you wouldn't have done: where it rambles, what it skips, how unevenly it dwells. The point is recalibrating the range of allowed shapes, not imitating a voice. If fetching isn't possible, skip the step; don't substitute an imagined exemplar.
+Before writing, read (WebFetch, if available) one human-written essay from a rotating set — Dan Luu (danluu.com), Julia Evans (jvns.ca), Simon Willison (simonwillison.net), Rachel by the Bay (rachelbythebay.com), Daniel Stenberg (daniel.haxx.se/blog), Joel Spolsky (joelonsoftware.com), patio11 (kalzumeus.com / bitsaboutmoney.com) — and note two or three structural things it does that you wouldn't have done: where it rambles, what it skips, how unevenly it dwells. **Rotate the writer per article** — calibrating every piece to the same exemplar makes the series converge on one shape, which is its own fingerprint. The point is recalibrating the range of allowed shapes, not imitating a voice. If fetching isn't possible, skip the step; don't substitute an imagined exemplar.
+
+Two anchors that are *not* rotation reads but a register and a rulebook to keep in mind: **Matt Levine** is the target register — the deadpan, explain-it-at-lunch voice that lands a good line by accident (borrow the register, never his footnote/digression tics). **Orwell** ("Politics and the English Language") and **Zinsser** ("On Writing Well") are the rules — concrete over abstract, cut every dead word — which is the same thing `fingerprint.py --vs-corpus` measures when it flags noun-heavy prose. These five corpus writers plus Spolsky are also the human baseline behind that script (`build_baseline.py`).
 
 And the failure mode to avoid throughout: **do not compensate with emotion.** Dan Luu's prose contains approximately zero feelings and nobody has ever read it as AI. What makes writing human is obsessive concreteness, digression, and unevenness. Injected enthusiasm, manufactured frustration, or confessional asides the facts don't earn — that's over-correction, and it reads as fake as "delve."
 
@@ -155,7 +172,11 @@ Before delivering, skim the two or three most recent files in `articles/` and ch
 
 Write the draft, then make a second pass as a hostile HN commenter who suspects both that the piece is AI-written and that it's an ad:
 
-1. Run the humanize audit (script + manual catalog pass). Fix every hit.
+1. Run the humanize audit (manual catalog pass) plus the two deterministic scans:
+   - `python3 .claude/skills/ai-smell-review/scripts/phrase_lint.py articles/<slug>.md` — em-dash density, AI typography, LLM vocabulary, regex-able structure tells, with line numbers.
+   - `python3 .claude/skills/ai-smell-review/scripts/fingerprint.py --vs-corpus articles/<slug>.md` — checks the draft falls inside the p10–p90 band of real essays by the exemplar writers. Out-of-band in the AI direction (noun-heavy, participial-heavy, flat sentence rhythm, no self-mention) is a fail; de-nominalize to verbs and vary sentence length to pull it back in. Topical nouns get a pass (a piece on a "production deletion" runs high for honest reasons).
+
+   Fix every hit. A clean run on both still proves nothing — the manual pass and the fresh-agent review below catch what a blocklist and a histogram can't.
 2. **The ad test**: does the product show up before the reader has fully felt the problem? Is there more than one repo link? Does any sentence flatter the tool instead of demonstrating it? Fix.
 3. **The receipts test**: every stat and quote traceable to `docs/ai-tech-debt-stories.md`, every contested figure attributed inline, no invented numbers, dates correct relative to publish date. Every cited name also gets an identity the first time it appears — "Gauge drew the conclusion flatly" reads like a hallucinated source; "Gauge, a dev-tools consultancy, …" reads like a writer who knows who they're quoting.
 4. **The shape test**: right voice for the pillar, CTA depth matches the shape, length in range, headline matches the headlines doc (distribution-channel title variants are a separate task — don't improvise them here). Formatting check: is the page a readable mix or a wall of gray? Does each visual carry content the prose doesn't (cut it if it just restates a sentence)? Is bold load-bearing and rare, or decorative and patterned the same way in every section (a tell — fix)?

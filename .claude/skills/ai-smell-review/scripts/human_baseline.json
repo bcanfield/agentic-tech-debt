@@ -1,0 +1,194 @@
+{
+  "_about": "Human-prose fingerprint bands. Built by build_baseline.py from real essays. fingerprint.py --vs-corpus flags drafts outside p10-p90.",
+  "n_docs": 25,
+  "sources": [
+    "Dan Luu",
+    "Julia Evans",
+    "Simon Willison",
+    "Daniel Stenberg",
+    "Joel Spolsky"
+  ],
+  "metrics": {
+    "nominal_per_k": {
+      "p10": 11.8,
+      "p50": 17.4,
+      "p90": 31.02,
+      "mean": 20.66
+    },
+    "participial_per_k": {
+      "p10": 0.0,
+      "p50": 1.4,
+      "p90": 3.06,
+      "mean": 1.61
+    },
+    "passive_per_k": {
+      "p10": 2.18,
+      "p50": 4.3,
+      "p90": 6.58,
+      "mean": 4.14
+    },
+    "hedge_per_k": {
+      "p10": 0.0,
+      "p50": 4.3,
+      "p90": 10.24,
+      "mean": 5.21
+    },
+    "self_per_k": {
+      "p10": 6.46,
+      "p50": 16.1,
+      "p90": 51.38,
+      "mean": 22.52
+    },
+    "punct_per_k": {
+      "p10": 0.0,
+      "p50": 3.4,
+      "p90": 9.28,
+      "mean": 4.06
+    },
+    "sent_mean": {
+      "p10": 17.48,
+      "p50": 24.9,
+      "p90": 36.1,
+      "mean": 26.97
+    },
+    "sent_stdev": {
+      "p10": 9.5,
+      "p50": 16.8,
+      "p90": 26.66,
+      "mean": 18.89
+    },
+    "rhythm_stdev": {
+      "p10": 8.24,
+      "p50": 14.7,
+      "p90": 28.68,
+      "mean": 18.58
+    }
+  },
+  "docs": [
+    {
+      "source": "Dan Luu",
+      "title": "Steve Ballmer was an underrated CEO",
+      "words": 6670
+    },
+    {
+      "source": "Dan Luu",
+      "title": "How good can you be at Codenames without knowing any words?",
+      "words": 5674
+    },
+    {
+      "source": "Dan Luu",
+      "title": "A discussion of discussions on AI bias",
+      "words": 7950
+    },
+    {
+      "source": "Dan Luu",
+      "title": "What the FTC got wrong in the Google antitrust investigation",
+      "words": 32652
+    },
+    {
+      "source": "Dan Luu",
+      "title": "How web bloat impacts users with slow devices",
+      "words": 12527
+    },
+    {
+      "source": "Julia Evans",
+      "title": "Moving away from Tailwind, and learning to structure my CSS",
+      "words": 2139
+    },
+    {
+      "source": "Julia Evans",
+      "title": "Links to CSS colour palettes",
+      "words": 277
+    },
+    {
+      "source": "Julia Evans",
+      "title": "Testing Vue components in the browser",
+      "words": 1761
+    },
+    {
+      "source": "Julia Evans",
+      "title": "Examples for the tcpdump and dig man pages",
+      "words": 691
+    },
+    {
+      "source": "Julia Evans",
+      "title": "Notes on clarifying man pages",
+      "words": 1591
+    },
+    {
+      "source": "Simon Willison",
+      "title": "The Fable 5 Export Controls Harm US Cyber Defense",
+      "words": 269
+    },
+    {
+      "source": "Simon Willison",
+      "title": "\"They screwed us\": Personality clashes sent Anthropic's models offline",
+      "words": 282
+    },
+    {
+      "source": "Simon Willison",
+      "title": "Why AI hasn\u2019t replaced software engineers, and won\u2019t",
+      "words": 373
+    },
+    {
+      "source": "Simon Willison",
+      "title": "Publishing WASM wheels to PyPI for use with Pyodide",
+      "words": 591
+    },
+    {
+      "source": "Simon Willison",
+      "title": "Statement on the US government directive to suspend access to Fable 5 and Mythos",
+      "words": 470
+    },
+    {
+      "source": "Daniel Stenberg",
+      "title": "curl summer of bliss",
+      "words": 430
+    },
+    {
+      "source": "Daniel Stenberg",
+      "title": "A human in control",
+      "words": 919
+    },
+    {
+      "source": "Daniel Stenberg",
+      "title": "curl up 2026 summary",
+      "words": 389
+    },
+    {
+      "source": "Daniel Stenberg",
+      "title": "The pressure",
+      "words": 1697
+    },
+    {
+      "source": "Daniel Stenberg",
+      "title": "named globs with curl",
+      "words": 695
+    },
+    {
+      "source": "Joel Spolsky",
+      "title": "Progress on the Block Protocol",
+      "words": 1438
+    },
+    {
+      "source": "Joel Spolsky",
+      "title": "Making the web better. With blocks!",
+      "words": 891
+    },
+    {
+      "source": "Joel Spolsky",
+      "title": "Kinda a big announcement",
+      "words": 1165
+    },
+    {
+      "source": "Joel Spolsky",
+      "title": "So, how\u2019s that retirement thing going, anyway?",
+      "words": 819
+    },
+    {
+      "source": "Joel Spolsky",
+      "title": "Welcome, Prashanth!",
+      "words": 490
+    }
+  ]
+}
