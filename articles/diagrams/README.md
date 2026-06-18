@@ -31,3 +31,5 @@ Then, via the Playwright MCP:
 
 - `invisible-debt-is-the-problem.html` → `articles/invisible-debt-is-the-problem.diagram.png`
   — Fowler's deliberate/inadvertent × prudent/reckless debt quadrant.
+- `curl-bogus-ai-bug-report-every-18-hours.html` → `articles/curl-bogus-ai-bug-report-every-18-hours.diagram.png`
+  — dated timeline of curl's bug-bounty report volume (48h → 18h) with the 20%-slop/5%-genuine ratio.
