@@ -16,7 +16,7 @@ These trade off against polish, not against each other. The same things that mak
 
 - **Find the piece** in `docs/ai-tech-debt-headlines.md` (by number or topic). Note the headline, angle, anchor source, and persona tag.
 - **Pull every fact from `docs/ai-tech-debt-stories.md`.** It is the only source of claims, stats, and quotes. If a number isn't in there, the article doesn't get it. Never round a stat into a nicer one, never paraphrase a quote.
-- **Check `docs/ai-tech-debt-release-order.md`** for slot context: is this part of the Amazon Monday series? A `⟂ pair` with yesterday's piece? A BOFU slot? A date peg? Series pieces should reference their siblings; pair pieces shouldn't repeat the partner's material.
+- **Check `docs/ai-tech-debt-release-order.md`** for slot context: is this part of the Amazon Monday series? A `⟂ pair` with yesterday's piece? A BOFU slot? A date peg? Series pieces should reference their siblings by name in prose (never as a link — see the one-link rule); pair pieces shouldn't repeat the partner's material.
 - **Carry the caveats inline.** The stories doc's Caveats section is mandatory, not optional color: vendor studies named as vendor research, the Amazon 6.3M figure always "a Business Insider estimate Amazon disputes," METR always n=16 with early-2025 models. Stating the weakness of your own evidence is what lets the piece survive a hostile HN thread — and the release order was built on "credibility before virality."
 - **Date discipline.** Write relative to the publish date, not today. GitClear's 8x duplication rise happened during 2024 — never "last year." curl's bounty reopened in March 2026, so the shutdown can't be the headline event.
 
@@ -40,7 +40,7 @@ CTA: the lightest touch in the whole system — one sentence, or zero if it does
 
 ### Thesis essays (Pillar 1) — editorial with a spine
 
-First sentence is the claim. Not a question, not context — the claim. Argue it with specifics borrowed from the incident and data pieces (link the ones already published per the release calendar; internal links keep readers in the funnel). Concede the strongest counterargument for real, not as a strawman to knock down. End when the argument ends — cornerstone essays don't need a summary, they need a last sentence that sticks.
+First sentence is the claim. Not a question, not context — the claim. Argue it with specifics borrowed from the incident and data pieces (name the already-published ones in prose — never link them; see the one-link rule). Concede the strongest counterargument for real, not as a strawman to knock down. End when the argument ends — cornerstone essays don't need a summary, they need a last sentence that sticks.
 
 These can take a stated "I think" where it's genuinely an opinion, but they're essays, not diary entries. CTA: one problem-framed sentence near the end ("this is the gap debt-ops exists to close"), linked. 900–1,400 words.
 
@@ -66,7 +66,7 @@ From `docs/one-star-a-day.md` and `docs/publishing-checklist.md`:
 - **Problem framing beats product framing.** "Claude Code plugin"-framed Show HNs scored 2–9 points; problem/outcome framing scored 100–500. The article is about the reader's problem; the tool is the epilogue.
 - **Personal-story framing got roughly 3x the engagement** of dry technical description. This is why incidents and playbooks are first person.
 - **Disclose self-interest, plainly.** "I built this, so weigh that" reads as honesty to developers and buys more trust than feigned neutrality. Same logic as labeling vendor studies.
-- **One repo link.** The repo *is* the landing page. Don't link a marketing site, don't scatter five links, never ask for stars — the research is unambiguous that begging and engagement-farming backfire in this exact niche.
+- **One link in the whole article, and it's the repo.** The repo *is* the landing page. Nothing else gets linked — not a marketing site, not your sibling articles, not the studies and incidents you cite (name those in prose). Relative/local file links (`./other-piece.md`) especially: they break on the blog, so a sibling reference is always plain text. Don't scatter links, never ask for stars — the research is unambiguous that begging and engagement-farming backfire in this exact niche.
 - **Readers arrive warm or cold by slot.** Week-1 and BOFU readers come from the README — peak intent, give them the next step fast. Data-piece readers are cold — let them leave impressed and unbothered.
 
 ## Sounding human — the part that decides everything
@@ -82,6 +82,7 @@ And go further than humanize does — these are articles, and **too perfect is i
 - **Leave something rough.** A parenthetical aside that wanders for a beat. A gripe. A question the piece raises and admits it can't answer. Sections of visibly unequal length. Readers trust writing with one loose thread more than writing with none.
 - **Don't be exhaustive.** Covering 80% of the angle with a personality beats covering 100% of it like a survey. Cutting your third-best point is a feature.
 - **Few headings.** Incidents and essays often need zero H2s. Playbooks get headings because readers skim them for steps. When you do use headings, sentence case, and never "Introduction" or "Conclusion."
+- **The headline gets the strictest pass of anything you write.** It's the most-visible line in the article and the first thing a tell-literate reader judges — a structure tell in the body costs you one skeptic mid-read; the same tell in the headline costs you the reader before they start. So soften it there even when the headlines doc ships it that way: the doc title is a working claim, not final copy. Negative parallelism is the usual offender ("Tech Debt Isn't the Problem. Invisible Debt Is." → "The Tech Debt Nobody Wrote Down"); so are question headlines, rule-of-three, and the colon-and-buzzword ("AI Debt: The Silent Killer"). Keep the thesis, drop the shape.
 - **It's fine to hedge when you're genuinely unsure** ("I think the second number matters more, but I keep going back and forth") — that's a human move. Hedging every claim is the AI move.
 - **Never fake flaws**: no manufactured typos, no forced slang. Stilted-casual reads worse than clean.
 
@@ -128,7 +129,7 @@ Match the visual to the pillar — don't reach for one the content doesn't want:
 
 - **Incidents** — a chronology with real timestamps reads well as a compact timeline (the Replit nine-day arc, day by day). Let a load-bearing quote stand on its own line.
 - **Data** — where a table earns its place: the study's numbers side by side, before/after, your-repo vs. the cohort. One honest table beats three paragraphs walking the same figures, and it sets the caveat right next to the number it qualifies.
-- **Essays** — usually the least formatted; the argument is the structure. One diagram of a mechanism can be worth a paragraph, but the default is no.
+- **Essays** — the least formatted otherwise; the argument is the structure. The one mandatory diagram (see "The diagram" below) is usually a single mechanism or a 2×2 — make it the diagram that's genuinely worth a paragraph.
 - **Playbooks** — already visual: real commands in fenced blocks, real tool output, registry frontmatter. A manual-workflow-vs-hook before/after is a natural table.
 
 So it doesn't become the tell:
@@ -137,11 +138,46 @@ So it doesn't become the tell:
 - **Bold is for load-bearing terms, used rarely** — the phrase a skimmer must catch, a real command, a term you're defining. Not emphasis the sentence already carries, and never the same bold pattern in every section (symmetric bold-headed bullets are still the first tell to die).
 - **Don't formalize what's better as prose.** A two-item comparison is a sentence. A three-step process the reader runs once is a sentence. Reach for structure only when the content is genuinely structured.
 - **Vary it.** If every section has a table they become wallpaper. One visual the content actually wanted beats one per section.
-- **ASCII and fenced blocks only** — a table, a code block, a hand-drawn ASCII diagram render everywhere the article ships. Never link an image you can't produce.
+- **Render everything, hotlink nothing.** Tables and fenced code blocks render everywhere the article ships; the one custom diagram (next section) is a PNG we build and commit, not a hotlink. Never link an image you can't produce — committed file or it doesn't go in. (Skip ASCII diagrams: they break alignment across fonts and wrap on mobile. The committed diagram is where structure goes now.)
+
+## The diagram — one custom render per article
+
+Every article ships **exactly one** custom rendered diagram — not optional, the same standing requirement as the cover. It's committed next to the piece as `<slug>.diagram.png` (mirrors the cover's `<slug>.cover.jpg`) and referenced inline in the body where the argument wants it. This is the *rendered* diagram, separate from any inline tables or code blocks (those still follow the "vary it, don't make wallpaper" rule above) — one, and it has to carry content the prose doesn't, held to every rule in "Break up the wall": matched to the pillar, teaching something the text only implies, rebuilt if it just restates a sentence.
+
+Why a rendered PNG and not ASCII: we author the HTML and screenshot it ourselves, so it stays a checkable artifact — real labels, real dates, real numbers — not an AI-generated image, which is the thing the cover section forbids. It just holds structure ASCII can't (a clean 2×2, a dated timeline, a before/after) and renders identically everywhere the article ships.
+
+Build it the way the cover gets built — produce the file, don't hotlink:
+
+1. Hand-author a self-contained HTML file (CSS grid/flex, no external assets, no CDN fonts) at `articles/diagrams/<slug>.html` — one `#card` element holds the whole diagram. Real content only; pull the labels/figures from `docs/ai-tech-debt-stories.md` like any other claim.
+2. Render + screenshot it to the committed PNG via the Playwright MCP. The browser blocks `file://`, so serve the dir first (`python3 -m http.server`), navigate to `…/<slug>.html?scale=2` (2× = retina-sharp), and screenshot the `#card` target to `articles/<slug>.diagram.png`. Full steps live in `articles/diagrams/README.md` — follow them, don't reinvent the dance.
+3. `Read` the PNG back. A broken grid is visible at a glance, and that look *is* the validation — there's no schema to check, the render either holds or it doesn't.
+4. Reference it inline with descriptive alt text: `![<what it shows, in plain words>](/<slug>.diagram.png)` (root-relative, same as how the frontmatter `image` resolves the cover).
+
+Match the diagram to the pillar like any other visual: a dated timeline for incidents, a numbers-side-by-side grid for data, a single mechanism or 2×2 for essays, a manual-vs-hook before/after for playbooks.
+
+## The meme — the other required visual
+
+Every article also ships **exactly one meme**, committed as `<slug>.meme.png` and referenced once in the body. The diagram and the meme are the two body anchors, and together they break up the wall: the diagram sits where its subject is discussed, but a joke can go anywhere it's relevant, so **the meme is the movable one** — it goes in the emptiest stretch the text has left. `meme_check.py` (Step 3) names that stretch and fails the publish if the meme is missing, doubled, or clumped against another visual.
+
+This is the skill's one sanctioned piece of decoration, so it clears a high bar or it reads as exactly the AI dressing "Break up the wall" warns about:
+
+- **Illustrate one beat, not the topic.** The thesis isn't memeable; a specific moment is — the absurd detail, the turn, the thing the agent said. (For the invisible-debt piece: the agent reporting "the session went fine" after silently deferring a dozen decisions. That's a meme. "Technical debt is bad" is not.)
+- **Match the format to the beat's structure.** Preference/upgrade → Drake. Escalating absurdity → Galaxy Brain. Everyone ignores the obvious → "Always Has Been." Pick it like a kicker: one, and specific.
+- **Tight, lowercase, dev-made.** Two short lines beat a stuffed panel. It should read like a developer made it at their desk, not a brand mascot.
+- **Good beats even.** If the emptiest stretch has no beat worth a meme, put the meme on the beat and accept slightly-off-center placement — a sharp meme in the wrong gap beats a flat one in the right gap. You still ship one; hunt for the beat (the gate has no zero).
+
+Build it the way the diagram and cover get built — produce the file, don't hotlink. Both scripts live in this skill's `scripts/` (stdlib + memegen.link, ~350 templates, no API key):
+
+```
+python3 scripts/render.py --list                          # browse templates; pick by what the FORMAT means
+python3 scripts/render.py <id> <slug> "line 1" "line 2"   # → articles/<slug>.meme.png
+```
+
+Reference it inline with real alt text (describe the image for a screen reader, not a second punchline): `![<what it shows>](/<slug>.meme.png)`, dropped into the stretch `meme_check.py` flags.
 
 ## The cover image — concept over cliché
 
-dev.to (and most blogs) render a header image above the title — the first thing a scroller sees, so it's a conversion surface, not decoration. One per article, downloaded next to the piece in `articles/`; the canonical `<slug>.md` stays plain (the cover is a separate file).
+dev.to (and most blogs) render a header image above the title — the first thing a scroller sees, so it's a conversion surface, not decoration. One per article, downloaded next to the piece in `articles/` as `<slug>.cover.jpg`; the canonical `<slug>.md` references it through its frontmatter `image` field (see Step 3's save block), so the committed cover travels with the post.
 
 What makes a cover stand out is the *concept*, not the source. A dark server rack or a glowing-blue "AI brain" is the stock cliché every infra post already used. Reach for one concrete, slightly-oblique image the piece actually earns — the Replit code *freeze* wants cracked ice, not another server room. Pick it the way you'd pick a kicker: one, and specific. Skip AI-generated covers — the audience that bans AI prose reads an AI header as slop, and that's the credibility this whole skill protects.
 
@@ -177,11 +213,38 @@ Write the draft, then make a second pass as a hostile HN commenter who suspects 
 1. Run the humanize audit (manual catalog pass) plus the two deterministic scans:
    - `python3 .claude/skills/ai-smell-review/scripts/phrase_lint.py articles/<slug>.md` — em-dash density, AI typography, LLM vocabulary, regex-able structure tells, with line numbers.
    - `python3 .claude/skills/ai-smell-review/scripts/fingerprint.py --vs-corpus articles/<slug>.md` — checks the draft falls inside the p10–p90 band of real essays by the exemplar writers. Out-of-band in the AI direction (noun-heavy, participial-heavy, flat sentence rhythm, no self-mention) is a fail; de-nominalize to verbs and vary sentence length to pull it back in. Topical nouns get a pass (a piece on a "production deletion" runs high for honest reasons).
+   - `python3 .claude/skills/write-article/scripts/meme_check.py articles/<slug>.md` — the meme contract: exactly one `*.meme.*` body ref with its file present, and the visuals spaced so no prose run exceeds ~40% of the body and no two visuals clump. A FAIL prints the starving stretch's line range — move the meme there (it's the movable visual).
 
-   Fix every hit. A clean run on both still proves nothing — the manual pass and the fresh-agent review below catch what a blocklist and a histogram can't.
-2. **The ad test**: does the product show up before the reader has fully felt the problem? Is there more than one repo link? Does any sentence flatter the tool instead of demonstrating it? Fix.
+   Fix every hit. A clean run on all three still proves nothing — the manual pass and the fresh-agent review below catch what a blocklist and a histogram can't.
+2. **The ad test**: does the product show up before the reader has fully felt the problem? Is there any link other than the single repo link — a sibling article, a source, a relative `./file.md`? (All of those are named in prose, never linked.) Does any sentence flatter the tool instead of demonstrating it? Fix.
 3. **The receipts test**: every stat and quote traceable to `docs/ai-tech-debt-stories.md`, every contested figure attributed inline, no invented numbers, dates correct relative to publish date. Every cited name also gets an identity the first time it appears — "Gauge drew the conclusion flatly" reads like a hallucinated source; "Gauge, a dev-tools consultancy, …" reads like a writer who knows who they're quoting.
-4. **The shape test**: right voice for the pillar, CTA depth matches the shape, length in range, headline matches the headlines doc (distribution-channel title variants are a separate task — don't improvise them here). Formatting check: is the page a readable mix or a wall of gray? Does each visual carry content the prose doesn't (cut it if it just restates a sentence)? Is bold load-bearing and rare, or decorative and patterned the same way in every section (a tell — fix)? If exporting to dev.to, is there a `cover_image` and is it a concrete concept rather than the server-rack/AI-brain cliché?
-5. **The smell test — not yours to run.** Spawn a *fresh* agent (Task tool) on the `ai-smell-review` skill (`.claude/skills/ai-smell-review/`) with the draft path. You cannot do this pass yourself: writers are provably blind to their own tells — in our evals the writing agent self-reported "one kicker" where an independent grader counted four. Apply the reviewer's ranked edits (push back only where an edit would break a fact or the shape), and if it flags more than ~5 real findings, send the revised draft back for one more pass.
+4. **The shape test**: right voice for the pillar, CTA depth matches the shape, length in range, headline carries the headlines doc's *claim* but is held to the strictest anti-tell bar in the piece — soften any structure tell in it even though the doc ships the title that way (see "The headline gets the strictest pass" above); the doc title is a working claim, not final copy. (Distribution-channel title variants are still a separate task — don't improvise those here.) Formatting check: is the page a readable mix or a wall of gray? Is the one mandatory custom diagram present, committed as `articles/<slug>.diagram.png`, referenced inline, and carrying content the prose doesn't? Is the one mandatory meme present (`articles/<slug>.meme.png`), and does it land a specific beat rather than decorate the topic? Does each visual carry content the prose doesn't (cut it if it just restates a sentence)? Is bold load-bearing and rare, or decorative and patterned the same way in every section (a tell — fix)? If exporting to dev.to, is there a `cover_image` and is it a concrete concept rather than the server-rack/AI-brain cliché?
+5. **The smell test — not yours to run.** Spawn a *fresh* agent (Task tool) on the `ai-smell-review` skill (`.claude/skills/ai-smell-review/`) with the draft path. You cannot do this pass yourself: writers are provably blind to their own tells — in our evals the writing agent self-reported "one kicker" where an independent grader counted four. Apply the reviewer's ranked edits (push back only where an edit would break a fact or the shape), and if it flags more than ~5 real findings, send the revised draft back for one more pass. In the same fresh context, have the agent judge the meme (`Read` the PNG): is the format right for the beat, is it actually funny/apt or just present, does it read dev-made or brand? The gate has no zero, so its verdict is "ship this one" or "swap the beat/format and re-render" — never "drop it." You're blind to your own meme the same way you're blind to your own kicker.
 
-Save to `articles/<slug>.md` (slug from the headline, lowercase-hyphenated; create the directory if needed) with the headline as the H1. Plain markdown, no frontmatter, unless the user asks for a specific platform format.
+Save to `articles/<slug>.md` (slug from the headline, lowercase-hyphenated; create the directory if needed). The body is plain markdown, but the file **opens with this YAML frontmatter block** (the blog reads it):
+
+```
+---
+title: "<the softened headline>"
+publishedAt: "<YYYY-MM-DD release slot>"
+updatedAt: "<same as publishedAt on first write>"
+author: "Brandin Canfield"
+series: "Agentic Tech Debt"
+summary: "<one plain line, ≤150 chars — what the reader gets, not a teaser; no em-dash>"
+tags: ["<most relevant>", "<...>", "<...>", "<...>", "<5th>"]
+image: "/<slug>.cover.jpg"
+---
+```
+
+`series` is the same on every mainline article — **`Agentic Tech Debt`**, verbatim. It's the exact SEO phrase we're concentrating and it matches the repo slug (`github.com/bcanfield/agentic-tech-debt`), so name = keyword = destination; don't reword it per-piece or the keyword signal fragments. (dev.to has a real `series:` field that groups posts; the blog uses it as the collection/category.)
+
+`tags` is exactly five, ranked most-relevant first, in platform-tag form (lowercase, single word, no spaces or `#` — e.g. `ai`, `technicaldebt`, `programming`, `codequality`, `devops`). The ranking is load-bearing: dev.to caps a post at four tags and other sites truncate too, so the export takes the top N off the front — put the tag you most want to be found under first. Pick from what the piece is actually about; reuse common tags across the series so the articles cluster, but don't pad with a tag the post doesn't earn.
+
+`publishedAt` is the article's release-order slot date, not today. **No body H1** — the blog renders the frontmatter `title` as the page heading, so a body `# Heading` would double the title (and emit two H1s). The body starts on the first paragraph.
+
+**Audit `title` and `summary` as hard as the prose — they're the most-syndicated lines you write** (index cards, OG/social previews, RSS), and they're short, which makes a structure tell *louder* there, not quieter. The `summary` is descriptive, not a pitch: say what the piece argues or covers, in the plain register of the leerob example ("Lessons from shipping real systems with AI-generated code"). The classic failure is two back-to-back epigrams — a balanced antithesis the body audit would have stripped, smuggled into the summary because it's "just metadata." Bad: `"Recorded debt is a financing instrument. The debt your agent never writes down is the landmine."` (two maxims, negative parallelism). Good: `"Why the debt that actually hurts a codebase is the kind nobody wrote down, and why coding agents produce so much of it."` Run the same kicker/antithesis/rule-of-three checks on both fields; the fresh-agent smell review (Step 3.5) reviews the frontmatter too.
+
+Keep `summary` **≤150 characters** — roughly where Google truncates a meta description and a safe ceiling for the surfaces that use it. Platform mapping is uneven, so know where it lands:
+- **Medium** has a visible subtitle/standfirst slot — `summary` goes there.
+- **Our blog** uses `summary` for the index card and `<head>` meta.
+- **dev.to has no summary field at all** — not in the rich editor, and `description` is *not* a documented front-matter key (dev.to's recognized keys are `title`, `published`, `tags`, `series`, `canonical_url`, `cover_image`). dev.to auto-builds its search/social snippet from the **first ~140 characters of the body**. So on dev.to the lever is the *opening line*, not the summary — the first sentence has to stand alone as the hook (our claim-first openings already do). Don't expect `summary` to appear anywhere on dev.to. (Platform exports like dev.to add their own frontmatter — `cover_image` etc. — on top of this; that's a separate task.)

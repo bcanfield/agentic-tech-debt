@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!-- Source for articles/invisible-debt-is-the-problem.quadrant.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --cell: #ffffff;
+    --danger-bg: #fbeae6;
+    --danger-line: #d8714f;
+    --danger-ink: #a63a1c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 920px;
+    padding: 56px 60px 48px;
+    background: var(--paper);
+  }
+  /* corner + 2 column heads, then 2 body rows, then footer */
+  .grid {
+    display: grid;
+    grid-template-columns: 130px 1fr 1fr;
+    grid-template-rows: auto auto auto auto;
+    gap: 0;
+  }
+  .corner { background: transparent; }
+  .colhead {
+    text-align: center;
+    padding: 0 16px 18px;
+  }
+  .colhead .axis {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .colhead .gloss {
+    display: block;
+    margin-top: 5px;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    letter-spacing: 0;
+  }
+  .rowhead {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 20px;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .cell {
+    background: var(--cell);
+    border: 1px solid var(--line);
+    margin: -0.5px; /* collapse shared borders */
+    min-height: 116px;
+    padding: 24px 26px;
+    display: flex;
+    align-items: center;
+    font-size: 19px;
+    line-height: 1.4;
+    font-style: italic;
+    color: #2b2b2b;
+  }
+  .cell .quote::before { content: "\201C"; }
+  .cell .quote::after { content: "\201D"; }
+  .cell.danger {
+    background: var(--danger-bg);
+    border-color: var(--danger-line);
+    position: relative;
+    z-index: 2;
+    color: var(--danger-ink);
+    font-weight: 500;
+  }
+  .cell.danger .tag {
+    position: absolute;
+    right: 16px;
+    bottom: 12px;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--danger-line);
+  }
+  /* footer brackets */
+  .foot {
+    padding-top: 16px;
+    text-align: center;
+  }
+  .foot .bracket {
+    border-top: 2px solid var(--line);
+    margin: 0 14px;
+    padding-top: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .foot.off .bracket { border-color: var(--danger-line); color: var(--danger-ink); }
+  .caption {
+    margin-top: 26px;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+  <!-- ?scale=2 renders at 2x for retina-sharp PNGs; default 1x -->
+  <script>
+    addEventListener("DOMContentLoaded", () => {
+      const s = new URLSearchParams(location.search).get("scale");
+      if (s) document.getElementById("card").style.zoom = s;
+    });
+  </script>
+  <div id="card">
+    <div class="grid">
+      <div class="corner"></div>
+      <div class="colhead"><span class="axis">Deliberate</span><span class="gloss">you chose it</span></div>
+      <div class="colhead"><span class="axis">Inadvertent</span><span class="gloss">you never noticed</span></div>
+
+      <div class="rowhead">Prudent</div>
+      <div class="cell"><span class="quote">ship now, deal with the consequences</span></div>
+      <div class="cell"><span class="quote">now we know how we should have done it</span></div>
+
+      <div class="rowhead">Reckless</div>
+      <div class="cell"><span class="quote">no time for design</span></div>
+      <div class="cell danger"><span class="quote">what's layering?</span><span class="tag">where it hurts</span></div>
+
+      <div class="corner"></div>
+      <div class="foot on"><div class="bracket">on the books</div></div>
+      <div class="foot off"><div class="bracket">off the books</div></div>
+    </div>
+    <div class="caption">Martin Fowler&rsquo;s technical-debt quadrant</div>
+  </div>
+</body>
+</html>
