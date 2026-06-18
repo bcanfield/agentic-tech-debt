@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!-- Source for articles/cheap-to-write-expensive-to-own.diagram.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --grid: #e8e2d8;
+    --write: #4f8a63;     /* generation cost — falling */
+    --write-ink: #2f6342;
+    --own: #d8714f;       /* ownership cost — flat/rising */
+    --own-ink: #a63a1c;
+    --gap: #fbeae6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 940px;
+    padding: 50px 58px 38px;
+    background: var(--paper);
+  }
+  .title { font-size: 20px; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 4px; }
+  .sub { font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  svg { display: block; width: 100%; height: auto; }
+  .axis { stroke: #b8b1a4; stroke-width: 1.5; }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .curve { fill: none; stroke-width: 3.5; }
+  .curve.write { stroke: var(--write); }
+  .curve.own { stroke: var(--own); }
+  .xlab { font-size: 13px; fill: var(--muted); font-weight: 600; }
+  .axlab { font-size: 12.5px; fill: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; font-weight: 700; }
+  .clab { font-size: 15.5px; font-weight: 700; }
+  .clab.write { fill: var(--write-ink); }
+  .clab.own { fill: var(--own-ink); }
+  .csub { font-size: 12.5px; fill: var(--muted); }
+  .gaplab { font-size: 14px; font-weight: 700; fill: var(--own-ink); }
+  .crossdot { fill: #1a1a1a; }
+  .crosslab { font-size: 12px; fill: var(--muted); font-style: italic; }
+  .caption {
+    margin-top: 22px; font-size: 13px; color: var(--muted);
+    line-height: 1.5; border-top: 1px solid var(--line); padding-top: 16px;
+  }
+  .caption b { color: #3a3a3a; font-weight: 700; }
+</style>
+</head>
+<body>
+  <div id="card">
+    <div class="title">Two costs that used to be one line</div>
+    <div class="sub">What it costs to make a line of code, vs. what it costs to live with it, 2022–2026</div>
+
+    <svg viewBox="0 0 824 380" role="img" aria-label="Cost-to-generate falls while cost-to-own holds; the two cross and a gap opens.">
+      <!-- y axis -->
+      <line class="axis" x1="70" y1="20" x2="70" y2="320"/>
+      <!-- x axis -->
+      <line class="axis" x1="70" y1="320" x2="800" y2="320"/>
+
+      <!-- light gridlines -->
+      <line class="grid" x1="70" y1="80" x2="800" y2="80"/>
+      <line class="grid" x1="70" y1="160" x2="800" y2="160"/>
+      <line class="grid" x1="70" y1="240" x2="800" y2="240"/>
+
+      <!-- y axis label -->
+      <text class="axlab" x="20" y="175" transform="rotate(-90 20 175)">cost per line</text>
+
+      <!-- x ticks -->
+      <text class="xlab" x="92"  y="342">2022</text>
+      <text class="xlab" x="290" y="342">2024</text>
+      <text class="xlab" x="690" y="342">2026</text>
+
+      <!-- the gap region: between the two curves after they cross -->
+      <!-- own curve points: flat-ish, slight rise. write curve: high then plunges. -->
+      <path d="M 360 150 L 460 132 L 560 120 L 660 110 L 760 104
+               L 760 280 L 660 244 L 560 196 L 460 162 L 360 150 Z"
+            fill="var(--gap)" stroke="none" opacity="0.85"/>
+
+      <!-- cost to OWN: starts mid, holds, drifts up slightly -->
+      <path class="curve own"
+            d="M 95 158 C 200 152, 300 150, 360 150 S 560 124, 660 112 T 760 104"/>
+
+      <!-- cost to GENERATE: starts high, plunges as agents arrive -->
+      <path class="curve write"
+            d="M 95 70 C 200 78, 280 92, 330 118 S 430 196, 500 232 S 640 272, 760 282"/>
+
+      <!-- crossing point -->
+      <circle class="crossdot" cx="360" cy="150" r="5"/>
+      <text class="crosslab" x="300" y="120">they cross, ~2024</text>
+
+      <!-- curve labels -->
+      <text class="clab write" x="800" y="300" text-anchor="end">cost to generate</text>
+      <text class="csub" x="800" y="316" text-anchor="end">type it · prompt for it</text>
+
+      <text class="clab own" x="800" y="82" text-anchor="end">cost to own</text>
+      <text class="csub" x="800" y="98" text-anchor="end">read · review · test · debug · hand off</text>
+
+      <!-- gap label -->
+      <text class="gaplab" x="540" y="180" text-anchor="middle">the debt</text>
+      <text class="csub" x="540" y="196" text-anchor="middle">lives in this gap</text>
+    </svg>
+
+    <div class="caption">
+      Before coding agents the two were the same line, because the person who wrote the code
+      was the person who read it: <b>slow production was the review</b>. Generation then fell to
+      near zero while ownership held, so the lines came apart and a gap opened where nobody pays
+      down. (Curve shapes are illustrative; the crossing is GitClear's 2024 finding that
+      copy-pasted code first beat refactored code.)
+    </div>
+  </div>
+</body>
+</html>

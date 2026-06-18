@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!-- Source for articles/ai-spiked-duplicate-code-8x.diagram.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --grid: #e8e2d8;
+    --up: #d8714f;        /* moving the wrong way */
+    --up-ink: #a63a1c;
+    --down: #4f8a63;      /* refactoring, falling */
+    --down-ink: #2f6342;
+    --chip: #f1ece3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 940px;
+    padding: 50px 58px 38px;
+    background: var(--paper);
+  }
+  .title { font-size: 20px; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 4px; }
+  .sub { font-size: 14px; color: var(--muted); margin-bottom: 30px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { font-size: 12px; color: var(--muted); text-transform: uppercase;
+             letter-spacing: 0.05em; font-weight: 700; padding: 0 0 12px; text-align: right; }
+  thead th.metric { text-align: left; }
+  tbody td { padding: 16px 0; border-top: 1px solid var(--line); vertical-align: middle; }
+  .metric { text-align: left; }
+  .mname { font-size: 16px; font-weight: 700; }
+  .mdesc { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .year { text-align: right; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .y2020 { color: #8a8276; }
+  .y2024 { color: var(--ink); }
+  .delta { text-align: right; width: 200px; }
+  .arrow { display: inline-block; font-size: 14px; font-weight: 700; padding: 5px 11px;
+           border-radius: 6px; font-variant-numeric: tabular-nums; }
+  .arrow.up { color: var(--up-ink); background: #fbeae6; }
+  .arrow.down { color: var(--down-ink); background: #e6f1ea; }
+
+  .flag { margin-top: 24px; background: var(--chip); border-left: 4px solid var(--up);
+          padding: 14px 18px; border-radius: 0 6px 6px 0; }
+  .flag b { color: var(--up-ink); }
+  .flag-t { font-size: 15px; font-weight: 700; }
+  .flag-s { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .caption { margin-top: 22px; font-size: 13px; color: var(--muted);
+             line-height: 1.5; border-top: 1px solid var(--line); padding-top: 16px; }
+  .caption b { color: #3a3a3a; font-weight: 700; }
+</style>
+</head>
+<body>
+  <!-- ?scale=2 renders at 2x for retina-sharp PNGs; default 1x -->
+  <script>
+    addEventListener("DOMContentLoaded", () => {
+      const s = new URLSearchParams(location.search).get("scale");
+      if (s) document.getElementById("card").style.zoom = s;
+    });
+  </script>
+  <div id="card">
+    <div class="title">What changed in the diffs, 2020 to 2024</div>
+    <div class="sub">GitClear's four code-change rates across 211 million changed lines</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="metric">share of changed lines</th>
+          <th>2020</th>
+          <th>2024</th>
+          <th class="delta">shift</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="metric">
+            <div class="mname">Copy-pasted</div>
+            <div class="mdesc">a second copy of a block</div>
+          </td>
+          <td class="year y2020">8.3%</td>
+          <td class="year y2024">12.3%</td>
+          <td class="delta"><span class="arrow up">▲ +48% relative</span></td>
+        </tr>
+        <tr>
+          <td class="metric">
+            <div class="mname">Moved (refactored)</div>
+            <div class="mdesc">existing code reorganized</div>
+          </td>
+          <td class="year y2020">24.1%</td>
+          <td class="year y2024">9.5%</td>
+          <td class="delta"><span class="arrow down">▼ −39.9%</span></td>
+        </tr>
+        <tr>
+          <td class="metric">
+            <div class="mname">Churn</div>
+            <div class="mdesc">revised within two weeks</div>
+          </td>
+          <td class="year y2020">3.1%</td>
+          <td class="year y2024">5.7%</td>
+          <td class="delta"><span class="arrow up">▲ nearly doubled</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="flag">
+      <div class="flag-t">2024: the first year <b>copy-pasted code beat refactored code</b></div>
+      <div class="flag-s">Duplicated blocks of 5+ lines rose 8x during the year. Pasting overtook reorganizing.</div>
+    </div>
+
+    <div class="caption">
+      Source: GitClear, <b>211M changed lines</b> from 2020–2024 across repos including Google,
+      Microsoft, and Meta. Vendor research, and a correlation with AI adoption over the same years,
+      not proven causation. Percentages are GitClear's; relative shifts as the report states them.
+    </div>
+  </div>
+</body>
+</html>

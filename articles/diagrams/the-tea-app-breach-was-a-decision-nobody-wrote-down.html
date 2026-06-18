@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!-- Source for articles/the-tea-app-breach-was-a-decision-nobody-wrote-down.diagram.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --gate-bg: #f3f1ec;
+    --gate-line: #b9b2a6;
+    --open-bg: #fbeae6;
+    --open-line: #d8714f;
+    --open-ink: #a63a1c;
+    --note-bg: #eef2f6;
+    --note-line: #6f8aa6;
+    --note-ink: #3a5570;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 940px;
+    padding: 50px 58px 42px;
+    background: var(--paper);
+  }
+  .title { font-size: 20px; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 4px; }
+  .sub { font-size: 14px; color: var(--muted); margin-bottom: 36px; }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr 38px 1.15fr 38px 1fr;
+    align-items: stretch;
+  }
+  .box {
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 6px;
+    padding: 18px 18px 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  .box .lab {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+  }
+  .box .h { font-size: 16px; font-weight: 600; line-height: 1.35; }
+  .box .d { font-size: 13px; color: #3a3a3a; line-height: 1.45; margin-top: 7px; }
+
+  /* the gate that was never installed */
+  .gate {
+    background: var(--gate-bg);
+    border: 2px dashed var(--gate-line);
+    color: var(--muted);
+  }
+  .gate .lab { color: var(--gate-line); }
+  .gate .h { color: #7c756a; }
+  .gate .skip {
+    margin-top: 10px; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.03em; text-transform: uppercase; color: var(--gate-line);
+  }
+
+  /* the open bucket */
+  .open { background: var(--open-bg); border-color: var(--open-line); }
+  .open .lab { color: var(--open-ink); }
+  .open .h { color: var(--open-ink); }
+  .open .payload {
+    margin-top: 9px; font-size: 13px; color: var(--open-ink); line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .arrow {
+    align-self: center;
+    font-size: 22px;
+    color: var(--rail, #c9c2b6);
+    text-align: center;
+    line-height: 1;
+  }
+  .arrow.through { color: var(--open-line); }
+
+  /* the unrecorded-decision callout, hanging off the gate */
+  .note {
+    margin-top: 26px;
+    background: var(--note-bg);
+    border: 1px solid var(--note-line);
+    border-left: 4px solid var(--note-line);
+    border-radius: 5px;
+    padding: 15px 20px;
+  }
+  .note .ntag {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--note-ink); margin-bottom: 5px;
+  }
+  .note .nbody { font-size: 14px; color: #2c2c2c; line-height: 1.5; }
+  .note .nbody code {
+    font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 13px; background: #fff; border: 1px solid var(--line);
+    border-radius: 3px; padding: 1px 5px; color: var(--note-ink);
+  }
+
+  .caption {
+    margin-top: 24px; font-size: 13px; color: var(--muted);
+    text-align: center; letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+  <!-- ?scale=2 renders at 2x for retina-sharp PNGs; default 1x -->
+  <script>
+    addEventListener("DOMContentLoaded", () => {
+      const s = new URLSearchParams(location.search).get("scale");
+      if (s) document.getElementById("card").style.zoom = s;
+    });
+  </script>
+  <div id="card">
+    <div class="title">The read path that shipped, and the check that didn't</div>
+    <div class="sub">One request from anyone on the internet to every record in the database.</div>
+
+    <div class="flow">
+      <div class="box">
+        <div class="lab">Request</div>
+        <div class="h">A caller asks for a user record</div>
+        <div class="d">No token, no login. Just the database URL, which leaked.</div>
+      </div>
+
+      <div class="arrow">&rarr;</div>
+
+      <div class="box gate">
+        <div class="lab">Access check</div>
+        <div class="h">"Is this caller allowed to read this?"</div>
+        <div class="skip">Never installed &mdash; deferred "for now," recorded nowhere</div>
+      </div>
+
+      <div class="arrow through">&rarr;</div>
+
+      <div class="box open">
+        <div class="lab">Open Firebase bucket</div>
+        <div class="h">Returns everything</div>
+        <div class="payload">~72,000 images<br>~13,000 government IDs<br>1.1M+ private messages</div>
+      </div>
+    </div>
+
+    <div class="note">
+      <div class="ntag">The decision that wasn't written down</div>
+      <div class="nbody">Choosing the permissive default was a real choice: <code>ship with open rules, tighten before real users</code>. It lived only in someone's head. With the access check skipped, nothing in the system ever pointed back at it &mdash; so launch went past it, and the bucket stayed open.</div>
+    </div>
+
+    <div class="caption">Tea app breach, disclosed July 2025. Figures as reported; AI-authorship is attributed, not confirmed.</div>
+  </div>
+</body>
+</html>

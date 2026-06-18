@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!-- Source for articles/running-tech-debt-ops-with-an-ai-agent.diagram.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --cell: #ffffff;
+    --auto-bg: #eaf2ec;
+    --auto-line: #4f8a63;
+    --auto-ink: #2f6342;
+    --gap-bg: #fbeae6;
+    --gap-line: #d8714f;
+    --gap-ink: #a63a1c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 940px;
+    padding: 52px 58px 44px;
+    background: var(--paper);
+  }
+  .heads {
+    display: grid;
+    grid-template-columns: 150px 1fr 1fr;
+    margin-bottom: 16px;
+  }
+  .heads .corner { }
+  .colhead .axis {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    padding-left: 4px;
+  }
+  .colhead .gloss {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    padding-left: 4px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 150px 1fr 1fr;
+    align-items: stretch;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding-right: 18px;
+  }
+  .step .n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .cell {
+    background: var(--cell);
+    border: 1px solid var(--line);
+    margin: -0.5px;
+    min-height: 70px;
+    padding: 16px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #2b2b2b;
+  }
+  .cell code {
+    font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: #444;
+  }
+  .cell .tag {
+    margin-top: 7px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .cell.gap {
+    background: var(--gap-bg);
+    border-color: var(--gap-line);
+    position: relative;
+    z-index: 2;
+    color: var(--gap-ink);
+    font-weight: 500;
+  }
+  .cell.gap .tag { color: var(--gap-line); }
+  .cell.auto {
+    background: var(--auto-bg);
+    border-color: var(--auto-line);
+    position: relative;
+    z-index: 2;
+    color: var(--auto-ink);
+    font-weight: 500;
+  }
+  .cell.auto .tag { color: var(--auto-line); }
+  .caption {
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+  <!-- ?scale=2 renders at 2x for retina-sharp PNGs; default 1x -->
+  <script>
+    addEventListener("DOMContentLoaded", () => {
+      const s = new URLSearchParams(location.search).get("scale");
+      if (s) document.getElementById("card").style.zoom = s;
+    });
+  </script>
+  <div id="card">
+    <div class="heads">
+      <div class="corner"></div>
+      <div class="colhead"><span class="axis">By hand</span><span class="gloss">works today, zero installs</span></div>
+      <div class="colhead"><span class="axis">With a hook</span><span class="gloss">what debt-ops changes</span></div>
+    </div>
+
+    <div class="row">
+      <div class="step"><span class="n">1</span>Catch</div>
+      <div class="cell gap"><span><code>grep</code> for <code>as any</code>, swallowed errors, TODOs — if you remember to run it</span><span class="tag">the link that breaks</span></div>
+      <div class="cell auto"><span>runs on every edit the agent makes</span><span class="tag">automated</span></div>
+    </div>
+
+    <div class="row">
+      <div class="step"><span class="n">2</span>Register</div>
+      <div class="cell"><span>write a markdown file to <code>docs/debt/</code> — hotspot, why, payoff trigger</span></div>
+      <div class="cell auto"><span>same folder, same format, written for you</span><span class="tag">automated</span></div>
+    </div>
+
+    <div class="row">
+      <div class="step"><span class="n">3</span>Review</div>
+      <div class="cell"><span><code>git log</code> churn &times; Fowler quadrant, ranked by hand</span></div>
+      <div class="cell"><span>a skill prints the ranked list</span><span class="tag">one command</span></div>
+    </div>
+
+    <div class="row">
+      <div class="step"><span class="n">4</span>Pay down</div>
+      <div class="cell"><span>smallest fix, drop the entry, 3&ndash;10 a session</span></div>
+      <div class="cell"><span>still you, diff in front of you</span><span class="tag">stays manual</span></div>
+    </div>
+
+    <div class="caption">The catch&ndash;register&ndash;review&ndash;paydown loop: what you can run today, and the one step worth automating</div>
+  </div>
+</body>
+</html>
