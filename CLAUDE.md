@@ -32,22 +32,22 @@ deltas below** (don't flatten them).
 - **Helper scripts** — every adapter co-locates each script with its invoker: hook
   scripts in `hooks/` (next to `hooks.json`), skill scripts in the skill's own
   `scripts/`. `claude-code` is the reference (it has all six). Copies:
-  - `register.py` (add skill) → `claude-code/skills/add/scripts/`, `codex/skills/add/scripts/`, `copilot/skills/debt-ops-add/scripts/`, `skills/debt-ops-add/scripts/`
-  - `review.py` (review skill) → `claude-code/skills/review/scripts/`, `codex/skills/review/scripts/`, `copilot/skills/debt-ops-review/scripts/`, `skills/debt-ops-review/scripts/`
-  - `feedback.py`, `session-start.py` (hooks) → `claude-code/hooks/`, `codex/hooks/`, `copilot/hooks/`
-  - `stop.py` (hook) → `claude-code/hooks/`, `codex/hooks/`, `copilot/hooks/` (copilot on `agentStop`)
-  - `drop.py` (hook) → `claude-code/hooks/`, `codex/hooks/` (no copilot — `userPromptSubmitted` output isn't processed)
+  - `register.py` (add skill) → `claude-code/skills/add/scripts/`, `codex/skills/add/scripts/`, `copilot/skills/debt-ops-add/scripts/`, `cursor/skills/debt-ops-add/scripts/`, `skills/debt-ops-add/scripts/`
+  - `review.py` (review skill) → `claude-code/skills/review/scripts/`, `codex/skills/review/scripts/`, `copilot/skills/debt-ops-review/scripts/`, `cursor/skills/debt-ops-review/scripts/`, `skills/debt-ops-review/scripts/`
+  - `feedback.py`, `session-start.py` (hooks) → `claude-code/hooks/`, `codex/hooks/`, `copilot/hooks/`, `cursor/hooks/`
+  - `stop.py` (hook) → `claude-code/hooks/`, `codex/hooks/`, `copilot/hooks/`, `cursor/hooks/` (copilot on `agentStop`, cursor on `stop`)
+  - `drop.py` (hook) → `claude-code/hooks/`, `codex/hooks/`, `cursor/hooks/` (cursor on `beforeSubmitPrompt`; no copilot — `userPromptSubmitted` output isn't processed)
 - **Within-script helpers** repeated across most of the above — change one, change
   all: `git_toplevel`, `repo_hash`, `cache_base`, `read_registry_dir`, `log_metric`,
   `letter_for`, `parse_frontmatter`, `days_since`.
 - **Skills (`SKILL.md`)** — `add`, `review`, `metrics`, `init` each live in
-  `claude-code/skills/`, `codex/skills/`, `copilot/skills/`, and top-level `skills/`.
-  Dir names differ by namespace (see deltas): bare (`add`) under the namespaced
-  plugins, `debt-ops-`-prefixed under copilot + portable.
+  `claude-code/skills/`, `codex/skills/`, `copilot/skills/`, `cursor/skills/`, and
+  top-level `skills/`. Dir names differ by namespace (see deltas): bare (`add`)
+  under the namespaced plugins, `debt-ops-`-prefixed under copilot + cursor + portable.
 - **Cross-cutting contracts** (must match everywhere they appear):
   - Registry schema (frontmatter fields + quadrant/category enums) — every
     `register.py`, `review.py`, and `add` skill. Canonical: `docs/tech-debt-plugin-plan.md`.
-  - Disciplines wording — `session-start.py` (claude, codex) + every `init` skill.
+  - Disciplines wording — `session-start.py` (claude, codex, cursor) + every `init` skill.
   - Feedback marker `<!-- debt-ops:feedback v1 -->` — every `feedback.py`,
     `session-start.py`, and the `init` skills that write it.
   - Cache layout + `metrics.jsonl` event shapes — the scripts + the `metrics` skill.
@@ -56,33 +56,44 @@ deltas below** (don't flatten them).
 
 These differ on purpose; preserve them when propagating a shared change:
 
-- **Cache base.** `claude-code` uses `CLAUDE_PLUGIN_DATA`; `codex`/`copilot`/portable
+- **Cache base.** `claude-code` uses `CLAUDE_PLUGIN_DATA`; `codex`/`copilot`/`cursor`/portable
   use `DEBT_OPS_CACHE` → `~/.cache/debt-ops`.
 - **Script-reference style.** Layout is now uniform (hook scripts in `hooks/`, skill
   scripts in the skill's `scripts/`); only the *reference* differs. `claude-code`
   addresses scripts via the `${CLAUDE_PLUGIN_ROOT}/…` token (Claude provides it);
   `codex`/`copilot`/portable call the bundled script by relative path (`scripts/…`),
-  since the open SKILL.md standard has no plugin-root token.
+  since the open SKILL.md standard has no plugin-root token. `cursor` hook scripts
+  are referenced by project-relative path (`.cursor/hooks/…`) in `hooks.json`, since
+  Cursor runs project hooks from the project root.
 - **Hook I/O envelope.** `claude-code`/`codex` emit
   `hookSpecificOutput.additionalContext`; `copilot` emits a bare object and
   self-filters edit tools (its `postToolUse` has no matcher). `copilot`'s
   `feedback.py` prefers `modifiedResult` over `additionalContext` to work around
   [copilot-cli#2980](https://github.com/github/copilot-cli/issues/2980); its
   `stop.py` runs on `agentStop` (camelCase `sessionId`) and skips the batch
-  rotation (no `drop` hook to consume it).
+  rotation (no `drop` hook to consume it). `cursor` emits Cursor's snake_case
+  envelopes: `additional_context` (sessionStart + postToolUse — both injected, no
+  copilot-style workaround), `followup_message` (stop), and `continue:false` +
+  `user_message` (drop, on `beforeSubmitPrompt`). Its `postToolUse` has no matcher
+  so `feedback.py` self-filters edits by `tool_name`/`tool_input`; its `stop.py`
+  keys the per-session cap on `conversation_id` (no `session_id` in the payload)
+  and keeps batch rotation (it *does* have a `drop` hook) ([ADR 0020](./docs/adr/0020-cursor-full-hook-adapter.md)).
 - **Hook cwd.** Copilot runs plugin hooks with cwd = the *plugin install dir*, not
   the project, so `copilot`'s three hooks read the payload's `cwd` and `os.chdir`
-  into it (via `chdir_to_payload_cwd`) before any git call. Claude/Codex run hooks
-  in the project dir, so their copies do **not** have this helper — do not propagate
-  it ([ADR 0019](./docs/adr/0019-copilot-hooks-chdir-to-payload-cwd.md)).
+  into it (via `chdir_to_payload_cwd`) before any git call. Claude/Codex/`cursor` run
+  hooks in the project dir, so their copies do **not** have this helper — do not
+  propagate it ([ADR 0019](./docs/adr/0019-copilot-hooks-chdir-to-payload-cwd.md)).
 - **Charter file + invocation.** `CLAUDE.md` + `/debt-ops:add` (claude) vs
-  `AGENTS.md`/copilot-instructions + `$add` / bare skill name (codex, copilot, portable).
+  `AGENTS.md`/copilot-instructions + `$add` / bare skill name (codex, copilot, cursor, portable).
 - **Frontmatter.** `claude-code` skills use `allowed-tools` /
   `disable-model-invocation`; portable skills are `name` + `description` only.
   `claude-code` skills also carry `metadata.internal: true` to hide them from the
   `npx skills` CLI (it reads the root `marketplace.json` → `./claude-code` and would
   otherwise offer broken `${CLAUDE_PLUGIN_ROOT}` copies alongside the portable set).
   Do **not** propagate that flag to codex/copilot/portable ([ADR 0018](./docs/adr/0018-hide-claude-code-skills-from-skills-cli.md)).
+  `cursor` skills are `name` + `description` like portable, except `debt-ops-init`
+  adds `disable-model-invocation: true` (Cursor supports the field natively, making
+  init explicit-only — `/debt-ops-init`). Do not propagate that field to the portable set.
 
 ## Demo GIFs
 

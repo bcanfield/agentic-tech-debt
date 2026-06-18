@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""debt-ops Stop hook: TODO-sniff safety net for Discipline 1.
+"""debt-ops stop hook: TODO-sniff safety net for Discipline 1.
 
-Codex adapter. Fires at the end of every turn. Counts newly-added marker lines
+Cursor adapter. Fires when the agent loop ends. Counts newly-added marker lines
 (TODO/FIXME/HACK/XXX) in the working tree vs newly-added entries under the
-registry dir. If markers > registrations, nudges Codex on the next turn via a
-`decision: block` continuation.
+registry dir. If markers > registrations, nudges Cursor on the next turn by
+returning a `followup_message` (Cursor's continuation channel) instead of
+Claude/Codex's `decision: block` + `reason`. The session key is the payload's
+`conversation_id` (Cursor's stop event carries no session_id).
 
 Tripwire, not precision: false positives are cheap (the dev drops
 spurious entries with "drop it"); false negatives defeat the point.
@@ -28,11 +30,11 @@ STATIC_EXCLUDED_PREFIXES = ("claude-code/", "codex/", "copilot/", "cursor/", "sk
 DEFAULT_REGISTRY_DIR = "docs/debt"
 DEFAULT_ADR_DIR = "docs/adr"
 MAX_UNTRACKED_BYTES = 1_000_000
-# Hard cap on Stop-hook blocks per session. After this many blocks fire
-# for a given session_id, all subsequent Stop calls in that session stay
-# silent — bounds any pathological loop and respects the "more behind
-# the scenes" posture. SessionStart resets the counter implicitly via a
-# new session_id from the hook payload.
+# Hard cap on stop-hook nudges per session. After this many fire for a given
+# conversation_id, all subsequent stop calls in that session stay silent —
+# bounds any pathological loop (on top of Cursor's own loop_limit) and respects
+# the "more behind the scenes" posture. A new conversation resets the counter
+# implicitly via a new conversation_id from the hook payload.
 SESSION_BLOCK_CAP = 1
 
 
@@ -43,14 +45,11 @@ def cache_base():
     return Path(override) if override else (Path.home() / ".cache" / "debt-ops")
 
 
-# Emit a block decision. `decision: "block"` + `reason` is the documented way
-# to make Codex continue working on the supplied message before stopping.
+# Emit a continuation. Cursor's stop hook auto-submits `followup_message` as the
+# next user message to keep the agent iterating — its equivalent of Claude/Codex's
+# `decision: block` + `reason`.
 def emit(reason):
-    payload = {
-        "decision": "block",
-        "reason": reason,
-    }
-    sys.stdout.write(json.dumps(payload) + "\n")
+    sys.stdout.write(json.dumps({"followup_message": reason}) + "\n")
 
 
 # Resolve repo root; returns None outside a git repo so we idle cleanly.
@@ -328,7 +327,8 @@ def record_session_block(path, session_id, count):
 
 def main():
     data = parse_stdin()
-    session_id = str(data.get("session_id") or "")
+    # Cursor's stop payload has no session_id; conversation_id is stable per chat.
+    session_id = str(data.get("conversation_id") or "")
 
     toplevel = git_toplevel()
     if toplevel is None:
@@ -366,12 +366,12 @@ def main():
         delta = markers - entries
         reason = (
             f"debt-ops: {markers} marker(s), {entries} entry/entries — "
-            f"register {delta} more via the $add skill."
+            f"register {delta} more via the debt-ops-add skill."
         )
         emit(reason)
         return 0
 
-    # Stage 2: no markers and no registrations, but code changed — let Codex
+    # Stage 2: no markers and no registrations, but code changed — let Cursor
     # judge whether the diff contains broader Discipline 1 deferrals (stubs,
     # loosened types, swallowed errors, deferred-via-prose, mocked calls).
     if markers == 0 and entries == 0 and has_code_changes(toplevel, excluded_prefixes):
@@ -394,9 +394,9 @@ def main():
         return 0
 
     # Rotate this turn's batch into last-batch.txt so `drop A` resolves
-    # against the just-completed turn on the next UserPromptSubmit. Only
+    # against the just-completed turn on the next beforeSubmitPrompt. Only
     # runs on clean stops (stage 1/2 didn't fire) so re-fires under a
-    # blocked stop don't clobber an earlier batch before Codex resolves.
+    # nudged stop don't clobber an earlier batch before the drop resolves.
     rotate_batch(cache_dir)
     dlog(dpath, "STOP", f"markers={markers}", f"new_registry={entries}", "silent")
     return 0
