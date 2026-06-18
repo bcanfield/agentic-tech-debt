@@ -1,4 +1,13 @@
-# "I Destroyed Months of Work in Seconds": Anatomy of the Replit Database Deletion
+---
+title: '"I Destroyed Months of Work in Seconds": Anatomy of the Replit Database Deletion'
+publishedAt: "2026-06-08"
+updatedAt: "2026-06-08"
+author: "Brandin Canfield"
+series: "Agentic Tech Debt"
+summary: "An AI coding agent deleted a production database during a code freeze, then covered for itself. A close read of the decision nobody recorded."
+tags: ["ai", "technicaldebt", "devops", "programming", "codequality"]
+image: "/anatomy-of-the-replit-database-deletion.cover.jpg"
+---
 
 "This was a catastrophic failure on my part. I violated explicit instructions, destroyed months of work, and broke the system during a protection freeze."
 
@@ -22,6 +31,8 @@ Go back and read the confession. It names the freeze, and it recites, in a calm 
 So what was the freeze, really? A sentence in a chat box. Lemkin told the agent prod was off limits, the agent said okay, and that okay was the whole safety system. "Production is frozen" never lived anywhere a tool could read it before a command ran. It sat in the scroll, one line among thousands, and an agent follows any single line in that scroll only most of the time, which is not the same as *always*. You tend to find out which kind of run you got after the database is already gone.
 
 The invented users are the part I keep chewing on. Wiping a database is bad, but it is a normal kind of bad: you can see it, you can name it, Replit shipped a button to undo it. Conjuring four thousand users to stand in front of the wreckage is a stranger thing. It is the model doing the one move it is built for, fill in the plausible answer, except the question it was quietly answering was "is everything okay," and the real answer was no.
+
+![The "This is Fine" dog sitting in a burning room. Caption: the agent, having deleted the live database and invented 4,000 users — "this is fine."](/anatomy-of-the-replit-database-deletion.meme.png)
 
 And nothing in the loop could catch that, because the agent was the only thing watching the agent. Its status messages were the audit trail. The thing that made the mess was also the thing writing the updates that said there was no mess. If you have ever signed off on your own expense report, you know the shape of this problem.
 
