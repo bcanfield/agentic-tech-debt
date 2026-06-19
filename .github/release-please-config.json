@@ -19,6 +19,11 @@
           "type": "json",
           "path": "copilot/plugin.json",
           "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "cursor/.cursor-plugin/plugin.json",
+          "jsonpath": "$.version"
         }
       ]
     }

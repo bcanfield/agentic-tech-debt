@@ -8,7 +8,7 @@
 - **Be refreshingly concise.** Nobody likes overly wordy AI slop. Speak and comment like a co-worker.
 - **Guide the agent with markdown, not orchestration.** Claude Code and Codex are smart and have the keys to the user's repo. Skills should load research-backed principles and trust the agent's judgment, not script its every step. Reach for Python only when determinism demands it (timestamps, audits, atomic file ops, hook contracts), never to make decisions a smart agent reading the repo can make better.
 - **Python over Bash for plugin scripts.** Stdlib `json`, `re`, and `subprocess.run(..., timeout=...)` beat hand-rolled JSON escaping, a `jq` dependency, and the BSD/GNU `timeout` portability dance. And run on Windows without WSL.
-- **Conventional commits.** All three adapters' plugin versions auto-bump in lockstep via release-please (config in `.github/`; mirrors `claude-code/.claude-plugin/plugin.json`, `codex/.codex-plugin/plugin.json`, and `copilot/plugin.json`); use `feat:` / `fix:` / `feat!:` prefixes. Anything else is ignored by the bumper. Don't hand-edit `version` in any `plugin.json`.
+- **Conventional commits.** All four adapters' plugin versions auto-bump in lockstep via release-please (config in `.github/`; mirrors `claude-code/.claude-plugin/plugin.json`, `codex/.codex-plugin/plugin.json`, `copilot/plugin.json`, and `cursor/.cursor-plugin/plugin.json`); use `feat:` / `fix:` / `feat!:` prefixes. Anything else is ignored by the bumper. Don't hand-edit `version` in any `plugin.json`.
 - **We like humanlike, concise inline comments** For example, a single line above a function or code block very simply and concisely saying what the code is doing so that the code is easy for a human to understand
 - **Record decisions as ADRs.** When we make a choice with two credible alternatives (a new convention, a tradeoff worth remembering), drop a short note in [`docs/adr/`](./docs/adr/) using the format in its [README](./docs/adr/README.md).
 
@@ -62,9 +62,13 @@ These differ on purpose; preserve them when propagating a shared change:
   scripts in the skill's `scripts/`); only the *reference* differs. `claude-code`
   addresses scripts via the `${CLAUDE_PLUGIN_ROOT}/…` token (Claude provides it);
   `codex`/`copilot`/portable call the bundled script by relative path (`scripts/…`),
-  since the open SKILL.md standard has no plugin-root token. `cursor` hook scripts
-  are referenced by project-relative path (`.cursor/hooks/…`) in `hooks.json`, since
-  Cursor runs project hooks from the project root.
+  since the open SKILL.md standard has no plugin-root token. `cursor` ships **two**
+  hooks configs: `hooks/hooks.json` (plugin/marketplace mode, scripts via the
+  `${CURSOR_PLUGIN_ROOT}/hooks/…` token — Cursor's analog of `${CLAUDE_PLUGIN_ROOT}`)
+  and `hooks/hooks.local.json` (manual copy → `.cursor/hooks.json`, project-relative
+  `.cursor/hooks/…` paths). They differ only in that prefix — keep in sync
+  ([ADR 0021](./docs/adr/0021-cursor-marketplace-plugin.md), mirroring Copilot's
+  dual config in ADR 0015).
 - **Hook I/O envelope.** `claude-code`/`codex` emit
   `hookSpecificOutput.additionalContext`; `copilot` emits a bare object and
   self-filters edit tools (its `postToolUse` has no matcher). `copilot`'s
@@ -80,9 +84,15 @@ These differ on purpose; preserve them when propagating a shared change:
   and keeps batch rotation (it *does* have a `drop` hook) ([ADR 0020](./docs/adr/0020-cursor-full-hook-adapter.md)).
 - **Hook cwd.** Copilot runs plugin hooks with cwd = the *plugin install dir*, not
   the project, so `copilot`'s three hooks read the payload's `cwd` and `os.chdir`
-  into it (via `chdir_to_payload_cwd`) before any git call. Claude/Codex/`cursor` run
-  hooks in the project dir, so their copies do **not** have this helper — do not
-  propagate it ([ADR 0019](./docs/adr/0019-copilot-hooks-chdir-to-payload-cwd.md)).
+  into it (via `chdir_to_payload_cwd`) before any git call. Claude/Codex run hooks
+  in the project dir, so their copies do **not** have a chdir helper — do not
+  propagate one ([ADR 0019](./docs/adr/0019-copilot-hooks-chdir-to-payload-cwd.md)).
+  `cursor` has its own variant — `chdir_to_workspace`, keyed on the payload's
+  `workspace_roots[0]` (present in *every* Cursor hook payload), in all four hooks —
+  so one script set works whether the marketplace plugin runs hooks from the plugin
+  dir or the project ([ADR 0021](./docs/adr/0021-cursor-marketplace-plugin.md)). It's
+  a no-op in the project-local install. Distinct from Copilot's (payload `cwd`); do
+  not cross-propagate.
 - **Charter file + invocation.** `CLAUDE.md` + `/debt-ops:add` (claude) vs
   `AGENTS.md`/copilot-instructions + `$add` / bare skill name (codex, copilot, cursor, portable).
 - **Frontmatter.** `claude-code` skills use `allowed-tools` /
