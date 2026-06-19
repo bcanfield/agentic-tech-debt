@@ -47,11 +47,17 @@ copilot plugin marketplace add bcanfield/agentic-tech-debt
 copilot plugin install debt-ops@agentic-tech-debt
 ```
 
-**Cursor** — full write-time loop via Cursor's agent hooks (1.7+), plus the skills. Copy this adapter's hooks into `.cursor/` and the skills into `.agents/skills/`:
+**Cursor** — full write-time loop via Cursor's agent hooks (2.5+ plugin marketplace), plus the skills. One-click install via the plugin (hooks + skills bundled):
+
+```text
+/add-plugin     # then pick debt-ops, or browse cursor.com/marketplace
+```
+
+Prefer to install by hand? Copy `hooks.local.json` + the scripts into `.cursor/` and the skills into `.agents/skills/`:
 
 ```bash
 mkdir -p .cursor/hooks .agents/skills
-cp cursor/hooks/hooks.json .cursor/hooks.json
+cp cursor/hooks/hooks.local.json .cursor/hooks.json
 cp cursor/hooks/*.py .cursor/hooks/
 cp -r cursor/skills/debt-ops-* .agents/skills/
 ```

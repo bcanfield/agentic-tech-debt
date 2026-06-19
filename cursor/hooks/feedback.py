@@ -11,8 +11,9 @@ Copilot copy. Cursor's I/O shim is simpler than Copilot's:
 - stdout: {"additional_context": "..."} — Cursor injects postToolUse
   additional_context into the conversation, so (unlike Copilot, blocked by
   copilot-cli#2980) we don't need the modifiedResult workaround.
-- cwd: Cursor runs project hooks from the project root, so there's no chdir step
-  (Copilot needs one because it runs hooks in the plugin dir).
+- cwd: project-local installs run from the project root, but a marketplace-plugin
+  install may run hooks from the plugin dir, so we re-anchor to the payload's
+  workspace_roots[0] before any git call (cf. the Copilot chdir, ADR 0019).
 - commands source: AGENTS.md carries the `<!-- debt-ops:feedback v1 -->` marker
   block, but Cursor's sessionStart can also detect + cache commands to
   feedback.list, so either source works (charter wins when present).
@@ -70,6 +71,19 @@ def git_toplevel():
         return Path(s) if s else None
     except (subprocess.CalledProcessError, FileNotFoundError):
         return None
+
+
+# Re-anchor cwd to the workspace root before any git call. Cursor's payload always
+# carries workspace_roots; a marketplace-plugin install can run hooks from the
+# plugin dir, so this corrects cwd there and is a no-op for the project-local
+# install (cwd is already the project root). One script set, both install modes.
+def chdir_to_workspace(data):
+    roots = data.get("workspace_roots") if isinstance(data, dict) else None
+    if roots:
+        try:
+            os.chdir(roots[0])
+        except (OSError, TypeError):
+            pass
 
 
 # Short stable hash of the repo path — used as the cache subdirectory name.

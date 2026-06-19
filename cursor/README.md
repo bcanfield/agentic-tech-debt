@@ -33,25 +33,46 @@ bundled skills, disciplines injected per session *and* persistable to the charte
 
 Needs a git repo and Python 3.10+ (stdlib only).
 
-### 1. Hooks
+### Recommended: the Cursor marketplace plugin
 
-Copy this adapter's hooks into your repo's `.cursor/` directory:
+This adapter is a self-contained Cursor plugin (`cursor/.cursor-plugin/plugin.json`,
+bundling the hooks and skills), so the whole loop installs in one step once it's on
+a marketplace:
+
+```text
+/add-plugin            # then pick debt-ops, or browse cursor.com/marketplace
+```
+
+Plugin-mode hooks (`cursor/hooks/hooks.json`) reference their scripts via the
+`${CURSOR_PLUGIN_ROOT}` token, and each hook re-anchors to the workspace root
+(`workspace_roots[0]`) before any git call — so the write-time loop fires whether
+Cursor runs plugin hooks from the plugin dir or the project. To test locally
+before publishing, symlink this dir into Cursor's local-plugin path:
+
+```bash
+ln -s "$PWD/cursor" ~/.cursor/plugins/local/debt-ops
+```
+
+### Manual install (no marketplace)
+
+Copy the hooks and skills into your repo by hand.
+
+**1. Hooks** — note this uses `hooks.local.json` (project-relative paths), not the
+plugin-mode `hooks.json`:
 
 ```bash
 mkdir -p .cursor/hooks
-cp cursor/hooks/hooks.json .cursor/hooks.json
+cp cursor/hooks/hooks.local.json .cursor/hooks.json
 cp cursor/hooks/session-start.py cursor/hooks/feedback.py cursor/hooks/stop.py cursor/hooks/drop.py .cursor/hooks/
 ```
 
-`hooks.json` must live at `.cursor/hooks.json` (Cursor's config location); the
+The config must live at `.cursor/hooks.json` (Cursor's config location); the
 scripts sit under `.cursor/hooks/` and are referenced by relative path from the
 project root. Cursor watches the config and reloads it automatically. A
 user-level install works too — drop the same files under `~/.cursor/` and adjust
-the paths in `hooks.json`.
+the paths.
 
-### 2. Skills
-
-Drop the four `debt-ops-*` skills into a Cursor skills directory
+**2. Skills** — drop the four `debt-ops-*` skills into a Cursor skills directory
 (`.agents/skills/` or `.cursor/skills/`, project-local; or `~/.agents/skills/`
 personal):
 
@@ -64,7 +85,7 @@ cp -r cursor/skills/debt-ops-* .agents/skills/
 explicit-only — run it as `/debt-ops-init` when you want to write the disciplines
 into `AGENTS.md` for the team. The other three are model-invoked.
 
-### 3. (Optional) charter
+### (Optional) charter
 
 The `sessionStart` hook injects the disciplines and detects quality commands
 every session, so you don't *need* the charter. Run `debt-ops-init` if you want

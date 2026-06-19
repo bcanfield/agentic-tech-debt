@@ -65,6 +65,19 @@ def git_toplevel():
         return None
 
 
+# Re-anchor cwd to the workspace root before any git call. Cursor's payload always
+# carries workspace_roots; a marketplace-plugin install can run hooks from the
+# plugin dir, so this corrects cwd there and is a no-op for the project-local
+# install (cwd is already the project root). One script set, both install modes.
+def chdir_to_workspace(data):
+    roots = data.get("workspace_roots") if isinstance(data, dict) else None
+    if roots:
+        try:
+            os.chdir(roots[0])
+        except (OSError, TypeError):
+            pass
+
+
 def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
@@ -327,6 +340,7 @@ def record_session_block(path, session_id, count):
 
 def main():
     data = parse_stdin()
+    chdir_to_workspace(data)
     # Cursor's stop payload has no session_id; conversation_id is stable per chat.
     session_id = str(data.get("conversation_id") or "")
 

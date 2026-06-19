@@ -1,0 +1,17 @@
+{
+  "name": "agentic-tech-debt",
+  "owner": {
+    "name": "Brandin Canfield",
+    "email": "brandincanfield@gmail.com"
+  },
+  "metadata": {
+    "description": "debt-ops for Cursor — write-time tech-debt capture, review, and metrics via Cursor agent hooks + skills."
+  },
+  "plugins": [
+    {
+      "name": "debt-ops",
+      "source": "cursor",
+      "description": "Catches AI-introduced tech debt at write-time. Every \"I'll fix this later,\" every shortcut, every punt your AI agent writes gets caught."
+    }
+  ]
+}

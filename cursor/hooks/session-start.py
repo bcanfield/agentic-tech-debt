@@ -68,6 +68,19 @@ def git_toplevel():
         return None
 
 
+# Re-anchor cwd to the workspace root before any git call. Cursor's payload always
+# carries workspace_roots; a marketplace-plugin install can run hooks from the
+# plugin dir, so this corrects cwd there and is a no-op for the project-local
+# install (cwd is already the project root). One script set, both install modes.
+def chdir_to_workspace(data):
+    roots = data.get("workspace_roots") if isinstance(data, dict) else None
+    if roots:
+        try:
+            os.chdir(roots[0])
+        except (OSError, TypeError):
+            pass
+
+
 def repo_hash(toplevel):
     return hashlib.sha1(str(toplevel).encode()).hexdigest()[:12]
 
@@ -304,6 +317,14 @@ def disciplines_text(adr_dir, registry_dir):
 
 
 def main():
+    # sessionStart carries workspace_roots; read it so a plugin-dir install can
+    # re-anchor to the project before resolving the repo (no-op project-local).
+    try:
+        data = json.loads(sys.stdin.read() or "{}")
+    except (ValueError, OSError):
+        data = {}
+    chdir_to_workspace(data)
+
     toplevel = git_toplevel()
     if toplevel is None:
         emit("debt-ops: not a git repo, plugin idle this session")
