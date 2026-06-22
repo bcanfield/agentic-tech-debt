@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "agentic-tech-debt",
-  "description": "Plugins implementing the agentic-tech-debt system across coding agents.",
+  "description": "debt-ops for Claude Code: write-time tech-debt capture, review, and metrics.",
   "owner": {
     "name": "Brandin Canfield",
     "email": "brandincanfield@gmail.com"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "debt-ops",
-      "description": "Catches AI-introduced tech debt at write-time. Every \"I'll fix this later,\" every shortcut, every punt your AI agent writes gets caught.",
+      "description": "Tracks the tech debt your AI agent writes. Every shortcut and \"I'll fix this later\" logged in your repo and kept visible until it's fixed.",
       "author": {
         "name": "Brandin Canfield",
         "email": "brandincanfield@gmail.com"

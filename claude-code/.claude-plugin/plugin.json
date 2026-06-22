@@ -1,7 +1,7 @@
 {
   "name": "debt-ops",
   "version": "0.9.1",
-  "description": "Catches AI-introduced tech debt at write-time. Every \"I'll fix this later,\" every shortcut, every punt your AI agent writes gets caught.",
+  "description": "Tracks the tech debt your AI agent writes. Every shortcut and \"I'll fix this later\" logged in your repo and kept visible until it's fixed.",
   "author": {
     "name": "Brandin Canfield",
     "email": "brandincanfield@gmail.com"
