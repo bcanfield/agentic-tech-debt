@@ -51,6 +51,20 @@ deltas below** (don't flatten them).
   - Feedback marker `<!-- debt-ops:feedback v1 -->` — every `feedback.py`,
     `session-start.py`, and the `init` skills that write it.
   - Cache layout + `metrics.jsonl` event shapes — the scripts + the `metrics` skill.
+  - Product copy across the eight manifests (keep in lockstep, but mind the
+    per-schema shape):
+    - **Plugin tagline** — `"Tracks the tech debt your AI agent writes — every
+      shortcut and \"I'll fix this later\" logged in your repo and kept visible
+      until it's fixed."` is byte-identical in all four `plugin.json` (`claude-code/.claude-plugin/`,
+      `codex/.codex-plugin/`, `copilot/`, `cursor/.cursor-plugin/`) **and** the
+      `plugins[].description` of the `.claude-plugin/`, `.github/plugin/`, and
+      `.cursor-plugin/` marketplaces. The codex `.agents/plugins/marketplace.json`
+      has **no** per-plugin description (that schema uses `interface.displayName`).
+    - **Marketplace blurb** — one template, `"debt-ops for <Tool> — write-time
+      tech-debt capture, review, and metrics."`, carried as top-level `description`
+      (`.claude-plugin/`) or `metadata.description` (`.github/plugin/` → Copilot,
+      `.cursor-plugin/` → Cursor). The codex `.agents/plugins/` marketplace shows
+      only `interface.displayName` (no blurb field).
 
 ### Per-adapter deltas (do NOT sync away)
 
