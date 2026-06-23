@@ -23,7 +23,8 @@
 
 Just needs a git repo and Python 3.10+.
 
-<img src="https://cdn.simpleicons.org/claude/d97757" height="16" alt="" align="absmiddle" /> **Claude Code**
+<a id="claude-code"></a>
+<img src="./assets/agents/claude.svg" height="16" alt="" align="absmiddle" /> **Claude Code**
 
 ```bash
 /plugin marketplace add bcanfield/agentic-tech-debt
@@ -31,23 +32,19 @@ Just needs a git repo and Python 3.10+.
 ```
 
 <details>
-<summary>Codex, Copilot, and other agents</summary>
-
-**Codex**
+<summary><img src="./assets/agents/codex.svg" height="16" alt="" align="absmiddle" /> <b>Codex</b></summary>
 
 ```bash
 codex plugin marketplace add bcanfield/agentic-tech-debt
 # then, inside Codex: /plugins → install debt-ops
 ```
 
-**GitHub Copilot CLI**
+</details>
 
-```bash
-copilot plugin marketplace add bcanfield/agentic-tech-debt
-copilot plugin install debt-ops@agentic-tech-debt
-```
+<details>
+<summary><img src="./assets/agents/cursor.svg" height="16" alt="" align="absmiddle" /> <b>Cursor</b></summary>
 
-**Cursor** — full write-time loop via Cursor's agent hooks (2.5+ plugin marketplace), plus the skills. One-click install via the plugin (hooks + skills bundled):
+One-click install via the plugin (hooks + skills bundled):
 
 ```text
 /add-plugin     # then pick debt-ops, or browse cursor.com/marketplace
@@ -64,15 +61,32 @@ cp -r cursor/skills/debt-ops-* .agents/skills/
 
 See the [Cursor adapter README](./cursor/README.md) for details.
 
-**Any other agent** (Gemini CLI, Windsurf, opencode…) via portable [Agent Skills](https://skills.sh):
+</details>
+
+<details>
+<summary><img src="./assets/agents/copilot.svg" height="16" alt="" align="absmiddle" /> <b>GitHub Copilot CLI</b></summary>
+
+```bash
+copilot plugin marketplace add bcanfield/agentic-tech-debt
+copilot plugin install debt-ops@agentic-tech-debt
+```
+
+Then run `debt-ops-init` once — Copilot has no per-session inject, so this writes the
+disciplines into your charter (`.github/copilot-instructions.md` or `AGENTS.md`). See the
+[Copilot adapter README](./copilot/README.md) for the manual-install alternative and details.
+
+</details>
+
+<details>
+<summary><img src="./assets/agents/gemini.svg" height="16" alt="" align="absmiddle" /> <b>Any other agent</b> (Gemini CLI, Windsurf, opencode…)</summary>
+
+Via portable [Agent Skills](https://skills.sh):
 
 ```bash
 npx skills add bcanfield/agentic-tech-debt
 ```
 
-Then run `debt-ops-init` once — on Copilot the disciplines live in your charter
-(`.github/copilot-instructions.md` or `AGENTS.md`), not a per-session inject. See the
-[Copilot adapter README](./copilot/README.md) for the manual-install alternative and details.
+Then run `debt-ops-init` once to write the disciplines into your `AGENTS.md`.
 
 </details>
 
