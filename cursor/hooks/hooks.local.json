@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "python3 .cursor/hooks/session-start.py",
+        "timeout": 10
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "python3 .cursor/hooks/drop.py",
+        "timeout": 3
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "python3 .cursor/hooks/feedback.py",
+        "timeout": 5
+      }
+    ],
+    "stop": [
+      {
+        "command": "python3 .cursor/hooks/stop.py",
+        "timeout": 5
+      }
+    ]
+  }
+}

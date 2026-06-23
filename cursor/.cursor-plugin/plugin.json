@@ -9,11 +9,14 @@
   "homepage": "https://github.com/bcanfield/agentic-tech-debt",
   "repository": "https://github.com/bcanfield/agentic-tech-debt",
   "license": "MIT",
+  "category": "productivity",
   "keywords": [
     "tech-debt",
     "code-health",
     "hotspots",
     "adr",
     "productivity"
-  ]
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
 }

@@ -47,7 +47,24 @@ copilot plugin marketplace add bcanfield/agentic-tech-debt
 copilot plugin install debt-ops@agentic-tech-debt
 ```
 
-**Any other agent** (Cursor, Gemini CLI, Windsurf, opencode…) via portable [Agent Skills](https://skills.sh):
+**Cursor** — full write-time loop via Cursor's agent hooks (2.5+ plugin marketplace), plus the skills. One-click install via the plugin (hooks + skills bundled):
+
+```text
+/add-plugin     # then pick debt-ops, or browse cursor.com/marketplace
+```
+
+Prefer to install by hand? Copy `hooks.local.json` + the scripts into `.cursor/` and the skills into `.agents/skills/`:
+
+```bash
+mkdir -p .cursor/hooks .agents/skills
+cp cursor/hooks/hooks.local.json .cursor/hooks.json
+cp cursor/hooks/*.py .cursor/hooks/
+cp -r cursor/skills/debt-ops-* .agents/skills/
+```
+
+See the [Cursor adapter README](./cursor/README.md) for details.
+
+**Any other agent** (Gemini CLI, Windsurf, opencode…) via portable [Agent Skills](https://skills.sh):
 
 ```bash
 npx skills add bcanfield/agentic-tech-debt
