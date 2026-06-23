@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.9.1...debt-ops-v0.10.0) (2026-06-23)
+
+
+### Features
+
+* add Cursor full hook adapter with all four mechanisms ([#46](https://github.com/bcanfield/agentic-tech-debt/issues/46)) ([ba3ccd0](https://github.com/bcanfield/agentic-tech-debt/commit/ba3ccd07f7d58b17e3b237480472c987cc6cc07a))
+
 ## [0.9.1](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.9.0...debt-ops-v0.9.1) (2026-06-06)
 
 
