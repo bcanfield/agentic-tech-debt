@@ -33,7 +33,8 @@ not as a skill.
 | Codex | ✅ | ✅ | full (have it) |
 | GitHub Copilot CLI | ✅ | ✅ `postToolUse` (no matcher; self-filter to edits) | full — adapter is the prize |
 | Gemini CLI | ✅ | ✅ (on by default) | full |
-| Cursor / Windsurf / Continue | ✅ | weak/none or non-portable | **skills + AGENTS.md degraded mode** |
+| Cursor | ✅ | ✅ full hooks (1.7+): `sessionStart`/`postToolUse`/`stop`/`beforeSubmitPrompt` | **full — shipped (`cursor/`, ADR 0020)** |
+| Windsurf / Continue | ✅ | weak/none or non-portable | skills + AGENTS.md degraded mode |
 | VS Code Copilot (extension) | ✅ | cloud-agent hooks only | skills + degraded mode |
 
 Sources are cited in the session research; key ones: the Agent Skills standard
@@ -95,7 +96,8 @@ so it's the second full-experience target.
 
 **Reversed.** The original plan was to extract a vendored `_common.py` once a
 third adapter landed. We're not doing that ([ADR 0014](./adr/0014-keep-adapters-duplicated.md)):
-the helper scripts and skills stay duplicated across all four implementations, and
+the helper scripts and skills stay duplicated across every implementation
+(`claude-code`, `codex`, `copilot`, `cursor`, portable `skills`), and
 parity is maintained by hand/AI per-change. The policy, the full duplicate map, and
 the per-adapter deltas live in CLAUDE.md under "Adapter parity — duplicated on
 purpose." Revisit the extraction only if AI-sync drift actually ships a bug.
@@ -118,5 +120,7 @@ purpose." Revisit the extraction only if AI-sync drift actually ships a bug.
 - A marketplace/registry listing for the portable skills (submitting to
   agentskills.io or per-tool catalogs) — distribution, not engineering; revisit
   after B validates.
-- Cursor/Continue-specific hook shims — only if those tools grow a portable hook
-  surface; until then they get skills + degraded mode.
+- ~~Cursor~~ hook shim — **done** (`cursor/`, [ADR 0020](./adr/0020-cursor-full-hook-adapter.md)):
+  Cursor 1.7+ shipped a full hook surface, so it's a full adapter, not degraded.
+- Continue-specific hook shims — only if it grows a portable hook surface; until
+  then it gets skills + degraded mode.

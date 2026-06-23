@@ -5,12 +5,12 @@
     "email": "brandincanfield@gmail.com"
   },
   "metadata": {
-    "description": "debt-ops for GitHub Copilot CLI — write-time tech-debt capture, review, and metrics."
+    "description": "debt-ops for GitHub Copilot CLI: write-time tech-debt capture, review, and metrics."
   },
   "plugins": [
     {
       "name": "debt-ops",
-      "description": "Catches AI-introduced tech debt at write-time. Every \"I'll fix this later,\" every shortcut, every punt your AI agent writes gets caught.",
+      "description": "Tracks the tech debt your AI agent writes. Every shortcut and \"I'll fix this later\" logged in your repo and kept visible until it's fixed.",
       "source": "./copilot",
       "category": "productivity"
     }

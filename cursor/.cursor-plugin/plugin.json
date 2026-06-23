@@ -1,0 +1,22 @@
+{
+  "name": "debt-ops",
+  "version": "0.9.1",
+  "description": "Tracks the tech debt your AI agent writes. Every shortcut and \"I'll fix this later\" logged in your repo and kept visible until it's fixed.",
+  "author": {
+    "name": "Brandin Canfield",
+    "email": "brandincanfield@gmail.com"
+  },
+  "homepage": "https://github.com/bcanfield/agentic-tech-debt",
+  "repository": "https://github.com/bcanfield/agentic-tech-debt",
+  "license": "MIT",
+  "category": "productivity",
+  "keywords": [
+    "tech-debt",
+    "code-health",
+    "hotspots",
+    "adr",
+    "productivity"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
+}
