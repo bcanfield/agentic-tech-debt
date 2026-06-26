@@ -9,6 +9,8 @@ tags: ["ai", "opensource", "technicaldebt", "security", "programming"]
 image: "/curl-bogus-ai-bug-report-every-18-hours.cover.jpg"
 ---
 
+> **Full research and the plugin →** [github.com/bcanfield/agentic-tech-debt](https://github.com/bcanfield/agentic-tech-debt)
+
 Somewhere in curl's bug-bounty queue last year sat a confident, well-formatted report about an HTTP/3 vulnerability. It walked through the flaw, named the affected function, suggested a fix. The only problem was the function. It does not exist in curl. It never has. An AI had written a plausible security report about code that was never in the project, and a human had to read far enough to figure that out before it could be thrown away.
 
 That report is one of thousands, and by this month it's barely notable. As I write this in June 2026, curl receives a bug report roughly every eighteen hours. Most are not real. Daniel Stenberg, who has maintained curl for going on three decades and personally triages a lot of that queue, has been keeping count. Around one in five submissions now carries the telltale signatures of AI slop. Around one in twenty is a genuine vulnerability. The rest is the wide middle: reports that look real enough to demand a human's time and turn out to be nothing.

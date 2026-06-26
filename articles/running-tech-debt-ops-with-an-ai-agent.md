@@ -9,7 +9,7 @@ tags: ["ai", "technicaldebt", "programming", "codequality", "devops"]
 image: "/running-tech-debt-ops-with-an-ai-agent.cover.jpg"
 ---
 
-> Full content, research, and plugins → **[debt-ops on GitHub](https://github.com/bcanfield/agentic-tech-debt)**
+> **Full research and the plugin →** [github.com/bcanfield/agentic-tech-debt](https://github.com/bcanfield/agentic-tech-debt)
 
 The problem with letting an agent write most of your code isn't that the code is bad. A lot of it is fine. The problem is the rate. An agent will defer a dozen small decisions in a session (cast a value to `any` to clear a type error, swallow an exception so a test goes green, pick a default "for now") and then tell you the session went well, because by its own account it did. OX Security, which sells code-security tooling so weigh it accordingly, put the mechanism plainly in their October 2025 "Army of Juniors" report: "vulnerable systems now reach production at unprecedented speed, and proper code review simply cannot scale to match the new output velocity."
 
