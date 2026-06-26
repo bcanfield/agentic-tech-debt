@@ -117,7 +117,9 @@ def main():
         "title": title,
         "body_markdown": body,
         "published": bool(args.publish),
-        "tags": ", ".join(tags),
+        # dev.to wants tags as a JSON array — a comma-separated string is silently
+        # ignored on POST (post publishes with zero tags).
+        "tags": tags,
         "canonical_url": args.canonical,
     }
     if description:
