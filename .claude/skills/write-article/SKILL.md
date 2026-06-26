@@ -59,6 +59,17 @@ The install command appears exactly as it works:
 
 1,200–2,000 words is fine here; playbooks are the one shape where length reads as generosity.
 
+## Cut to the key points — write for the shortest attention span ever
+
+Reader attention is the scarcest thing in the system, scarcer than any stat or kicker. Three dense paragraphs stacked with no break and the skimmer is gone before your best line lands. Assume every reader is one scroll from leaving, and that the back half of any piece loses readers the front half kept. The job isn't to say everything true about the topic — it's to land a few things so cleanly the reader can't not finish.
+
+So before you polish, find the spine: **what are the two or three things this piece must get across?** Write those, then treat everything else as a candidate for the cut. The test for a paragraph isn't "is it good?" — it's "does the piece break if it's gone?" If not, cut it. A 700-word version that lands all three points beats an 1,100-word version that also makes four more — the four extra didn't add reach, they buried the three that mattered.
+
+- **Aim at the low end of every range in Step 2; the high end is a ceiling you earn, not a target.** A draft that comes in 200 words under and loses nothing is the win, not one padded to the middle. The current series runs 1,000–1,900 words — most of those should be shorter.
+- **Kill the throat-clearing.** Scene-setting first paragraphs, "it's worth noting," the sentence that restates the last paragraph, the second example that proves what the first already proved. The opening paragraph is the most common thing to cut whole — claim-first openings (Step 2) exist partly so there's nothing to clear.
+- **Most paragraphs shorter than you'd default to, one idea each.** A one-line paragraph between two dense ones is the rest stop a skimmer needs — that's the same break-the-wall job the diagram, meme, and tables do, done with whitespace.
+- **Concise ≠ compressed.** Cutting words and whole paragraphs is the goal; turning every survivor into a kicker is the *opposite* failure, the one "The register" warns about. The minimal article is fewer words and *plainer*, not fewer words and punchier. Playbooks stay long where length is reference value — but even there, density and skimmability still apply; long is not the same as padded.
+
 ## Conversion mechanics (what our research actually found)
 
 From `docs/one-star-a-day.md` and `docs/publishing-checklist.md`:
