@@ -32,7 +32,7 @@ grep -rn "except:\s*$\|except Exception:\s*pass\|catch\s*(.*)\s*{\s*}" .
 grep -rEn "TODO|FIXME|HACK|XXX" src/
 ```
 
-The last one is the obvious one and also the weakest. A `TODO` is a deferral someone bothered to label. The reason this step matters at agent speed is that most agent deferrals don't get a `TODO`. They get a clean-looking line that compiles. The cast is invisible to the test suite and to your eye on a 400-line diff, and only a grep that knows what an `as any` looks like will find it.
+The last grep is the weakest. A `TODO` is a deferral someone bothered to label, and most agent deferrals don't get one. They get a clean line that compiles. The cast is invisible to the test suite and to your eye on a 400-line diff; only a grep that knows what an `as any` looks like will find it.
 
 Run those after a session and you'll get hits. Some are real debt, plenty are noise (a `: any` in a third-party `.d.ts` you can't touch). That's fine. The triage is the next step, and over-catching is the right failure mode here. A false positive costs you a glance; a missed deferral costs you a debugging afternoon three sprints out.
 
@@ -42,9 +42,9 @@ Here's where the manual loop earns its keep, and it's almost embarrassingly low-
 
 The format matters less than the fields. I use frontmatter so a script can rank it later, but a teammate doing this with a plain sentence per file would get 90% of the value. The fields I won't skip: where the debt lives (so churn can be measured against it), why it exists, and the load-bearing one, the payoff trigger. Not a due date. The *condition* that means it's time to pay, like "the first time someone touches this auth path again" or "when we add a second payment provider." A due date is a guess; a condition is something you can actually wait for.
 
-Two things make a registry beat the alternatives, and I held off building this for a while because I assumed `TODO` comments were good enough. They're not, for a reason that's specific to agents. A `TODO` rots in the file it sits in. It travels with the code, which sounds good until the agent rewrites that file next session and the comment goes with it, or gets "cleaned up." A ticket in Jira dies in grooming three weeks later when nobody remembers the context. A markdown file written at decision time, checked into the repo, sitting in a folder of its peers, survives both: version control tracks it, grep finds it, and because it isn't real code the agent doesn't touch it on its next pass. The decision and the code that prompted it get committed together, which is the one time all the context is in the same place.
+Why not `TODO` comments? I assumed they were good enough for a while; they're not, for a reason specific to agents. A `TODO` travels with the code, which sounds fine until the agent rewrites that file next session and the comment goes with it, or gets "cleaned up." A Jira ticket dies in grooming three weeks later when nobody remembers the context. A markdown file checked into the repo survives both: version control tracks it, grep finds it, and because it isn't real code the agent doesn't touch it on its next pass. The decision and the code that prompted it are committed together, the one time all the context is in the same place.
 
-What surprised me building this is how much of it is just *writing the decision down at the moment you make it*. Take the Replit database deletion last summer, the agent that wiped a production database mid-freeze and apologized in flat past tense, reciting every rule it broke. The agent understood the freeze fine. It named it in the apology. The miss was that nobody wrote down "we're working through it anyway" anywhere outside the chat log. A registry is that anywhere.
+What surprised me building this is how much of it is just *writing the decision down at the moment you make it*. Take the Replit database deletion last summer, the agent that wiped a production database mid-freeze and apologized in flat past tense, reciting every rule it broke. The agent understood the freeze fine. It named it in the apology. The miss was that "we're working through it anyway" was written down nowhere outside the chat log. A registry is that anywhere.
 
 ![Gru's-plan meme. Panel 1: "grep for the shortcuts after every session." Panel 2: "register each one to docs/debt/." Panel 3: "if I remember to run the grep." Panel 4: Gru does a double-take at the same line, realizing the plan's whole catch step depends on him remembering.](/running-tech-debt-ops-with-an-ai-agent.meme.png)
 
@@ -72,7 +72,7 @@ That's the loop. Catch, register, review, pay down, repeat. It works with grep, 
 
 The honest problem with the manual loop is the catch step. It only works if you remember to run it, and the entire premise of this series is that at agent speed you won't. The decisions go by faster than you take notes. Everything downstream (the registry, the churn ranking, the paydown) is durable once an entry exists. The fragile link is a human noticing the deferral in the first place.
 
-So I wrote a hook to do that catching for me. debt-ops is a plugin that watches your coding agent and runs the catch step on every edit, registering each deferral to a file in `docs/debt/`, the same folder and format from the manual version, just written without you having to catch it. The review step is a skill that runs the churn ranking for you. Here's that skill against this repo's own registry, real output, eight entries deep into building the thing in public:
+So I wrote a hook to do that catching for me. debt-ops is a plugin that watches your coding agent and runs the catch step on every edit; each deferral is registered to a file in `docs/debt/`, the same folder and format as the manual version, just written without you having to catch it. The review step is a skill that runs the churn ranking for you. Here's that skill against this repo's own registry, real output, eight entries deep into building the thing in public:
 
 ```
 debt-ops review — 8 entries
@@ -86,7 +86,7 @@ top 3 to pay down
     Both content-pipeline skills shipped with hand-written descriptions; the skill-creat...
 ```
 
-That top entry is the project documenting its own shortcut. I ship debt-ops as four self-contained copies, so every shared script exists four times and I sync them by hand. That's a deliberate tradeoff, registered against itself, ranked top because that file churns. The `[ai]` flag means the agent wrote it; the "11 edits since logged" is the churn count doing the ranking. None of that is mocked up for the article. It's what the command prints when I run it just now.
+That top entry is the project documenting its own shortcut. I ship debt-ops as four self-contained copies, so every shared script exists four times and is synced by hand. That's a deliberate tradeoff, registered against itself, ranked top because that file churns. None of it is mocked up for the article. It's what the command prints when I run it just now.
 
 Since the plugin watches your agent and reads your repo, here's exactly what it is and isn't, because the one plugin I watched get torched on Hacker News died for undisclosed server calls. debt-ops runs entirely on your machine. The hooks are stdlib Python, no dependencies to audit. It makes no network calls and sends no telemetry; the registry is plain markdown in your repo, the only state is a local cache, and it's MIT-licensed. You can read every line before you trust it with a single edit, which given what it's hooked into is the point.
 

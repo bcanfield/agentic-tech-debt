@@ -129,8 +129,14 @@ in the manifest, click the Tags box, `keyboard type` it, wait ~1.5s, then click 
 top `#<tag> … posts` suggestion button. NOTE: some canonical tags have a cuid-suffixed
 slug (e.g. `#programming-ciovqvfcb008…`) — that's the *real* tag (displays as
 "#programming" to readers), not a malformed custom one, so don't "fix" it. Added tags
-show as chip buttons; click a chip to remove it. (Optional, same tab: SEO fields,
-slug, and a canonical-URL checkbox — set canonical to the Medium URL if cross-posting.)
+show as chip buttons; click a chip to remove it.
+
+**Canonical URL (cross-posting).** Same tab, find the SEO / "canonical URL" field
+(it may be behind a "This article is originally published elsewhere" / canonical
+checkbox). Set it to the **portfolio** post — `https://brandincanfield.com/blog/<slug>`
+— so Hashnode doesn't compete with your site for SEO. Publish the portfolio first
+(`publish-to-portfolio`) to have that URL; Medium and dev.to point at the same one.
+(Same tab also has slug + other SEO fields — optional.)
 
 ## Step 7 — Publish
 
