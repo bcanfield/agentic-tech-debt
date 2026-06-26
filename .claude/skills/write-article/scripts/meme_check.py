@@ -1,35 +1,45 @@
 #!/usr/bin/env python3
-"""Gate the article's meme: exactly one, and the visuals break up the wall evenly.
+"""Gate the article's visuals: enough of them, well-spaced, exactly one meme.
 
-Two deterministic contracts the prose audit can't enforce by eye:
+Three deterministic contracts the prose audit can't enforce by eye:
 
-  1. COUNT — the body references exactly one `*.meme.*` image and the file exists.
+  1. MEME — the body references exactly one `*.meme.*` image and the file exists.
      (Cover lives in frontmatter, not the body, so it never counts here.)
-  2. PLACEMENT — the meme is the one movable visual, so it should land in the
-     biggest empty stretch, not clumped against the diagram or a code block.
-     We flag the longest unbroken prose run and any two visuals sitting too close.
+  2. ANCHORS — at least three committed body images total, one of them a diagram
+     (`*.diagram.*`) and one the meme. The third is a free anchor (stat-card, a
+     second diagram, a before/after) — the article just has to carry three.
+  3. SPACING — no more than two consecutive prose paragraphs without a visual
+     break between them. A break is a committed image, a fenced code block, a
+     table, a blockquote, or a heading. Prose-heavy shapes (incident/data/essay)
+     have nothing but images to break a run, so the rule lands as "an image every
+     two paragraphs" there; playbooks lean on their native code/tables.
 
-This is the floor, not the verdict — "is the meme any good" is the fresh-agent
-review's job. A clean run here just means it's present and well-spaced.
+The fix for a too-long prose run is a rendered image that carries content the
+prose doesn't — or cutting the prose until the run closes. Never decoration.
+
+This is the floor, not the verdict — "is the meme any good", "does this image
+earn its place" is the fresh-agent review's job.
 
 Usage: python3 meme_check.py <article.md>
 Exit status: 1 if any contract fails (so it can gate a publish step), else 0.
 """
 import re
 import sys
+from os.path import join, dirname, exists
 
-# Longest unbroken prose run, as a fraction of total body prose. Over this and the
-# wall isn't broken — move the meme into that stretch.
-MAX_GAP_FRAC = 0.40
-# Two visuals closer than this (prose words between them) read as clumped.
-MIN_ADJ_WORDS = 80
+# Longest allowed run of consecutive prose paragraphs with no visual between them.
+MAX_PROSE_RUN = 2
+# Minimum committed body images (diagram + meme + one more).
+MIN_IMAGES = 3
 
-FENCE = re.compile(r"```.*?```", re.S)
 IMAGE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+IMAGE_ONLY = re.compile(r"^!\[[^\]]*\]\([^)]*\)$")
+HEADING = re.compile(r"^#{1,6}\s")
+TABLE_SEP = re.compile(r"^\s*\|?[\s:|-]*-[\s:|-]*$")
 
 
 def split_frontmatter(raw):
-    # returns (body_start_char) — body is everything after the closing --- fence
+    # returns body_start_char — body is everything after the closing --- fence
     if raw.startswith("---"):
         end = raw.find("\n---", 3)
         if end != -1:
@@ -37,66 +47,91 @@ def split_frontmatter(raw):
     return 0
 
 
-def words(text):
-    return len(re.findall(r"\S+", text))
-
-
-def lineno(raw, offset):
-    return raw[:offset].count("\n") + 1
+def classify(body):
+    """Walk the body into blocks tagged 'prose' or 'break', with body line numbers."""
+    lines = body.split("\n")
+    blocks = []  # (kind, start_line_idx)  kind in {'prose','break'}
+    i, n = 0, len(lines)
+    while i < n:
+        s = lines[i].strip()
+        if s == "":
+            i += 1
+            continue
+        if s.startswith("```"):  # fenced code block — one break
+            j = i + 1
+            while j < n and not lines[j].strip().startswith("```"):
+                j += 1
+            blocks.append(("break", i))
+            i = j + 1
+            continue
+        if HEADING.match(s) or IMAGE_ONLY.match(s):  # heading / standalone image — break
+            blocks.append(("break", i))
+            i += 1
+            continue
+        if s.startswith(">"):  # blockquote — break
+            blocks.append(("break", i))
+            while i < n and lines[i].strip().startswith(">"):
+                i += 1
+            continue
+        if "|" in s and i + 1 < n and TABLE_SEP.match(lines[i + 1]):  # table — break
+            blocks.append(("break", i))
+            i += 2
+            while i < n and "|" in lines[i]:
+                i += 1
+            continue
+        # otherwise a prose paragraph: consume to the next blank/special line
+        blocks.append(("prose", i))
+        i += 1
+        while i < n and lines[i].strip() != "" and not lines[i].strip().startswith(("```", ">")) \
+                and not HEADING.match(lines[i].strip()) and not IMAGE_ONLY.match(lines[i].strip()):
+            i += 1
+    return blocks
 
 
 def check(path):
     raw = open(path, encoding="utf-8").read()
     body_start = split_frontmatter(raw)
     body = raw[body_start:]
+    base_line = raw[:body_start].count("\n")  # body line k → raw line base_line + k + 1
     fails = []
     print(f"\n== {path}")
 
-    # 1. COUNT — exactly one meme ref, file present
-    meme_refs = [m for m in IMAGE.finditer(body) if ".meme." in m.group(1)]
+    # 1. MEME — exactly one meme ref, file present
+    refs = [m.group(1) for m in IMAGE.finditer(body)]
+    meme_refs = [r for r in refs if ".meme." in r]
     if len(meme_refs) != 1:
         fails.append(f"found {len(meme_refs)} `*.meme.*` refs in body; need exactly 1")
     else:
-        ref = meme_refs[0].group(1).lstrip("/").split("/")[-1]
-        from os.path import join, dirname, exists
-        if not exists(join(dirname(path) or ".", ref)):
-            fails.append(f"meme ref `{ref}` has no file next to the article")
+        name = meme_refs[0].lstrip("/").split("/")[-1]
+        if not exists(join(dirname(path) or ".", name)):
+            fails.append(f"meme ref `{name}` has no file next to the article")
 
-    # 2. PLACEMENT — collect visual spans (fences + body images) as (start, end, is_meme)
-    spans = [(body_start + m.start(), body_start + m.end(), False) for m in FENCE.finditer(body)]
-    for m in IMAGE.finditer(body):
-        s = body_start + m.start()
-        if not any(lo <= s < hi for lo, hi, _ in spans):  # skip images inside a fence
-            spans.append((s, body_start + m.end(), ".meme." in m.group(1)))
-    spans.sort()
+    # 2. ANCHORS — >=3 committed images, at least one diagram
+    if len(refs) < MIN_IMAGES:
+        fails.append(f"{len(refs)} committed body image(s); need >= {MIN_IMAGES} "
+                     f"(diagram + meme + one more)")
+    if not any(".diagram." in r for r in refs):
+        fails.append("no `*.diagram.*` ref in body; the mandatory diagram is missing")
 
-    if spans:
-        # prose gaps between visuals (and head/tail), each tagged with its borders
-        gaps = [(body_start, spans[0][0], False)]
-        for (_, prev_end, pm), (next_start, _, nm) in zip(spans, spans[1:]):
-            gaps.append((prev_end, next_start, pm or nm))  # 3rd field: meme borders this gap
-        gaps.append((spans[-1][1], len(raw), False))
-
-        prose_total = sum(words(raw[a:b]) for a, b, _ in gaps) or 1
-        biggest = max(gaps, key=lambda g: words(raw[g[0]:g[1]]))
-        big_w = words(raw[biggest[0]:biggest[1]])
-        if big_w / prose_total > MAX_GAP_FRAC:
-            fails.append(
-                f"longest prose run is {big_w}w ({big_w/prose_total:.0%} of body), "
-                f"L{lineno(raw, biggest[0])}–L{lineno(raw, biggest[1])} — "
-                f"move the meme into it"
-            )
-        # adjacency only matters for the MOVABLE visual — don't police content-anchored
-        # code blocks (e.g. a registry example next to the install-command CTA).
-        for a, b, meme_borders in gaps[1:-1]:
-            if meme_borders and words(raw[a:b]) < MIN_ADJ_WORDS:
+    # 3. SPACING — no run of more than MAX_PROSE_RUN consecutive prose paragraphs
+    run, run_start = 0, None
+    for kind, ln in classify(body):
+        if kind == "prose":
+            if run == 0:
+                run_start = ln
+            run += 1
+            if run > MAX_PROSE_RUN:
                 fails.append(
-                    f"meme is only {words(raw[a:b])}w from the next visual near "
-                    f"L{lineno(raw, a)} — move it into open prose"
+                    f"{run} prose paragraphs in a row with no visual, "
+                    f"starting L{base_line + run_start + 1} — break it with a rendered "
+                    f"image (or cut prose until the run closes)"
                 )
+                run = 0  # report each over-long run once
+        else:
+            run = 0
 
     if not fails:
-        print("  ok — exactly one meme, visuals evenly spaced.")
+        print("  ok — one meme, >=3 images, no prose run over two paragraphs.")
         return 0
     for f in fails:
         print(f"  FAIL  {f}")

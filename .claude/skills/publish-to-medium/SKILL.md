@@ -180,7 +180,14 @@ remote `https` images — they came in with the body paste.
    each became a "Remove <tag>" chip via snapshot (Medium caps at 5; manifest is capped).
 3. Click the dialog's **Publish** button (labelled just "Publish", not "Publish now"):
    `agent-browser --session-name medium find role button click --name "Publish"`.
-4. Wait, then read the canonical URL — that's the deliverable:
+4. **Set the canonical link to the portfolio** (cross-posting — do this so Medium
+   doesn't outrank your own site). On the published story: **…** (more) menu →
+   **Story settings** → **Advanced settings** → **Customize canonical link**, and
+   enter `https://brandincanfield.com/blog/<slug>`. Publish the portfolio first
+   (`publish-to-portfolio`) to have that URL; Hashnode and dev.to point at the same
+   one. Drive it off snapshots — the menu labels can shift. (If asked for a draft,
+   skip Publish but you can still set canonical from the draft's … menu.)
+5. Wait, then read the published URL — that's the deliverable:
    ```bash
    agent-browser --session-name medium eval 'document.querySelector("link[rel=canonical]")?.href || location.href'
    ```
