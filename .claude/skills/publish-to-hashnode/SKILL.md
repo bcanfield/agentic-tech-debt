@@ -125,11 +125,29 @@ sleep 4   # uploads; then "Change cover"/"Delete cover" appear = success
 
 Click **Publish** (upper-right) → "Draft settings" dialog opens → **Discovery** tab →
 `textbox "Tags"`. Hashnode tags are a fixed taxonomy with autocomplete: for each tag
-in the manifest, click the Tags box, `keyboard type` it, wait ~1.5s, then click the
-top `#<tag> … posts` suggestion button. NOTE: some canonical tags have a cuid-suffixed
-slug (e.g. `#programming-ciovqvfcb008…`) — that's the *real* tag (displays as
-"#programming" to readers), not a malformed custom one, so don't "fix" it. Added tags
-show as chip buttons; click a chip to remove it.
+in the manifest, focus the Tags box, `keyboard type` it, wait ~1.5s, then **click the
+matching suggestion** to commit it.
+
+> **Two gotchas that bite hard (verified June 2026):**
+> - **You MUST click the suggestion — typing + Enter does nothing.** The box does not
+>   clear on its own; if you just type each tag, they **concatenate** into one garbage
+>   string (`aiopensourcetechnicaldebt…`). Clicking the suggestion is what adds the
+>   chip and clears the box. (If it accumulated, select-all + Backspace to clear.)
+> - **Suggestion text has NO space between tag and count** — it's `#ai38,235 posts`,
+>   not `#ai 38,235 posts`. So a `startsWith("#ai ")` match fails. Match the tag token
+>   with a regex that stops at the first digit:
+>   ```bash
+>   # after typing one tag, click its exact suggestion:
+>   agent-browser --session-name hashnode eval '(()=>{const want="ai";const b=[...document.querySelectorAll("button")].filter(x=>/posts/.test(x.textContent)).find(x=>{const m=x.textContent.trim().match(/^#([a-zA-Z0-9-]+?)\d/);return m&&m[1].toLowerCase()===want;});if(!b)return "NO_MATCH";b.setAttribute("data-ab","tg");return "ok";})()'
+>   agent-browser --session-name hashnode click '[data-ab="tg"]'
+>   ```
+> - **Re-focus the Tags box before each tag** (`[...document.querySelectorAll("input,textarea")].find(e=>/tag/i.test(e.placeholder||"")).focus()`).
+
+NOTE: some canonical tags have a cuid-suffixed slug (e.g. `#programming-ciovqvfcb008…`)
+— that's the *real* tag (displays as "#programming" to readers), not a malformed custom
+one, so don't "fix" it; the regex above won't match it (the cuid has letters after the
+digits), so click that suggestion by its `startsWith("#programming-")` prefix instead.
+Added tags show as chip buttons; click a chip to remove it.
 
 **Canonical URL (cross-posting).** Same tab, find the SEO / "canonical URL" field
 (it may be behind a "This article is originally published elsewhere" / canonical

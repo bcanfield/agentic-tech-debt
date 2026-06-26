@@ -97,6 +97,14 @@ The injector returns `RESULT blocks=N`. **Verify:** snapshot and confirm the
 paragraphs/headings/code/blockquotes are in the editor (inline code, bold, links
 and code fences all convert correctly).
 
+> **Markdown tables flatten — fix them by hand.** Medium has no table support, so a
+> markdown table pastes as one run-on paragraph (e.g. all cells concatenated:
+> "Header1 Header2 cell cell cell…") that reads as garbage. After the paste, check the
+> body for any source table and reformat it in the editor: select the flattened
+> paragraph, Backspace to empty it, and `keyboard type` a readable version (short
+> prose lines separated by `press "Enter"`, or a bulleted comparison). Do this before
+> Publish. (dev.to/Hashnode render tables natively — this is Medium-only.)
+
 If it returns `NO_EDITOR` or the editor stays empty, escalate through these
 fallbacks, re-checking after each:
 
@@ -175,18 +183,30 @@ remote `https` images — they came in with the body paste.
 > (vs. leaving a draft). For drafts, stop after Step 5.
 
 1. Click **Publish** (top-right): `agent-browser --session-name medium find role button click --name "Publish"`.
-2. A **Topics** dialog opens with an "Add a topic…" combobox. Click it, then for each
-   tag in the manifest: `keyboard type "<tag>"`, `sleep 0.4`, `press "Enter"`. Confirm
-   each became a "Remove <tag>" chip via snapshot (Medium caps at 5; manifest is capped).
+2. A **Topics** dialog opens with an "Add a topic…" combobox. `find role combobox
+   click` and `click <ref>` both **fail to focus it** (verified) — focus it via eval
+   instead, then type. For each tag in the manifest: focus, `keyboard type "<tag>"`,
+   `sleep ~1s` for the suggestion list, then `press "Enter"` to take the top match.
+   Re-focus before each tag (the box clears after each add):
+   ```bash
+   agent-browser --session-name medium eval '(()=>{const c=document.querySelector("input[role=combobox], [aria-label=\"Add a topic...\"]");c.focus();c.click();return "ok";})()'
+   ```
+   Confirm each became a "Remove <tag>" chip via snapshot (Medium caps at 5; manifest is capped).
 3. Click the dialog's **Publish** button (labelled just "Publish", not "Publish now"):
    `agent-browser --session-name medium find role button click --name "Publish"`.
-4. **Set the canonical link to the portfolio** (cross-posting — do this so Medium
-   doesn't outrank your own site). On the published story: **…** (more) menu →
-   **Story settings** → **Advanced settings** → **Customize canonical link**, and
-   enter `https://brandincanfield.com/blog/<slug>`. Publish the portfolio first
-   (`publish-to-portfolio`) to have that URL; Hashnode and dev.to point at the same
-   one. Drive it off snapshots — the menu labels can shift. (If asked for a draft,
-   skip Publish but you can still set canonical from the draft's … menu.)
+4. **Canonical link — NOT available for stories written in the editor.** Medium only
+   exposes "Customize canonical link" for posts created via its **Import a story**
+   tool (`medium.com/p/import`), which auto-sets canonical to the source URL. For a
+   natively-written story (what this skill produces) there is **no canonical field** —
+   it's not under … menu → Story settings → Advanced Settings, despite older guidance.
+   (Verified June 2026: searched the full Story settings + Advanced Settings DOM, no
+   canonical input exists.) So **don't burn time hunting for it.** Two options, surface
+   them to the user:
+   - **Leave it** self-canonical (a minor SEO miss — Medium ranks itself, not your site).
+   - **Re-do via Import** to get canonical: delete this post, then use Medium's Import
+     tool on the live portfolio URL (`https://brandincanfield.com/blog/<slug>`), which
+     pulls the article and sets canonical automatically. Bigger redo; only if the user
+     wants canonical on Medium specifically. Hashnode + dev.to canonical work normally.
 5. Wait, then read the published URL — that's the deliverable:
    ```bash
    agent-browser --session-name medium eval 'document.querySelector("link[rel=canonical]")?.href || location.href'

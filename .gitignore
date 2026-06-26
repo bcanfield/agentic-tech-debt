@@ -10,3 +10,7 @@ __pycache__/
 
 # skill-eval scratch (iterations, benchmarks, snapshots) — the skills themselves are tracked
 .claude/skills/write-article-workspace/
+
+# Local secrets (API keys for publishing skills)
+.env
+.env.*
