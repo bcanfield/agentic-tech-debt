@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!-- Source for articles/the-tea-app-breach-was-a-decision-nobody-wrote-down.anchor.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --human-bg: #eef2f6;
+    --human-line: #6f8aa6;
+    --human-ink: #3a5570;
+    --agent-bg: #fbeae6;
+    --agent-line: #d8714f;
+    --agent-ink: #a63a1c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 900px;
+    padding: 50px 56px 44px;
+    background: var(--paper);
+  }
+  .title { font-size: 20px; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 4px; }
+  .sub { font-size: 14px; color: var(--muted); margin-bottom: 34px; line-height: 1.5; }
+
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+  }
+  .col {
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    padding: 22px 24px 22px;
+    display: flex;
+    flex-direction: column;
+  }
+  .col .lab {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; margin-bottom: 14px;
+  }
+  .col .step {
+    font-size: 15px; line-height: 1.5; color: #2c2c2c;
+    padding-left: 18px; position: relative; margin-bottom: 10px;
+  }
+  .col .step::before {
+    content: ""; position: absolute; left: 0; top: 9px;
+    width: 7px; height: 7px; border-radius: 50%;
+  }
+  .col .artifact {
+    margin-top: auto; padding-top: 16px;
+    font-size: 14px; line-height: 1.45;
+  }
+  .col .artifact .atag {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px;
+  }
+
+  /* human column */
+  .human { background: var(--human-bg); border-color: var(--human-line); }
+  .human .lab { color: var(--human-ink); }
+  .human .step::before { background: var(--human-line); }
+  .human .artifact { border-top: 1px solid var(--human-line); color: var(--human-ink); font-weight: 500; }
+
+  /* agent column */
+  .agent { background: var(--agent-bg); border-color: var(--agent-line); }
+  .agent .lab { color: var(--agent-ink); }
+  .agent .step::before { background: var(--agent-line); }
+  .agent .artifact { border-top: 1px solid var(--agent-line); color: var(--agent-ink); }
+  .agent .artifact .line {
+    font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 13px; background: #fff; border: 1px solid var(--agent-line);
+    border-radius: 4px; padding: 7px 11px; display: inline-block; margin-top: 2px;
+    color: var(--agent-ink); font-weight: 600;
+  }
+
+  .foot {
+    margin-top: 26px;
+    font-size: 14px; line-height: 1.5; color: #2c2c2c;
+    border-left: 4px solid var(--agent-line);
+    background: #fff;
+    border-radius: 0 5px 5px 0;
+    padding: 13px 18px;
+  }
+  .caption {
+    margin-top: 22px; font-size: 13px; color: var(--muted);
+    text-align: center; letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+  <!-- ?scale=2 renders at 2x for retina-sharp PNGs; default 1x -->
+  <script>
+    addEventListener("DOMContentLoaded", () => {
+      const s = new URLSearchParams(location.search).get("scale");
+      if (s) document.getElementById("card").style.zoom = s;
+    });
+  </script>
+  <div id="card">
+    <div class="title">Who remembers the &ldquo;fix it later&rdquo;</div>
+    <div class="sub">Same permissive default, two ways the deferral gets recorded &mdash; or doesn&rsquo;t.</div>
+
+    <div class="cols">
+      <div class="col human">
+        <div class="lab">A person stands it up</div>
+        <div class="step">Goes to read the Firebase docs</div>
+        <div class="step">Sees the test-mode banner: rules expire in 30 days</div>
+        <div class="step">The work planted a memory</div>
+        <div class="artifact">
+          <span class="atag">What&rsquo;s left behind</span>
+          A mental sticky note: a security step is still owed.
+        </div>
+      </div>
+
+      <div class="col agent">
+        <div class="lab">An agent stands it up</div>
+        <div class="step">Provisions the database in one motion, default rules and all</div>
+        <div class="step">No docs read, no banner seen</div>
+        <div class="step">Reports the success and moves on</div>
+        <div class="artifact">
+          <span class="atag">What&rsquo;s left behind</span>
+          <span class="line">database provisioned &#10003;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">The friction that used to plant the sticky note is gone. The deferral now happens at the speed of the success message, and the success message is the only artifact left.</div>
+
+    <div class="caption">Tea app breach, disclosed July 2025. The mechanism, not the attribution.</div>
+  </div>
+</body>
+</html>

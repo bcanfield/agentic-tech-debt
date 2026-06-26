@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!-- Source for articles/ai-spiked-duplicate-code-8x.anchor.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --chip: #f1ece3;
+    --accent: #d8714f;
+    --accent-ink: #a63a1c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 940px;
+    padding: 50px 58px 40px;
+    background: var(--paper);
+  }
+  .title { font-size: 20px; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 4px; }
+  .sub { font-size: 14px; color: var(--muted); margin-bottom: 30px; }
+
+  /* hero number */
+  .hero { display: flex; align-items: baseline; gap: 18px; padding-bottom: 26px; }
+  .hero .big {
+    font-size: 92px; font-weight: 800; line-height: 0.9;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+  }
+  .hero .lab { font-size: 17px; line-height: 1.4; color: #3a3a3a; }
+  .hero .lab b { font-weight: 700; }
+
+  /* supporting stat row */
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--line); }
+  .stat { padding: 22px 26px 22px 0; }
+  .stat:nth-child(2) { padding-left: 28px; border-left: 1px solid var(--line); }
+  .stat .num { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .num.firms { font-size: 22px; letter-spacing: 0.01em; }
+  .stat .desc { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+  /* the credibility line */
+  .creed { margin-top: 24px; background: var(--chip); border-left: 4px solid var(--accent);
+           padding: 14px 18px; border-radius: 0 6px 6px 0; font-size: 15px; line-height: 1.45; }
+  .creed b { color: var(--accent-ink); font-weight: 700; }
+
+  .caption { margin-top: 22px; font-size: 13px; color: var(--muted);
+             line-height: 1.5; border-top: 1px solid var(--line); padding-top: 16px; }
+  .caption b { color: #3a3a3a; font-weight: 700; }
+</style>
+</head>
+<body>
+  <!-- ?scale=2 renders at 2x for retina-sharp PNGs; default 1x -->
+  <script>
+    addEventListener("DOMContentLoaded", () => {
+      const s = new URLSearchParams(location.search).get("scale");
+      if (s) document.getElementById("card").style.zoom = s;
+    });
+  </script>
+  <div id="card">
+    <div class="title">Why the duplication number is hard to wave off</div>
+    <div class="sub">What GitClear actually measured to land the 8x</div>
+
+    <div class="hero">
+      <div class="big">211M</div>
+      <div class="lab">changed lines of real <b>line-level diff history</b><br>across 2020&ndash;2024</div>
+    </div>
+
+    <div class="row">
+      <div class="stat">
+        <div class="num">5 years</div>
+        <div class="desc">of diffs, not a one-off snapshot</div>
+      </div>
+      <div class="stat">
+        <div class="num firms">Google &middot; Microsoft &middot; Meta</div>
+        <div class="desc">among the repos in the dataset</div>
+      </div>
+    </div>
+
+    <div class="creed">
+      Not a survey of how developers feel, not a benchmark on toy tasks &mdash; the
+      <b>actual diff history</b> of real codebases over five years.
+    </div>
+
+    <div class="caption">
+      Source: GitClear, <b>2025 AI Copilot Code Quality report</b>. Vendor research (GitClear
+      sells code-review analytics), and a correlation with AI adoption over these years, not
+      proven causation.
+    </div>
+  </div>
+</body>
+</html>

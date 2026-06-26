@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!-- Source for articles/cheap-to-write-expensive-to-own.anchor.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --chip: #f1ece3;
+    --accent: #d8714f;
+    --accent-ink: #a63a1c;
+    --calm: #4f8a63;
+    --calm-ink: #2f6342;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 940px;
+    padding: 50px 58px 40px;
+    background: var(--paper);
+  }
+  .title { font-size: 20px; font-weight: 700; letter-spacing: 0.01em; margin-bottom: 4px; }
+  .sub { font-size: 14px; color: var(--muted); margin-bottom: 30px; }
+
+  /* two opposing trends */
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--line); }
+  .trend { padding: 26px 30px 24px 0; }
+  .trend:nth-child(2) { padding-left: 32px; border-left: 1px solid var(--line); }
+  .trend .lab { font-size: 14px; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; color: #3a3a3a; }
+  .trend .flow { display: flex; align-items: baseline; gap: 12px; margin-top: 14px; font-variant-numeric: tabular-nums; }
+  .trend .from { font-size: 30px; font-weight: 700; color: var(--muted); }
+  .trend .arrow { font-size: 24px; color: var(--muted); }
+  .trend .to { font-size: 52px; font-weight: 800; line-height: 0.9; letter-spacing: -0.02em; }
+  .trend.up .to { color: var(--accent-ink); }
+  .trend.down .to { color: var(--calm-ink); }
+  .trend .delta { margin-top: 12px; font-size: 14px; font-weight: 700; }
+  .trend.up .delta { color: var(--accent-ink); }
+  .trend.down .delta { color: var(--calm-ink); }
+  .trend .yr { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+  /* the crossing line */
+  .creed { margin-top: 26px; background: var(--chip); border-left: 4px solid var(--accent);
+           padding: 16px 18px; border-radius: 0 6px 6px 0; font-size: 16px; line-height: 1.45; }
+  .creed b { color: var(--accent-ink); font-weight: 700; }
+
+  .dupe { margin-top: 18px; font-size: 14px; color: #3a3a3a; }
+  .dupe b { font-weight: 800; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+
+  .caption { margin-top: 22px; font-size: 13px; color: var(--muted);
+             line-height: 1.5; border-top: 1px solid var(--line); padding-top: 16px; }
+  .caption b { color: #3a3a3a; font-weight: 700; }
+</style>
+</head>
+<body>
+  <!-- ?scale=2 renders at 2x for retina-sharp PNGs; default 1x -->
+  <script>
+    addEventListener("DOMContentLoaded", () => {
+      const s = new URLSearchParams(location.search).get("scale");
+      if (s) document.getElementById("card").style.zoom = s;
+    });
+  </script>
+  <div id="card">
+    <div class="title">The cheap move overtook the careful one</div>
+    <div class="sub">Share of changed lines that were copy-pasted vs. moved (refactored), 2020 &rarr; 2024</div>
+
+    <div class="pair">
+      <div class="trend up">
+        <div class="lab">Copy-pasted lines</div>
+        <div class="flow">
+          <span class="from">8.3%</span>
+          <span class="arrow">&rarr;</span>
+          <span class="to">12.3%</span>
+        </div>
+        <div class="delta">+48% relative</div>
+        <div class="yr">2020 &rarr; 2024</div>
+      </div>
+      <div class="trend down">
+        <div class="lab">Moved / refactored lines</div>
+        <div class="flow">
+          <span class="from">24.1%</span>
+          <span class="arrow">&rarr;</span>
+          <span class="to">9.5%</span>
+        </div>
+        <div class="delta">&minus;39.9%</div>
+        <div class="yr">2020 &rarr; 2024</div>
+      </div>
+    </div>
+
+    <div class="creed">
+      <b>2024</b> was the first year GitClear measured &mdash; copy-pasted code beat
+      refactored code, and the two lines had never crossed before.
+    </div>
+
+    <div class="dupe">Duplicated code blocks of 5+ lines: <b>8&times;</b> during 2024.</div>
+
+    <div class="caption">
+      Source: GitClear, <b>2025 AI Copilot Code Quality report</b>, across 211M changed lines
+      (2020&ndash;2024). Vendor research (GitClear sells code-review analytics), and a
+      correlation with AI adoption over these years, not proven causation.
+    </div>
+  </div>
+</body>
+</html>

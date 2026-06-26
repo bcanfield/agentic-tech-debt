@@ -13,7 +13,7 @@ image: "/running-tech-debt-ops-with-an-ai-agent.cover.jpg"
 
 The problem with letting an agent write most of your code isn't that the code is bad. A lot of it is fine. The problem is the rate. An agent will defer a dozen small decisions in a session (cast a value to `any` to clear a type error, swallow an exception so a test goes green, pick a default "for now") and then tell you the session went well, because by its own account it did. OX Security, which sells code-security tooling so weigh it accordingly, put the mechanism plainly in their October 2025 "Army of Juniors" report: "vulnerable systems now reach production at unprecedented speed, and proper code review simply cannot scale to match the new output velocity."
 
-That's the bind. You can't review at the speed the thing generates, and you can't tell it to stop. So the only move left is to make the deferrals visible the moment they happen, then deal with them on your own schedule. That's the whole job, and it splits into four steps you can run by hand starting today: catch, register, review, pay down. No installs. I'll walk the manual version first, because it genuinely works and you should know what you're automating before you automate it.
+That's the bind. You can't review at the speed the thing generates, and telling it to slow down defeats the point of using it. So you make the deferrals visible the moment they happen and deal with them on your own schedule. Four steps, all of them runnable by hand starting today: catch, register, review, pay down. No installs. I'll walk the manual version first, because it genuinely works and you should know what you're automating before you automate it.
 
 ## Catch: grep for the shortcuts the agent didn't mention
 
@@ -41,6 +41,8 @@ Run those after a session and you'll get hits. Some are real debt, plenty are no
 Here's where the manual loop earns its keep, and it's almost embarrassingly low-tech. For each real deferral, write a markdown file into a `docs/debt/` folder and commit it next to the code. One file, one decision. That's the registry.
 
 The format matters less than the fields. I use frontmatter so a script can rank it later, but a teammate doing this with a plain sentence per file would get 90% of the value. The fields I won't skip: where the debt lives (so churn can be measured against it), why it exists, and the load-bearing one, the payoff trigger. Not a due date. The *condition* that means it's time to pay, like "the first time someone touches this auth path again" or "when we add a second payment provider." A due date is a guess; a condition is something you can actually wait for.
+
+![A single debt-registry markdown file for the adapter-script-duplication entry, showing its fields: hotspot, why, Fowler quadrant, and the payoff trigger.](/running-tech-debt-ops-with-an-ai-agent.anchor.png)
 
 Why not `TODO` comments? I assumed they were good enough for a while; they're not, for a reason specific to agents. A `TODO` travels with the code, which sounds fine until the agent rewrites that file next session and the comment goes with it, or gets "cleaned up." A Jira ticket dies in grooming three weeks later when nobody remembers the context. A markdown file checked into the repo survives both: version control tracks it, grep finds it, and because it isn't real code the agent doesn't touch it on its next pass. The decision and the code that prompted it are committed together, the one time all the context is in the same place.
 
@@ -88,6 +90,8 @@ top 3 to pay down
 
 That top entry is the project documenting its own shortcut. I ship debt-ops as four self-contained copies, so every shared script exists four times and is synced by hand. That's a deliberate tradeoff, registered against itself, ranked top because that file churns. None of it is mocked up for the article. It's what the command prints when I run it just now.
 
+![The catch, register, review, and pay-down loop in two columns: what you run by hand today, and which step the debt-ops hook takes over.](/running-tech-debt-ops-with-an-ai-agent.diagram.png)
+
 Since the plugin watches your agent and reads your repo, here's exactly what it is and isn't, because the one plugin I watched get torched on Hacker News died for undisclosed server calls. debt-ops runs entirely on your machine. The hooks are stdlib Python, no dependencies to audit. It makes no network calls and sends no telemetry; the registry is plain markdown in your repo, the only state is a local cache, and it's MIT-licensed. You can read every line before you trust it with a single edit, which given what it's hooked into is the point.
 
 It installs as a Claude Code plugin:
@@ -101,6 +105,6 @@ It installs as a Claude Code plugin:
 
 What it doesn't do is the part I'd want it to and can't make honest: it won't pay your debt down for you, not unattended, not in a way I'd trust against an auth path. The catch step is mechanical, so I automated it. The judgment steps (is this entry worth fixing, what's the smallest safe change) I still do by hand, one at a time, with the diff in front of me. If I'm honest that's also just how I like working, so take the recommendation with that grain of salt: I built the tool to do the part I'd forget, and kept the part I didn't want to give up.
 
-The repo is [github.com/bcanfield/agentic-tech-debt](https://github.com/bcanfield/agentic-tech-debt). Grep your own `src/` first, though — you'll find the hits whether or not you ever install anything.
+> The repo is [github.com/bcanfield/agentic-tech-debt](https://github.com/bcanfield/agentic-tech-debt). Grep your own `src/` first, though — you'll find the hits whether or not you ever install anything.
 
 *Cover photo by Lindsay Cotter on Unsplash.*
