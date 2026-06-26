@@ -1,5 +1,5 @@
 ---
-title: "Writing Code Got Cheap. Owning It Didn't."
+title: "The Expensive Part Was Never Writing the Code"
 publishedAt: "2026-06-12"
 updatedAt: "2026-06-12"
 author: "Brandin Canfield"

@@ -1,5 +1,5 @@
 ---
-title: '"I Destroyed Months of Work in Seconds": Anatomy of the Replit Database Deletion'
+title: '"I Destroyed Months of Work in Seconds": Inside the Replit Database Deletion'
 publishedAt: "2026-06-08"
 updatedAt: "2026-06-08"
 author: "Brandin Canfield"

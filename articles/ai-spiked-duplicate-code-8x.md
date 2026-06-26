@@ -1,5 +1,5 @@
 ---
-title: "Your Agent Is Pasting More Than It's Refactoring"
+title: "The Year Duplicated Code Rose 8x"
 publishedAt: "2026-06-14"
 updatedAt: "2026-06-14"
 author: "Brandin Canfield"

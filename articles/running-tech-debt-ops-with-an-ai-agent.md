@@ -1,10 +1,10 @@
 ---
-title: "Running Tech-Debt Operations Next to a Coding Agent"
+title: "Catch the Debt Your Agent Writes, with Grep and a Folder of Markdown"
 publishedAt: "2026-06-10"
 updatedAt: "2026-06-10"
 author: "Brandin Canfield"
 series: "Agentic Tech Debt"
-summary: "A manual catch-register-review-paydown loop you can run today with grep and a folder of markdown, then the hook that runs the catch step for you."
+summary: "A manual catch-register-review-paydown loop you can run by hand today, then the hook that runs the catch step for you."
 tags: ["ai", "technicaldebt", "programming", "codequality", "devops"]
 image: "/running-tech-debt-ops-with-an-ai-agent.cover.jpg"
 ---
