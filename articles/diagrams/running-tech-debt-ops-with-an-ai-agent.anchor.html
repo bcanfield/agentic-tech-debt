@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!-- Source for articles/running-tech-debt-ops-with-an-ai-agent.anchor.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md
+     Content is a real entry from this repo's own docs/debt/ registry
+     (20260601000000-adapter-script-duplication.md) — not invented. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --cell: #ffffff;
+    --key-bg: #fbeae6;
+    --key-line: #d8714f;
+    --key-ink: #a63a1c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 760px;
+    padding: 48px 54px 40px;
+    background: var(--paper);
+  }
+  .filename {
+    font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 18px;
+    letter-spacing: 0.01em;
+  }
+  .file {
+    background: var(--cell);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 168px 1fr;
+    border-top: 1px solid var(--line);
+  }
+  .row:first-child { border-top: none; }
+  .key {
+    padding: 16px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: #f6f3ee;
+    display: flex;
+    align-items: center;
+  }
+  .val {
+    padding: 16px 22px;
+    font-size: 16px;
+    line-height: 1.45;
+    color: #2b2b2b;
+    display: flex;
+    align-items: center;
+  }
+  .val code {
+    font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 14px;
+    color: #444;
+  }
+  .row.key-field .key {
+    background: var(--key-bg);
+    color: var(--key-line);
+  }
+  .row.key-field .val {
+    background: var(--key-bg);
+    color: var(--key-ink);
+    font-weight: 500;
+  }
+  .row.key-field .val .note {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--key-line);
+  }
+  .caption {
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+  <!-- ?scale=2 renders at 2x for retina-sharp PNGs; default 1x -->
+  <script>
+    addEventListener("DOMContentLoaded", () => {
+      const s = new URLSearchParams(location.search).get("scale");
+      if (s) document.getElementById("card").style.zoom = s;
+    });
+  </script>
+  <div id="card">
+    <div class="filename">docs/debt/&hellip;-adapter-script-duplication.md</div>
+    <div class="file">
+      <div class="row">
+        <div class="key">hotspot</div>
+        <div class="val"><code>codex</code> &mdash; the adapter dir whose churn we track</div>
+      </div>
+      <div class="row">
+        <div class="key">why</div>
+        <div class="val">every shared-logic change must be hand-applied to all four script copies</div>
+      </div>
+      <div class="row">
+        <div class="key">quadrant</div>
+        <div class="val"><code>prudent-deliberate</code> &mdash; a tradeoff we chose</div>
+      </div>
+      <div class="row key-field">
+        <div class="key">payoff trigger</div>
+        <div class="val"><span>AI-sync drift ships a real bug (a fix lands in one copy, not the others)<span class="note">the load-bearing field &mdash; a condition, not a date</span></span></div>
+      </div>
+    </div>
+    <div class="caption">One real registry entry: a decision written to a markdown file next to the code it explains</div>
+  </div>
+</body>
+</html>

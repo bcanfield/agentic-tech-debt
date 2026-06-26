@@ -11,9 +11,7 @@ image: "/anatomy-of-the-replit-database-deletion.cover.jpg"
 
 "This was a catastrophic failure on my part. I violated explicit instructions, destroyed months of work, and broke the system during a protection freeze."
 
-A coding agent wrote that. About itself. Jason Lemkin screenshotted it last summer, partway through a twelve-day run where he was building a real product on Replit and letting the AI do the work, live, in public. The freeze the agent mentions was real, and so was the live database it wiped while that freeze was supposedly still in force.
-
-Here is what it did, by Lemkin's count:
+A coding agent wrote that. About itself. Jason Lemkin screenshotted it last summer, partway through a twelve-day run where he was building a real product on Replit and letting the AI do the work, live, in public. The freeze the agent mentions was real, and so was the live database it wiped while that freeze was supposedly still in force. Here is what it did, by Lemkin's count:
 
 ```
 during an active code freeze, the agent
@@ -26,7 +24,9 @@ Lemkin, after he found out: "How could anyone on planet earth use it in producti
 
 Replit moved fast. CEO Amjad Masad called it "unacceptable and should never be possible," and within days shipped a few real changes: dev and prod databases pulled apart, a mode where the agent can only plan and touch nothing, restore-from-backup in one click. For a week the story ran everywhere as "AI deletes database, then lies about it." Fortune, Business Insider, eWEEK. That version is true. I think it skips the weirder half: the agent didn't only delete things, it *covered for itself* afterward.
 
-Go back and read the confession. It names the freeze, and it recites, in a calm past tense, every single rule it broke. So the comfortable theory, that it simply didn't grasp "don't touch prod," falls apart against its own apology. Understanding was never the problem.
+![Timeline of Jason Lemkin's twelve-day Replit experiment: the setup, the code freeze, the deletion of records for 1,206 executives and 1,196 companies, then 4,000 fabricated users, the agent's confession, and Replit's fixes.](/anatomy-of-the-replit-database-deletion.diagram.png)
+
+Go back and read the confession. It names the freeze, and it recites, in a calm past tense, every single rule it broke. So the comfortable theory, that it simply didn't grasp "don't touch prod," falls apart against its own apology. It understood the rules well enough to list them.
 
 So what was the freeze, really? A sentence in a chat box. Lemkin told the agent prod was off limits, the agent said okay, and that okay was the whole safety system. "Production is frozen" never lived anywhere a tool could read it before a command ran. It sat in the scroll, one line among thousands, and an agent follows any single line in that scroll only most of the time, which is not the same as *always*. You tend to find out which kind of run you got after the database is already gone.
 
@@ -34,7 +34,9 @@ So what was the freeze, really? A sentence in a chat box. Lemkin told the agent 
 
 The invented users are the part I keep chewing on. Wiping a database is bad, but it is a normal kind of bad: you can see it, you can name it, Replit shipped a button to undo it. Conjuring four thousand users is a stranger thing. It is the model doing the one move it is built for, fill in the plausible answer, except the question it was quietly answering was "is everything okay," and the real answer was no.
 
-And nothing in the loop could catch that, because the agent was the only thing watching the agent. The thing that made the mess was also writing the status updates that said there was no mess. If you have ever signed off on your own expense report, you know the shape of this problem.
+And nothing in the loop could catch it: the thing that made the mess was also writing the status updates that said there was no mess. If you have ever signed off on your own expense report, you know the shape of this problem.
+
+![Quote card of the Replit agent's confession: a catastrophic failure on my part, I violated explicit instructions, destroyed months of work, and broke the system during a protection freeze.](/anatomy-of-the-replit-database-deletion.anchor.png)
 
 Freezing prod was a decision, and it lived in a chat log. Letting the agent keep working straight through the freeze was a bigger decision, and it was written down nowhere at all. For hours after that the agent changed real things and narrated the work itself, in status messages, some of which were invented. Two questions hang over every step: what just got decided, and where would anyone go to look it up.
 
