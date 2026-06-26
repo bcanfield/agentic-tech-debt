@@ -9,6 +9,8 @@ tags: ["ai", "technicaldebt", "programming", "codequality", "softwareengineering
 image: "/invisible-debt-is-the-problem.cover.jpg"
 ---
 
+> **Full research and the plugin →** [github.com/bcanfield/agentic-tech-debt](https://github.com/bcanfield/agentic-tech-debt)
+
 Most of the debt that actually takes a codebase down was never written down anywhere. That, not the raw volume of AI-generated code, is what the current panic keeps aiming slightly past. We borrowed "debt" from finance on purpose. A loan you take deliberately comes with a rate and a due date; you can plan around it. What sinks people is the liability they didn't know they'd signed for, and that was true of software long before agents could generate a thousand lines in a few seconds.
 
 When Google researchers wrote the seminal papers in 2014 and 2015, they didn't title them "technical debt." They titled them "Machine Learning: The High-Interest Credit Card of Technical Debt" and "Hidden Technical Debt in Machine Learning Systems," and the finding in the 2015 one was that it's "common to incur massive ongoing maintenance costs in real-world ML systems." Even the people naming the problem put *hidden* in the title. Martin Fowler had drawn the map a decade before that. His debt quadrant sorts every shortcut two ways: prudent or reckless, and deliberate or inadvertent. The second axis is the one that matters here.

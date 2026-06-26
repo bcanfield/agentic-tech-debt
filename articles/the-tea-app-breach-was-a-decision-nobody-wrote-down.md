@@ -9,6 +9,8 @@ tags: ["ai", "security", "technicaldebt", "vibecoding", "programming"]
 image: "/the-tea-app-breach-was-a-decision-nobody-wrote-down.cover.jpg"
 ---
 
+> **Full research and the plugin →** [github.com/bcanfield/agentic-tech-debt](https://github.com/bcanfield/agentic-tech-debt)
+
 The Firebase database behind Tea was sitting open on the internet last July, and anyone who found the URL could read all of it. Roughly 72,000 images. Around 13,000 of them government IDs: driver's licenses and selfies people had uploaded to prove they were women, because Tea is a women-only app for vetting men before a date. Past that, 1.1 million-plus private messages. No password, no auth check, no token. Just a bucket you could point a script at.
 
 The IDs existed because the app asked for proof of identity to keep men out. Then it stored that proof somewhere a man on 4chan could grab the lot in an afternoon. The thing built to protect the users is the thing that doxxed them.

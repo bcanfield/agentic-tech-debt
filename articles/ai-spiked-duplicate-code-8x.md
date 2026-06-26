@@ -9,6 +9,8 @@ tags: ["ai", "technicaldebt", "codequality", "programming", "softwareengineering
 image: "/ai-spiked-duplicate-code-8x.cover.jpg"
 ---
 
+> **Full research and the plugin →** [github.com/bcanfield/agentic-tech-debt](https://github.com/bcanfield/agentic-tech-debt)
+
 Of the blocks your coding agent pasted into the codebase this week, a larger share are copies of something already in the repo than at any point anyone has measured. That's the most cited number in the AI-code-quality argument, and it comes from GitClear: duplicated code blocks of five or more lines rose eightfold during 2024.
 
 GitClear builds code-review analytics, so this is their data on their terms, and I'll come back to what that's worth. But the size of it is hard to wave off: 211 million changed lines across 2020 through 2024, from repos that include Google, Microsoft, and Meta. Not a survey of how developers feel, not a benchmark on toy tasks, but the actual line-level diff history of real codebases over five years.

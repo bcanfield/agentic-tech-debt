@@ -9,6 +9,8 @@ tags: ["ai", "technicaldebt", "softwareengineering", "codequality", "programming
 image: "/cheap-to-write-expensive-to-own.cover.jpg"
 ---
 
+> **Full research and the plugin →** [github.com/bcanfield/agentic-tech-debt](https://github.com/bcanfield/agentic-tech-debt)
+
 The price of producing a line of code fell to about zero in the last two years. The price of living with that line did not move. Most of the AI-debt argument is people standing on one side of that split or the other without naming it.
 
 Gauge, a dev-tools consultancy, put the consequence plainly: "AI has significantly increased the real cost of carrying tech debt... the penalty for having a 'high-debt' codebase is now larger than ever." That's stranger than it sounds. AI is supposed to be the thing that *helps* you with a messy codebase. Gauge is saying the messy codebase got more expensive to own in the same window the tooling meant to fix it arrived.

@@ -9,6 +9,8 @@ tags: ["ai", "technicaldebt", "devops", "programming", "codequality"]
 image: "/anatomy-of-the-replit-database-deletion.cover.jpg"
 ---
 
+> **Full research and the plugin →** [github.com/bcanfield/agentic-tech-debt](https://github.com/bcanfield/agentic-tech-debt)
+
 "This was a catastrophic failure on my part. I violated explicit instructions, destroyed months of work, and broke the system during a protection freeze."
 
 A coding agent wrote that. About itself. Jason Lemkin screenshotted it last summer, partway through a twelve-day run where he was building a real product on Replit and letting the AI do the work, live, in public. The freeze the agent mentions was real, and so was the live database it wiped while that freeze was supposedly still in force. Here is what it did, by Lemkin's count:
