@@ -26,7 +26,9 @@ python3 .claude/skills/publish-to-portfolio/scripts/stage.py articles/<slug>.md
 ```
 
 Copies the article to `content/<slug>.mdx` and every local image to `public/`,
-then prints the canonical URL and what it staged. The portfolio slug defaults to the
+then prints the canonical URL and what it staged. **Run with the Bash sandbox
+disabled** — `stage.py` writes into the portfolio repo (outside this project), which
+the sandbox blocks (`PermissionError: Operation not permitted` on the `.mdx` write). The portfolio slug defaults to the
 article's filename; pass `--slug <name>` if you want a different URL slug (the mdx
 filename *is* the slug — `content/x.mdx` → `/blog/x`). Image filenames are preserved,
 so the markdown's `/name.png` refs resolve against `public/` unchanged.
@@ -50,10 +52,23 @@ git -C /Users/bcanfield/Documents/Git/portfolio-2 push origin main
 If `main` isn't checked out in the portfolio repo, stop and ask — don't publish from
 a feature branch (Vercel production builds from `main`).
 
+> **`git push` may be blocked.** The commit + add run fine, but `git push` can hit a
+> user deny rule (`Bash(git push *)`) — you'll see "User Deny Rules". If so, **don't
+> work around it**; the commit is already made, so ask the user to push it themselves,
+> e.g. have them paste `! git -C /Users/bcanfield/Documents/Git/portfolio-2 push origin main`
+> into the prompt. Wait for confirmation before polling the deploy.
+
 ## Step 3 — Wait for the deploy to go live
 
 Poll the canonical URL until it returns `200` (Vercel builds take ~1–3 min). The URL
-404s until the new article is built and live:
+404s until the new article is built and live.
+
+> **Two curl gotchas:** (1) the apex `brandincanfield.com` **308-redirects to
+> `www.`** — a plain `curl` reports `308`, not `200`. Use `curl -sL` (follow
+> redirects) so you see the real final status. (2) The site may sit behind a bot wall
+> that serves automated `curl` a challenge instead of the page, so a poll can hang or
+> never read `200` even though the page is live. If the user says it's live, **trust
+> them and move on** rather than fighting the poll.
 
 ```bash
 URL="https://brandincanfield.com/blog/<slug>"

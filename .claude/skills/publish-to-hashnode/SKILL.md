@@ -149,12 +149,17 @@ one, so don't "fix" it; the regex above won't match it (the cuid has letters aft
 digits), so click that suggestion by its `startsWith("#programming-")` prefix instead.
 Added tags show as chip buttons; click a chip to remove it.
 
-**Canonical URL (cross-posting).** Same tab, find the SEO / "canonical URL" field
-(it may be behind a "This article is originally published elsewhere" / canonical
-checkbox). Set it to the **portfolio** post — `https://brandincanfield.com/blog/<slug>`
-— so Hashnode doesn't compete with your site for SEO. Publish the portfolio first
-(`publish-to-portfolio`) to have that URL; Medium and dev.to point at the same one.
-(Same tab also has slug + other SEO fields — optional.)
+**Canonical URL (cross-posting).** Same Discovery tab: check the `checkbox "Are you
+republishing? Add a canonical URL"` — that **reveals** a `textbox` with placeholder
+`https://example.com/original-article`. Focus it and type the **portfolio** URL
+`https://brandincanfield.com/blog/<slug>` so Hashnode doesn't compete with your site
+for SEO. Publish the portfolio first (`publish-to-portfolio`) to have that URL; Medium
+and dev.to point at the same one. (Same tab also has slug + other SEO fields — optional.)
+
+> **Draft settings autosave.** Tags + canonical persist on the draft as you set them.
+> Clicking between dialog tabs (Attribution/Discovery) by stale ref can accidentally
+> close the dialog — that's fine, reopen with **Publish** and your settings are still
+> there. Just re-verify before the final publish.
 
 ## Step 7 — Publish
 
@@ -164,15 +169,23 @@ Confirm the **Attribution** tab shows the right publication, then click the **di
 Publish button — *not* via `find role button --name "Publish"` (that hits the header
 button and just toggles the dialog). Mark and click it directly, e.g.:
 
+> **"Select a publication" is usually a no-op.** A draft opened via **Write**/**New**
+> from a publication already belongs to it (the header shows the publication name,
+> e.g. "Agentic Tech Tebt"), and Attribution may still display "Select a publication"
+> — publishing still goes to the right blog. Don't get stuck trying to make that
+> selector "stick."
+
 ```bash
 agent-browser --session-name hashnode eval '(()=>{const d=document.querySelector("[role=dialog]");const b=[...d.querySelectorAll("button")].find(x=>x.textContent.trim()==="Publish");b.setAttribute("data-ab","pub");return "ok";})()'
 agent-browser --session-name hashnode click '[data-ab="pub"]'
 ```
 
 On success the URL goes `/draft/…` → `/edit/…` and the header button flips
-"Publish" → "Update". The `/edit` page has no canonical link, so get the public URL
-from the publication dashboard (a `*.hashnode.dev` link) — it's `<blog>/<slug>` (the
-slug is on the Discovery tab). Return that URL.
+"Publish" → "Update". The `/edit` page has no canonical link; the cleanest way to get
+the public URL is the editor's **… menu → "View post"**, which navigates the browser
+straight to the live `*.hashnode.dev/<slug>` page — read `location.href` there. (Then
+verify the post: `h1` title, `cdn.hashnode.com` images, and `link[rel=canonical]`
+pointing at the portfolio.) Return that public URL.
 
 ## Notes
 
