@@ -34,12 +34,19 @@ helper does the deterministic prep, then you steer the browser off live snapshot
    medium`. Keep `--headed --args "--disable-blink-features=AutomationControlled"` on
    the publish runs too, or Cloudflare may re-challenge. Don't try to automate login.
 
-> **Two environment gotchas (both bit during development):**
+> **Three environment gotchas (all bit during development):**
 > - **Daemon reuse.** `agent-browser` runs one shared background daemon. If a daemon
 >   is already up (e.g. a session for another site), `--headed`/`--args` on a new
 >   `open` are **silently ignored** — you get the existing, often headless, browser
 >   (symptom: no visible window for login, or a stale page). Fix: `agent-browser
 >   close --all`, then relaunch with the headed login command above.
+> - **One daemon = one login at a time; verify before you close.** You can't hold two
+>   headed sign-in windows (e.g. Medium *and* Hashnode) open at once — the shared
+>   daemon shows one window, and opening the second replaces the first. When
+>   frontloading multiple sites' logins, do them **sequentially**: sign into one, then
+>   **reopen that session and snapshot to confirm it stuck** (`open …/new-story` should
+>   show the editor, not a "Sign in" page), *then* `close --all` and open the next.
+>   Closing before cookies flush silently drops the login — that cost a re-login this run.
 > - **Sandbox (Claude Code).** agent-browser needs its socket dir `~/.agent-browser`;
 >   the Bash sandbox blocks it (`Socket directory '/…/.agent-browser' is not writable
 >   … os error 1`). Run agent-browser commands with the sandbox disabled.

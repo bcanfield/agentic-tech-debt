@@ -29,12 +29,20 @@ self-sufficient; the sibling `publish-to-medium` skill follows the same shape.
 
    User signs in by hand once. Confirm logged-in via snapshot before proceeding.
 
-> **Two environment gotchas (both bit during development):**
+> **Three environment gotchas (all bit during development):**
 > - **Daemon reuse.** `agent-browser` runs one shared background daemon. If a daemon
 >   is already up (e.g. a session for another site like `medium`), `--headed`/`--args`
 >   on a new `open` are **silently ignored** — you get the existing, often headless,
 >   browser (symptom: no visible window for login). Fix: `agent-browser close --all`,
 >   then relaunch with the headed login command above.
+> - **One daemon = one login at a time; verify before you close.** You can't hold two
+>   headed sign-in windows (e.g. Medium *and* Hashnode) open at once — the shared
+>   daemon shows one window, and opening the second replaces the first. So **frontload
+>   logins sequentially**: sign into one, then **reopen that session and snapshot to
+>   confirm the login stuck** (`open …/draft` should NOT redirect to `/login`), *then*
+>   `close --all` and open the next. Closing before the cookies flush (or logging in
+>   while the daemon is on another session's context) silently drops the login — that
+>   cost a re-login this run.
 > - **Sandbox (Claude Code).** agent-browser needs its socket dir `~/.agent-browser`;
 >   the Bash sandbox blocks it (`Socket directory '/…/.agent-browser' is not writable
 >   … os error 1`). Run agent-browser commands with the sandbox disabled.
@@ -60,8 +68,10 @@ agent-browser --session-name hashnode snapshot -i      # logged in? (Feed/Write/
 ```
 
 If a sign-in page shows, **stop** and have the user run the login command. Then click
-**Write** (opens `hashnode.com/draft/<id>`). The Write button reopens the *last*
-draft — if it has content, click **New** to get a blank one. Verified editor fields:
+**Write** — it's a `button` (not a link, and there are usually two; either works), so
+use `find role button click --name "Write"` or click its ref, *not* `find role link`.
+It opens `hashnode.com/draft/<id>` and reopens the *last* draft — if it has content,
+click **New** for a blank one (also a button). Verified editor fields:
 `textbox "Article Title..."`, a body `[contenteditable="true"]`, a `"Cover"` button,
 and `"Publish"` (upper-right). Refs change per load — snapshot for current ones.
 
@@ -156,6 +166,12 @@ republishing? Add a canonical URL"` — that **reveals** a `textbox` with placeh
 for SEO. Publish the portfolio first (`publish-to-portfolio`) to have that URL; Medium
 and dev.to point at the same one. (Same tab also has slug + other SEO fields — optional.)
 
+> **Checking the box shifts refs — don't type by stale ref.** Revealing the canonical
+> field renumbers the tab's inputs, so a URL typed against the old ref lands in the
+> **SEO title** field instead. After checking the box, re-query the field **by
+> placeholder** (`input[placeholder*="original-article"]`), focus it, then type. If the
+> URL did leak into SEO title, clear it (focus it, `Meta+a`, `Backspace`) before publish.
+
 > **Draft settings autosave.** Tags + canonical persist on the draft as you set them.
 > Clicking between dialog tabs (Attribution/Discovery) by stale ref can accidentally
 > close the dialog — that's fine, reopen with **Publish** and your settings are still
@@ -175,17 +191,36 @@ button and just toggles the dialog). Mark and click it directly, e.g.:
 > — publishing still goes to the right blog. Don't get stuck trying to make that
 > selector "stick."
 
+The "Draft settings" panel is **not** a `[role=dialog]` (that selector returns
+`NO_PUB_BTN`). Its Publish button is a top-level button paired with a "Close" button —
+match it that way (the "Publish" button whose sibling set includes "Close"), *not* the
+header Publish:
+
 ```bash
-agent-browser --session-name hashnode eval '(()=>{const d=document.querySelector("[role=dialog]");const b=[...d.querySelectorAll("button")].find(x=>x.textContent.trim()==="Publish");b.setAttribute("data-ab","pub");return "ok";})()'
+agent-browser --session-name hashnode eval '(()=>{const btns=[...document.querySelectorAll("button")];const close=btns.find(b=>b.textContent.trim()==="Close");const b=btns.find(x=>x.textContent.trim()==="Publish"&&close&&x.parentElement===close.parentElement);const t=b||btns.reverse().find(x=>x.textContent.trim()==="Publish");if(!t)return "NO_PUB_BTN";t.setAttribute("data-ab","pub");return "ok";})()'
 agent-browser --session-name hashnode click '[data-ab="pub"]'
 ```
 
 On success the URL goes `/draft/…` → `/edit/…` and the header button flips
-"Publish" → "Update". The `/edit` page has no canonical link; the cleanest way to get
-the public URL is the editor's **… menu → "View post"**, which navigates the browser
-straight to the live `*.hashnode.dev/<slug>` page — read `location.href` there. (Then
-verify the post: `h1` title, `cdn.hashnode.com` images, and `link[rel=canonical]`
-pointing at the portfolio.) Return that public URL.
+"Publish" → "Update" — that alone confirms it published.
+
+**Getting the public URL (the `… menu → "View post"` route does NOT exist — don't
+chase it).** The `/edit` page has no canonical link, and the public site is
+bot-walled (curl gets a 403/challenge — verify in the logged-in browser, not curl).
+Reliable path:
+
+1. **Blog domain:** open the account menu (`button[aria-label="Open menu"]`) → grab
+   the dashboard id from the "Upgrade to Pro" link
+   (`…/dashboards/<ID>/billing`), open `https://hashnode.com/dashboards/<ID>` and read
+   the sole `*.hashnode.dev` link — that's the blog host. (For this user it's
+   `how-i-stopped-letting-ai-generated-code-wreck-my-projects.hashnode.dev`.)
+2. **Slug:** open the blog host homepage and list post links
+   (`a[href]` matching `hashnode.dev/<slug>$`); the new post is there. **Apostrophes
+   become `-`, not dropped** — "A Women's Safety App…" → `a-women-s-safety-app-…`
+   (guessing `womens` 404s).
+3. Navigate to that URL in the browser and verify: `h1` title matches,
+   `cdn.hashnode.com` images present, and `link[rel=canonical]` points at the
+   portfolio. Return that public URL.
 
 ## Notes
 
