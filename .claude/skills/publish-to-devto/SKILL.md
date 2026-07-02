@@ -18,12 +18,19 @@ images load from brandincanfield.com and `canonical_url` points at the portfolio
 
 ## Prerequisites
 
-1. **`DEVTO_API_KEY`** in the environment — a dev.to API key (Settings → Extensions →
-   "DEV Community API Keys" / Settings → Account). Check it's set:
+1. **`DEVTO_API_KEY`** — a dev.to API key (Settings → Extensions → "DEV Community API
+   Keys" / Settings → Account). **It lives in the repo-root `./.env`
+   (`DEVTO_API_KEY=…`), NOT the shell profile** — so it won't be in `$DEVTO_API_KEY`
+   until you source it. Load it (sandbox disabled — the Bash sandbox blocks reading
+   `.env`), then confirm:
 
    ```bash
-   [ -n "$DEVTO_API_KEY" ] && echo "key present" || echo "MISSING — ask the user to export DEVTO_API_KEY"
+   set -a; . ./.env; set +a
+   [ -n "$DEVTO_API_KEY" ] && echo "key present" || echo "MISSING — check ./.env, else ask the user"
    ```
+
+   Source it again in the same command as the Step 3 POST (env doesn't persist between
+   Bash calls). Only ask the user if `./.env` truly lacks it.
 
 2. **The article is live on the portfolio** (so its images resolve). Have the
    canonical URL ready: `https://brandincanfield.com/blog/<slug>`.
