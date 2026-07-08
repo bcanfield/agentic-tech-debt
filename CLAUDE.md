@@ -53,9 +53,9 @@ deltas below** (don't flatten them).
   - Cache layout + `metrics.jsonl` event shapes — the scripts + the `metrics` skill.
   - Product copy across the eight manifests (keep in lockstep, but mind the
     per-schema shape):
-    - **Plugin tagline** — `"Tracks the tech debt your AI agent writes. Every
-      shortcut and \"I'll fix this later\" logged in your repo and kept visible
-      until it's fixed."` is byte-identical in all four `plugin.json` (`claude-code/.claude-plugin/`,
+    - **Plugin tagline** — `"Every shortcut your coding agent takes, saved to
+      your repo as it happens. Fix them when you're ready."` is byte-identical
+      in all four `plugin.json` (`claude-code/.claude-plugin/`,
       `codex/.codex-plugin/`, `copilot/`, `cursor/.cursor-plugin/`) **and** the
       `plugins[].description` of the `.claude-plugin/`, `.github/plugin/`, and
       `.cursor-plugin/` marketplaces. The codex `.agents/plugins/marketplace.json`
