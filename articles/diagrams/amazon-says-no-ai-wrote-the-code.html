@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<!-- Source for articles/amazon-says-no-ai-wrote-the-code.diagram.png
+     Regenerate: open in Playwright, screenshot #card. See diagrams/README.md -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d9d4cc;
+    --paper: #faf8f4;
+    --rail: #c9c2b6;
+    --danger-bg: #fbeae6;
+    --danger-line: #d8714f;
+    --danger-ink: #a63a1c;
+    --calm-bg: #eaf2ec;
+    --calm-line: #4f8a63;
+    --calm-ink: #2f6342;
+    --node: #1a1a1a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  #card {
+    width: 940px;
+    padding: 50px 58px 40px;
+    background: var(--paper);
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin-bottom: 4px;
+  }
+  .sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 34px;
+  }
+  .rail {
+    position: relative;
+    border-left: 2px solid var(--rail);
+    margin-left: 8px;
+    padding-left: 30px;
+  }
+  .ev {
+    position: relative;
+    padding-bottom: 26px;
+  }
+  .ev:last-child { padding-bottom: 4px; }
+  .ev .dot {
+    position: absolute;
+    left: -39px;
+    top: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--node);
+    border: 3px solid var(--paper);
+  }
+  .ev.danger .dot { background: var(--danger-line); }
+  .ev.calm .dot { background: var(--calm-line); }
+  .phase {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ev.danger .phase { color: var(--danger-ink); }
+  .ev.calm .phase { color: var(--calm-ink); }
+  .head {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+  .attr {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .caveat {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    background: #f4efe6;
+    border: 1px dashed var(--rail);
+    color: #7a6f5c;
+    line-height: 1.4;
+  }
+  .caption {
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+  <!-- ?scale=2 renders at 2x for retina-sharp PNGs; default 1x -->
+  <script>
+    addEventListener("DOMContentLoaded", () => {
+      const s = new URLSearchParams(location.search).get("scale");
+      if (s) document.getElementById("card").style.zoom = s;
+    });
+  </script>
+  <div id="card">
+    <div class="title">Amazon's winter incident cluster</div>
+    <div class="sub">December 2025 – March 2026. Amazon disputes that AI-written code caused any of it.</div>
+
+    <div class="rail">
+      <div class="ev danger">
+        <div class="dot"></div>
+        <div class="phase">Mid-December 2025</div>
+        <div class="head">The Kiro coding agent "decides to delete and recreate the environment" — ~13-hour AWS Cost Explorer outage in a China region.</div>
+        <div class="attr">Financial Times (Feb 20), four people familiar. An AWS employee: "small but entirely foreseeable."</div>
+      </div>
+
+      <div class="ev danger">
+        <div class="dot"></div>
+        <div class="phase">March 2, 2026</div>
+        <div class="head">An incident linked to Amazon Q pushes wrong delivery estimates: ~120,000 lost orders, ~1.6M site errors.</div>
+        <div class="attr">The one incident with a clean line back to AI tooling.</div>
+      </div>
+
+      <div class="ev danger">
+        <div class="dot"></div>
+        <div class="phase">March 5, 2026</div>
+        <div class="head">A ~6-hour North America outage drops orders 99% — an estimated 6.3M lost.</div>
+        <div class="caveat">A Business Insider estimate Amazon disputes — and careful reporting ties it to an unreviewed config change, not AI.</div>
+      </div>
+
+      <div class="ev">
+        <div class="dot"></div>
+        <div class="phase">March 10, 2026</div>
+        <div class="head">CNBC: the internal doc's bullet point naming "GenAI-assisted changes" was deleted before the deep-dive meeting.</div>
+        <div class="attr">Treadwell's memo: "GenAI tools... accelerating production change instructions, leading to unsafe practices." Safeguards "haven't been fully established yet."</div>
+      </div>
+    </div>
+
+    <div class="caption">From Financial Times, CNBC, Fortune, and Business Insider reporting, Feb–Mar 2026.</div>
+  </div>
+</body>
+</html>
