@@ -1,8 +1,0 @@
-version: 2
-updates:
-  # The only automation surface with external deps: pinned GitHub Actions.
-  # The hooks/skills are stdlib Python only, so there's no package ecosystem.
-  - package-ecosystem: github-actions
-    directory: "/"
-    schedule:
-      interval: weekly
