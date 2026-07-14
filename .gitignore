@@ -7,3 +7,5 @@ __pycache__/
 
 # Playwright MCP traces left in the cwd during agent-driven authoring
 .playwright-mcp/
+
+.env
