@@ -1,6 +1,6 @@
 {
   "name": "debt-ops",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Every shortcut your coding agent takes, saved to your repo as it happens. Fix them when you're ready.",
   "author": {
     "name": "Brandin Canfield",
