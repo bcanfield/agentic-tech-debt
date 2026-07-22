@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.10.0...debt-ops-v0.10.1) (2026-07-22)
+
+
+### Bug Fixes
+
+* Tagline ([2d62751](https://github.com/bcanfield/agentic-tech-debt/commit/2d6275138075d2b8afaa79d6f4d7099d693a46eb))
+
 ## [0.10.0](https://github.com/bcanfield/agentic-tech-debt/compare/debt-ops-v0.9.1...debt-ops-v0.10.0) (2026-06-23)
 
 
