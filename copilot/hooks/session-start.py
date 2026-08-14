@@ -82,6 +82,25 @@ def ai_authored_count(registry_dir):
     return n
 
 
+# Adapter identity — a per-adapter delta; tags session metrics so cross-adapter
+# analysis can split claude-code / codex / copilot usage.
+ADAPTER = "copilot"
+
+# Language ecosystems this repo uses, by manifest presence — a join key for
+# cross-repo analysis (what kind of debt shows up in rust vs node, etc.).
+MANIFEST_LANGUAGES = {
+    "Cargo.toml": "rust",
+    "package.json": "node",
+    "pyproject.toml": "python",
+    "go.mod": "go",
+    "Gemfile": "ruby",
+}
+
+
+def detect_languages(toplevel):
+    return sorted({lang for f, lang in MANIFEST_LANGUAGES.items() if (toplevel / f).is_file()})
+
+
 def log_metric(cache_dir, payload):
     if not cache_dir.is_dir():
         return
@@ -199,12 +218,23 @@ def main():
 
     log_metric(cache_dir, {
         "event": "session",
+        "adapter": ADAPTER,
+        "languages": detect_languages(toplevel),
         "registry_count": md_count(toplevel / effective_registry_dir),
         "adr_count": md_count(toplevel / effective_adr_dir),
         "ai_authored_count": ai_authored_count(toplevel / effective_registry_dir),
         "adr_dir": effective_adr_dir,
         "registry_dir": effective_registry_dir,
     })
+
+    # Activation funnel: stamp the first-ever session for this repo (once). An
+    # all-time fact, so it's a marker file, not a windowed metric event.
+    first_session = cache_dir / "first-session"
+    if not first_session.exists():
+        try:
+            first_session.write_text(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), encoding="utf-8")
+        except OSError:
+            pass
     return 0
 
 

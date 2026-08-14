@@ -195,6 +195,15 @@ def main():
         "letter": letter,
     })
 
+    # Activation funnel: stamp the first-ever registration for this repo (once).
+    # An all-time fact, so it's a marker file, not a windowed metric event.
+    marker = cache_dir / "first-register"
+    if not marker.exists():
+        try:
+            marker.write_text(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), encoding="utf-8")
+        except OSError:
+            pass
+
     sys.stdout.write(f"+1 entry: {args.slug} ({letter})\n")
     return 0
 
