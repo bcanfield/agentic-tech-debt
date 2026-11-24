@@ -18,6 +18,11 @@
   guide for Claude Code plugin internals: manifest, skills, agents,
   hooks, MCP, LSP, monitors, marketplaces. Used while designing the
   plugin.
+- **[`telemetry-collection-plan.md`](./telemetry-collection-plan.md)**:
+  what usage data is worth collecting (to steer the roadmap and fuel
+  content like a "debt of the week") and how to collect it without
+  breaking the privacy promise — local by default, sharing via explicit
+  opt-in donation. See [ADR 0020](./adr/0020-local-only-opt-in-telemetry.md).
 - **[`adr/`](./adr/)**: Architecture Decision Records — short notes on
   the choices that shape how the plugin behaves. See
   [`adr/README.md`](./adr/README.md) for the format.
